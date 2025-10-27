@@ -25,13 +25,10 @@
             min-height: 100vh;
             padding: 20px;
             margin: 0;
-            display: flex;
-            flex-direction: column;
         }
         .container {
             max-width: 1600px;
             margin: 0 auto;
-            flex: 1;
         }
         .header {
             background-color: var(--bg-light);
@@ -72,7 +69,6 @@
             display: grid;
             grid-template-columns: 300px 1fr;
             gap: 20px;
-            flex: 1;
         }
         .sidebar {
             background-color: var(--bg-light);
@@ -678,49 +674,14 @@
         .estado-rojo {
             background-color: var(--danger);
         }
-        /* Pie de página */
-        .footer {
-            background-color: var(--bg-light);
-            padding: 20px;
-            text-align: center;
-            border-radius: 15px;
-            margin-top: 20px;
-            box-shadow: var(--shadow);
-            font-size: 14px;
-            color: var(--text-secondary);
-        }
-        .footer p {
-            margin: 5px 0;
-        }
-        .footer a {
-            color: var(--accent);
-            text-decoration: none;
-        }
-        .footer a:hover {
-            text-decoration: underline;
-        }
     </style>
 </head>
-<body onload="init()">
-    <!-- Modal de autenticación -->
-    <div id="authModal" class="modal" style="display: block;">
-        <div class="modal-content">
-            <h3>Ingresar como Administrador</h3>
-            <input type="password" id="adminPassword" placeholder="Contraseña de administrador">
-            <div class="modal-buttons">
-                <button class="confirm" onclick="checkAdminPassword()">Ingresar</button>
-            </div>
-        </div>
-    </div>
-
+<body>
     <div class="container">
         <div class="header">
             <h1>
-                <img
-                  src="logo-cpu.png"
-                  alt="Logo CPU"
-                  class="logo-cpu"
-                >
+                <img src="logo-cpu.png"
+                     alt="Logo CPU" class="logo-cpu">
                 Comunidad Pastoral Universitaria
             </h1>
             <p>📚 Control de Asistencia</p>
@@ -731,8 +692,8 @@
                 <h2>📋 Materias</h2>
                 <div class="tipo-materia">
                     <select id="tipoMateria" onchange="render()">
-                        <option value="extension">Actividades de Extensión Universitaria</option>
-                        <option value="taller">Proyecto de Extensión Universitaria</option>
+                        <option value="extension">Extensión Universitaria</option>
+                        <option value="taller">Talleres Universitarios</option>
                     </select>
                 </div>
                 <div class="mes-selector">
@@ -778,23 +739,16 @@
             </div>
         </div>
     </div>
-    <!-- Pie de página -->
-    <div class="footer">
-        <p>Programa desarrollado por <strong>Daniel Fiego</strong> para la <strong>Comunidad Pastoral Universitaria</strong>.</p>
-        <p>© 2025 Todos los derechos reservados.</p>
-        <p>Este software está protegido por las leyes de propiedad intelectual y solo puede ser utilizado bajo los términos y condiciones establecidos por sus desarrolladores.</p>
-        <p>Código regido bajo las normas de <a href="https://www.argentina.gob.ar/normativa" target="_blank">propiedad intelectual de la República Argentina</a>.</p>
-    </div>
     <!-- Modal para elegir tipo de materia -->
     <div id="modalTipoMateria" class="modal-tipo">
         <div class="modal-tipo-content">
             <h3>Selecciona el tipo de materia</h3>
             <div class="tipo-materia-options">
                 <div class="tipo-materia-option extension" onclick="seleccionarTipoMateria('extension')">
-                    Actividades de Extensión Universitaria
+                    Actividad de Extensión Universitaria
                 </div>
                 <div class="tipo-materia-option taller" onclick="seleccionarTipoMateria('taller')">
-                    Proyecto de Extensión Universitaria
+                    Proyecto de Extencion Universitaria
                 </div>
             </div>
         </div>
@@ -829,10 +783,8 @@
             <input type="text" id="editApellido" placeholder="Apellido">
             <input type="text" id="editDNI" placeholder="DNI">
             <input type="text" id="editPabellon" placeholder="Pabellón">
-            <label for="editFechaInscripcion">Fecha de Inscripción:</label>
-            <input type="date" id="editFechaInscripcion">
-            <label for="editFechaVencimiento">Fecha de Vencimiento:</label>
-            <input type="date" id="editFechaVencimiento">
+            <input type="date" id="editFechaInscripcion" placeholder="Fecha de Inscripción">
+            <input type="date" id="editFechaVencimiento" placeholder="Fecha de Vencimiento">
             <div class="modal-buttons">
                 <button class="cancel" onclick="cerrarModal('modalEditarAlumno')">Cancelar</button>
                 <button class="confirm" onclick="guardarEdicionAlumno()">Guardar</button>
@@ -840,10 +792,6 @@
         </div>
     </div>
     <script>
-        // Contraseña de administrador
-        const ADMIN_PASSWORD = "cpu20251";
-        let isAdmin = false;
-
         // Base de datos simulada por mes
         var db = {
             meses: [],
@@ -854,10 +802,6 @@
             alumnoAEditar: null,
             actual: null
         };
-        // Variables para el carousel
-        let currentSlide = 0;
-        let slides = [];
-        let slideInterval;
         // Inicializar la base de datos por mes
         function initDB() {
             for (let i = 0; i < 12; i++) {
@@ -868,47 +812,27 @@
                 });
             }
         }
+        // Variables para el carousel
+        let currentSlide = 0;
+        let slides = [];
+        let slideInterval;
         // Inicializar la aplicación
         function init() {
             initDB();
+            // Inicializar con el mes seleccionado en el selector (por defecto, enero)
             db.mesActual = parseInt(document.getElementById('mesSelector').value);
             render();
             updateClock();
             setInterval(updateClock, 1000);
         }
-        // Verificar contraseña de administrador
-        function checkAdminPassword() {
-            const password = document.getElementById("adminPassword").value;
-            if (password === ADMIN_PASSWORD) {
-                isAdmin = true;
-                document.getElementById("authModal").style.display = "none";
-                render();
-            } else {
-                isAdmin = false;
-                document.getElementById("authModal").style.display = "none";
-                render();
-            }
-        }
         // Actualizar el reloj
         function updateClock() {
             const now = new Date();
-            const options = {
-                weekday: 'long',
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit',
-                second: '2-digit'
-            };
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' };
             document.getElementById('clock').textContent = now.toLocaleDateString('es-ES', options);
         }
         // Mostrar modal para elegir tipo de materia
         function mostrarModalTipoMateria() {
-            if (!isAdmin) {
-                alert("No tienes permisos para realizar esta acción.");
-                return;
-            }
             document.getElementById('modalTipoMateria').style.display = 'block';
         }
         // Seleccionar tipo de materia
@@ -927,15 +851,12 @@
         }
         // Crear una nueva materia (solo para el mes seleccionado)
         function crearMateria() {
-            if (!isAdmin) {
-                alert("No tienes permisos para realizar esta acción.");
-                return;
-            }
             var nom = document.getElementById('nombreMateria').value.trim();
             if (!nom) {
                 alert('Ingresa un nombre para la materia');
                 return;
             }
+            // Usar el mes seleccionado en el selector
             var mesSeleccionado = parseInt(document.getElementById('mesSelector').value);
             db.meses[mesSeleccionado].materias.push({
                 id: Date.now(),
@@ -950,10 +871,6 @@
         }
         // Mostrar modal para eliminar materia
         function mostrarModalEliminarMateria(id) {
-            if (!isAdmin) {
-                alert("No tienes permisos para realizar esta acción.");
-                return;
-            }
             var mesSeleccionado = parseInt(document.getElementById('mesSelector').value);
             var materia = db.meses[mesSeleccionado].materias.find(m => m.id === id);
             document.getElementById('nombreMateriaEliminar').textContent = materia.nombre;
@@ -962,10 +879,6 @@
         }
         // Confirmar eliminación de materia
         function confirmarEliminarMateria() {
-            if (!isAdmin) {
-                alert("No tienes permisos para realizar esta acción.");
-                return;
-            }
             var mesSeleccionado = parseInt(document.getElementById('mesSelector').value);
             var materiasMesActual = db.meses[mesSeleccionado].materias;
             if (materiasMesActual.length === 1) {
@@ -984,13 +897,8 @@
         }
         // Mostrar el formulario para agregar alumno (solo materias del mes seleccionado)
         function mostrarFormularioAlumno() {
-            if (!isAdmin) {
-                alert("No tienes permisos para realizar esta acción.");
-                return;
-            }
             var mesSeleccionado = parseInt(document.getElementById('mesSelector').value);
-            var tipoSeleccionado = document.getElementById('tipoMateria').value;
-            var materiasMesActual = db.meses[mesSeleccionado].materias.filter(m => m.tipo === tipoSeleccionado);
+            var materiasMesActual = db.meses[mesSeleccionado].materias;
             var checkboxesHtml = '';
             materiasMesActual.forEach(m => {
                 checkboxesHtml += `
@@ -1011,10 +919,6 @@
         }
         // Agregar un alumno a una o varias materias (solo al mes seleccionado)
         function addAlumno() {
-            if (!isAdmin) {
-                alert("No tienes permisos para realizar esta acción.");
-                return;
-            }
             var n = document.getElementById('fn').value.trim();
             var a = document.getElementById('fa').value.trim();
             var d = document.getElementById('fd').value.trim();
@@ -1025,25 +929,22 @@
                 alert('Completa todos los campos y selecciona al menos una materia');
                 return;
             }
+            // Usar el mes seleccionado en el selector
             var mesSeleccionado = parseInt(document.getElementById('mesSelector').value);
             let alumnoExistente = db.meses[mesSeleccionado].alumnos.find(al => al.dni === d);
             if (!alumnoExistente) {
-                // Fechas por defecto (hoy y +1 año)
-                let hoy = new Date().toISOString().split('T')[0];
-                let unAnoDespues = new Date();
-                unAnoDespues.setFullYear(unAnoDespues.getFullYear() + 1);
-                let vencimiento = unAnoDespues.toISOString().split('T')[0];
                 alumnoExistente = {
                     id: Date.now(),
                     nombre: n,
                     apellido: a,
                     dni: d,
                     pabellon: p,
-                    fecha_inscripcion: hoy,
-                    fecha_vencimiento_carnet: vencimiento
+                    fecha_inscripcion: new Date().toISOString().split('T')[0],
+                    fecha_vencimiento_carnet: new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString().split('T')[0]
                 };
                 db.meses[mesSeleccionado].alumnos.push(alumnoExistente);
             }
+            // Agregar el alumno solo a las materias del mes seleccionado
             materiasSeleccionadas.forEach(mid => {
                 let materia = db.meses[mesSeleccionado].materias.find(m => m.id === mid);
                 if (materia) {
@@ -1062,6 +963,7 @@
                     }
                 }
             });
+            // Limpiar los campos y ocultar el formulario
             document.getElementById('fn').value = '';
             document.getElementById('fa').value = '';
             document.getElementById('fd').value = '';
@@ -1071,10 +973,6 @@
         }
         // Eliminar un alumno de una materia
         function delAlumno(mid, aid) {
-            if (!isAdmin) {
-                alert("No tienes permisos para realizar esta acción.");
-                return;
-            }
             if (confirm('¿Eliminar alumno?')) {
                 var mesSeleccionado = parseInt(document.getElementById('mesSelector').value);
                 var mat = db.meses[mesSeleccionado].materias.find(m => m.id === mid);
@@ -1086,10 +984,6 @@
         }
         // Alternar la asistencia de un alumno
         function toggleAsist(mid, aid, f) {
-            if (!isAdmin) {
-                alert("No tienes permisos para realizar esta acción.");
-                return;
-            }
             var mesSeleccionado = parseInt(document.getElementById('mesSelector').value);
             var mat = db.meses[mesSeleccionado].materias.find(m => m.id === mid);
             if (mat) {
@@ -1102,10 +996,6 @@
         }
         // Agregar una nueva fecha/clase
         function addFecha() {
-            if (!isAdmin) {
-                alert("No tienes permisos para realizar esta acción.");
-                return;
-            }
             var f = document.getElementById('ff').value.trim();
             if (!f) return;
             var mesSeleccionado = parseInt(document.getElementById('mesSelector').value);
@@ -1118,10 +1008,6 @@
         }
         // Eliminar una fecha/clase
         function deleteFecha() {
-            if (!isAdmin) {
-                alert("No tienes permisos para realizar esta acción.");
-                return;
-            }
             var mesSeleccionado = parseInt(document.getElementById('mesSelector').value);
             var mat = db.meses[mesSeleccionado].materias.find(m => m.id === db.actual);
             if (!mat || mat.fechas.length === 0) {
@@ -1144,10 +1030,6 @@
         }
         // Actualizar las observaciones de un alumno
         function updateObservaciones(mid, aid, valor) {
-            if (!isAdmin) {
-                alert("No tienes permisos para realizar esta acción.");
-                return;
-            }
             var mesSeleccionado = parseInt(document.getElementById('mesSelector').value);
             var mat = db.meses[mesSeleccionado].materias.find(m => m.id === mid);
             if (mat) {
@@ -1185,28 +1067,18 @@
         }
         // Función para renovar el carnet
         function renovarCarnet(mid, aid) {
-            if (!isAdmin) {
-                alert("No tienes permisos para realizar esta acción.");
-                return;
-            }
             var mesSeleccionado = parseInt(document.getElementById('mesSelector').value);
             var mat = db.meses[mesSeleccionado].materias.find(m => m.id === mid);
             if (mat) {
                 var al = mat.alumnos.find(a => a.id === aid);
                 if (al) {
-                    let unAnoDespues = new Date();
-                    unAnoDespues.setFullYear(unAnoDespues.getFullYear() + 1);
-                    al.fecha_vencimiento_carnet = unAnoDespues.toISOString().split('T')[0];
+                    al.fecha_vencimiento_carnet = new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString().split('T')[0];
                     render();
                 }
             }
         }
         // Mostrar modal para editar alumno
         function mostrarModalEditarAlumno(aid) {
-            if (!isAdmin) {
-                alert("No tienes permisos para realizar esta acción.");
-                return;
-            }
             var mesSeleccionado = parseInt(document.getElementById('mesSelector').value);
             var mat = db.meses[mesSeleccionado].materias.find(m => m.id === db.actual);
             if (mat) {
@@ -1225,10 +1097,6 @@
         }
         // Guardar la edición del alumno
         function guardarEdicionAlumno() {
-            if (!isAdmin) {
-                alert("No tienes permisos para realizar esta acción.");
-                return;
-            }
             var n = document.getElementById('editNombre').value.trim();
             var a = document.getElementById('editApellido').value.trim();
             var d = document.getElementById('editDNI').value.trim();
@@ -1264,7 +1132,7 @@
         }
         // Inicializar el carousel
         function initCarousel() {
-            const slidesData = [
+            slides = [
                 {
                     icon: "📚",
                     title: "La educación es el arma más poderosa para cambiar el mundo.",
@@ -1360,7 +1228,7 @@
             carouselContainer.className = 'carousel-container';
             const slidesContainer = document.createElement('div');
             slidesContainer.className = 'carousel-slides';
-            slidesData.forEach((slide, index) => {
+            slides.forEach((slide, index) => {
                 const slideElement = document.createElement('div');
                 slideElement.className = `carousel-slide ${index === 0 ? 'active' : ''}`;
                 slideElement.style.background = slide.background;
@@ -1383,7 +1251,7 @@
             // Indicadores del carousel
             const dots = document.createElement('div');
             dots.className = 'carousel-dots';
-            slidesData.forEach((_, index) => {
+            slides.forEach((_, index) => {
                 const dot = document.createElement('span');
                 dot.onclick = () => goToSlide(index);
                 if (index === 0) dot.className = 'active';
@@ -1396,44 +1264,29 @@
         function nextSlide() {
             slides[currentSlide].classList.remove('active');
             document.querySelectorAll('.carousel-dots span')[currentSlide].classList.remove('active');
-            currentSlide = (currentSlide + 1) % slides.length;
-            slides[currentSlide].classList.add('active');
-            document.querySelectorAll('.carousel-dots span')[currentSlide].classList.add('active');
+            setTimeout(() => {
+                currentSlide = (currentSlide + 1) % slides.length;
+                slides[currentSlide].classList.add('active');
+                document.querySelectorAll('.carousel-dots span')[currentSlide].classList.add('active');
+            }, 500);
         }
         function prevSlide() {
             slides[currentSlide].classList.remove('active');
             document.querySelectorAll('.carousel-dots span')[currentSlide].classList.remove('active');
-            currentSlide = (currentSlide - 1 + slides.length) % slides.length;
-            slides[currentSlide].classList.add('active');
-            document.querySelectorAll('.carousel-dots span')[currentSlide].classList.add('active');
+            setTimeout(() => {
+                currentSlide = (currentSlide - 1 + slides.length) % slides.length;
+                slides[currentSlide].classList.add('active');
+                document.querySelectorAll('.carousel-dots span')[currentSlide].classList.add('active');
+            }, 500);
         }
         function goToSlide(index) {
             slides[currentSlide].classList.remove('active');
             document.querySelectorAll('.carousel-dots span')[currentSlide].classList.remove('active');
-            currentSlide = index;
-            slides[currentSlide].classList.add('active');
-            document.querySelectorAll('.carousel-dots span')[currentSlide].classList.add('active');
-        }
-        // Renderizar el contenido principal
-        function render() {
-            var mesSeleccionado = parseInt(document.getElementById('mesSelector').value);
-            var tipoSeleccionado = document.getElementById('tipoMateria').value;
-            var materiasMesActual = db.meses[mesSeleccionado].materias;
-            // Filtrar materias por tipo
-            var materiasFiltradas = materiasMesActual.filter(m => m.tipo === tipoSeleccionado);
-            // Renderizar lista de materias filtradas
-            var materiasHtml = '';
-            materiasFiltradas.forEach(m => {
-                materiasHtml += `
-                    <div class="materia-item">
-                        <button class="materia-btn ${db.actual === m.id ? 'active' : ''}" onclick="verMateria(${m.id})">${m.nombre}</button>
-                        ${isAdmin ? `<button class="delete-materia" onclick="mostrarModalEliminarMateria(${m.id})">×</button>` : ''}
-                    </div>
-                `;
-            });
-            document.getElementById('materiasList').innerHTML = materiasHtml;
-            // Renderizar contenido principal
-            renderContent();
+            setTimeout(() => {
+                currentSlide = index;
+                slides[currentSlide].classList.add('active');
+                document.querySelectorAll('.carousel-dots span')[currentSlide].classList.add('active');
+            }, 500);
         }
         // Renderizar el contenido principal
         function renderContent() {
@@ -1450,9 +1303,10 @@
                     <p>Haz clic en "<strong>Nueva Materia</strong>"</p>
                 `;
                 document.getElementById('mainArea').appendChild(instruction);
+                // Iniciar el intervalo del carousel
                 slides = document.querySelectorAll('.carousel-slide');
                 clearInterval(slideInterval);
-                slideInterval = setInterval(nextSlide, 10000);
+                slideInterval = setInterval(nextSlide, 10000); // Cambia cada 10 segundos
                 return;
             }
             // Si hay una materia seleccionada, mostrar su contenido
@@ -1460,13 +1314,11 @@
             if (!mat) return;
             var html = `
                 <h2 class="materia-title">📖 ${mat.nombre}</h2>
-                ${isAdmin ? `
                 <div class="fecha-box">
                     <input type="text" id="ff" placeholder="Nueva fecha">
                     <button class="btn-fecha" onclick="addFecha()">➕ Agregar Columna</button>
                     <button class="btn-delete-fecha" onclick="deleteFecha()">🗑️ Eliminar Columna</button>
-                </div>` : ''}
-            `;
+                </div>`;
             if (!mat.alumnos || mat.alumnos.length === 0) {
                 html += '<div class="empty">No hay alumnos</div>';
             } else {
@@ -1477,42 +1329,81 @@
                 html += '<th>Observaciones</th><th>Acciones</th></tr></thead><tbody>';
                 mat.alumnos.forEach(al => {
                     const estadoCarnet = getEstadoCarnet(al.fecha_vencimiento_carnet);
-                    html += `<tr>
-                        <td><b>${al.nombre}</b></td>
-                        <td>${al.apellido}</td>
-                        <td>${al.dni}</td>
-                        <td>${al.pabellon}</td>
-                        <td>${al.fecha_inscripcion}</td>
-                        <td>${al.fecha_vencimiento_carnet}</td>
-                        <td><span class="estado-carnet ${estadoCarnet}"></span></td>`;
+                    html += `<tr><td><b>${al.nombre}</b></td><td>${al.apellido}</td><td>${al.dni}</td><td>${al.pabellon}</td>
+                    <td>${al.fecha_inscripcion}</td>
+                    <td>${al.fecha_vencimiento_carnet}</td>
+                    <td><span class="estado-carnet ${estadoCarnet}"></span></td>`;
                     mat.fechas.forEach(f => {
                         var chk = al.asist[f] ? 'checked' : '';
                         var ico = al.asist[f] ? '✅' : '❌';
-                        html += `<td>
-                            <div class="check-box">
-                                <input type="checkbox" ${chk} ${isAdmin ? `onclick="toggleAsist(${mat.id},${al.id},'${f}')"` : 'disabled'}>
-                                <span>${ico}</span>
-                            </div>
-                        </td>`;
+                        html += `<td><div class="check-box">
+                            <input type="checkbox" ${chk} onclick="toggleAsist(${mat.id},${al.id},'${f}')">
+                            <span>${ico}</span>
+                        </div></td>`;
                     });
-                    html += `<td>
-                        <textarea class="observaciones-input" placeholder="Escribir observaciones..." ${isAdmin ? `onchange="updateObservaciones(${mat.id},${al.id},this.value)"` : 'readonly'}>
-                            ${al.observaciones || ''}
-                        </textarea>
-                    </td>
+                    html += `<td><textarea class="observaciones-input"
+                        placeholder="Escribir observaciones..."
+                        onchange="updateObservaciones(${mat.id},${al.id},this.value)">${al.observaciones || ''}</textarea></td>
                     <td>
-                        ${isAdmin ? `
-                            <button class="btn-renovar" onclick="renovarCarnet(${mat.id},${al.id})">Renovar</button>
-                            <button class="btn-editar" onclick="mostrarModalEditarAlumno(${al.id})">Editar</button>
-                            <button class="btn-delete" onclick="delAlumno(${mat.id},${al.id})">Eliminar</button>
-                        ` : ''}
-                    </td>
-                    </tr>`;
+                        <button class="btn-renovar" onclick="renovarCarnet(${mat.id},${al.id})">Renovar</button>
+                        <button class="btn-editar" onclick="mostrarModalEditarAlumno(${al.id})">Editar</button>
+                        <button class="btn-delete" onclick="delAlumno(${mat.id},${al.id})">Eliminar</button>
+                    </td></tr>`;
                 });
                 html += '</tbody></table>';
+                // Estadísticas por alumno
+                mat.alumnos.forEach(al => {
+                    var totalAsistencias = Object.values(al.asist).filter(Boolean).length;
+                    var totalClases = mat.fechas.length;
+                    var porcentajeAsistencia = totalClases > 0 ? ((totalAsistencias / totalClases) * 100).toFixed(1) : 0;
+                    html += `<div class="stats">
+                        <div class="stat" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                            <h4>Asistencias</h4>
+                            <p>${totalAsistencias}</p>
+                        </div>
+                        <div class="stat" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+                            <h4>Clases</h4>
+                            <p>${totalClases}</p>
+                        </div>
+                        <div class="stat" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
+                            <h4>% Asistencia</h4>
+                            <p>${porcentajeAsistencia}%</p>
+                        </div>
+                    </div>`;
+                });
             }
             document.getElementById('mainArea').innerHTML = html;
         }
+        // Renderizar la barra lateral con las materias del mes seleccionado
+        function renderSidebar() {
+            var tipoActual = document.getElementById('tipoMateria').value;
+            var mesSeleccionado = parseInt(document.getElementById('mesSelector').value);
+            var materiasFiltradas = db.meses[mesSeleccionado].materias.filter(m => m.tipo === tipoActual);
+            var html = '';
+            if (materiasFiltradas.length === 0) {
+                html = '<p style="color:#999;text-align:center;padding:20px;">Sin materias</p>';
+            } else {
+                materiasFiltradas.forEach(m => {
+                    var active = m.id === db.actual ? 'active' : '';
+                    html += `<div class="materia-item">
+                        <button class="materia-btn ${active}" onclick="verMateria(${m.id})">${m.nombre}</button>`;
+                    if (materiasFiltradas.length > 1) {
+                        html += `<button class="delete-materia" onclick="mostrarModalEliminarMateria(${m.id})">×</button>`;
+                    }
+                    html += '</div>';
+                });
+            }
+            document.getElementById('materiasList').innerHTML = html;
+        }
+        // Función principal para renderizar todo
+        function render() {
+            renderSidebar();
+            renderContent();
+        }
+        // Inicializar la aplicación
+        init();
     </script>
 </body>
 </html>
+
+
