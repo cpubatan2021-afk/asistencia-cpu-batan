@@ -30,6 +30,108 @@
             max-width: 1600px;
             margin: 0 auto;
         }
+        /* Estilo para el modal de login */
+        #loginModal {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: fixed;
+            z-index: 1002;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+        }
+        .login-content {
+            background-color: var(--bg-light);
+            padding: 40px;
+            border-radius: 15px;
+            border: 1px solid var(--accent);
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+            box-shadow: var(--shadow);
+        }
+        .login-content h2 {
+            color: var(--accent);
+            margin: 0 0 25px 0;
+            font-size: 2em;
+        }
+        .login-content input[type="password"] {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border: 2px solid var(--accent);
+            background-color: #2d3436;
+            color: var(--text-primary);
+            font-size: 16px;
+            transition: var(--transition);
+        }
+        .login-content input[type="password"]:focus {
+            border-color: var(--accent-secondary);
+            box-shadow: 0 0 10px rgba(240, 147, 251, 0.5);
+        }
+        .login-options {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 20px 0;
+        }
+        .login-option {
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: var(--transition);
+        }
+        .login-option.admin {
+            background-color: var(--accent);
+            color: white;
+        }
+        .login-option.viewer {
+            background-color: var(--accent-secondary);
+            color: white;
+        }
+        .login-option:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        .login-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .login-buttons button {
+            padding: 12px 25px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            transition: var(--transition);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+        }
+        .login-buttons .confirm {
+            background-color: var(--success);
+            color: white;
+        }
+        .login-buttons .confirm:hover {
+            transform: translateY(-2px);
+        }
+        .login-buttons .cancel {
+            background-color: var(--danger);
+            color: white;
+        }
+        .login-buttons .cancel:hover {
+            transform: translateY(-2px);
+        }
+        /* Ocultar contenido principal hasta el login */
+        #appContent {
+            display: none;
+        }
+        /* Estilos existentes (sin cambios) */
         .header {
             background-color: var(--bg-light);
             padding: 30px;
@@ -677,69 +779,85 @@
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>
-                <img src="image (1).png"
-                     alt="logo CPU" class="logo-cpu">
-                Comunidad Pastoral Universitaria
-            </h1>
-            <p>📚 Control de Asistencia</p>
-            <div class="clock" id="clock"></div>
-        </div>
-        <div class="layout">
-            <div class="sidebar">
-                <h2>📋 Materias</h2>
-                <div class="tipo-materia">
-                    <select id="tipoMateria" onchange="render()">
-                        <option value="extension">Extensión Universitaria</option>
-                        <option value="taller">Talleres Universitarios</option>
-                    </select>
-                </div>
-                <div class="mes-selector">
-                    <select id="mesSelector" onchange="cambiarMes()">
-                        <option value="0">Enero</option>
-                        <option value="1">Febrero</option>
-                        <option value="2">Marzo</option>
-                        <option value="3">Abril</option>
-                        <option value="4">Mayo</option>
-                        <option value="5">Junio</option>
-                        <option value="6">Julio</option>
-                        <option value="7">Agosto</option>
-                        <option value="8">Septiembre</option>
-                        <option value="9">Octubre</option>
-                        <option value="10">Noviembre</option>
-                        <option value="11">Diciembre</option>
-                    </select>
-                </div>
-                <div class="materia-list" id="materiasList"></div>
-                <button class="btn-nueva" onclick="mostrarModalTipoMateria()">➕ Nueva Materia</button>
-                <button class="btn-nueva" onclick="mostrarFormularioAlumno()">➕ Nuevo Alumno</button>
+    <!-- Modal de Login -->
+    <div id="loginModal">
+        <div class="login-content">
+            <h2>🔐 Iniciar Sesión</h2>
+            <div class="login-options">
+                <div class="login-option admin" onclick="selectLoginType('admin')">Administrador</div>
+                <div class="login-option viewer" onclick="selectLoginType('viewer')">Espectador</div>
             </div>
-            <div class="content">
-                <div id="alumnoFormContainer" class="hidden">
-                    <div class="alumno-form-container">
-                        <h3>➕ Agregar Nuevo Alumno</h3>
-                        <div class="form-grid">
-                            <input type="text" id="fn" placeholder="Nombre">
-                            <input type="text" id="fa" placeholder="Apellido">
-                            <input type="text" id="fd" placeholder="DNI">
-                            <input type="text" id="fp" placeholder="Pabellón">
-                        </div>
-                        <div class="materias-selector">
-                            <h4>Seleccionar Materias:</h4>
-                            <div class="materias-checkbox-container" id="materiasCheckboxContainer"></div>
-                        </div>
-                        <button class="btn-add" onclick="addAlumno()">Agregar Alumno</button>
+            <input type="password" id="passwordInput" placeholder="Contraseña (solo administrador)" style="display: none;">
+            <div class="login-buttons">
+                <button class="confirm" onclick="login()">Ingresar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contenido principal (oculto hasta el login) -->
+    <div id="appContent">
+        <div class="container">
+            <div class="header">
+                <h1>
+                    <img src="image (1).png" alt="logo CPU" class="logo-cpu">
+                    Comunidad Pastoral Universitaria
+                </h1>
+                <p>📚 Control de Asistencia</p>
+                <div class="clock" id="clock"></div>
+            </div>
+            <div class="layout">
+                <div class="sidebar">
+                    <h2>📋 Materias</h2>
+                    <div class="tipo-materia">
+                        <select id="tipoMateria" onchange="render()">
+                            <option value="extension">Extensión Universitaria</option>
+                            <option value="taller">Talleres Universitarios</option>
+                        </select>
                     </div>
+                    <div class="mes-selector">
+                        <select id="mesSelector" onchange="cambiarMes()">
+                            <option value="0">Enero</option>
+                            <option value="1">Febrero</option>
+                            <option value="2">Marzo</option>
+                            <option value="3">Abril</option>
+                            <option value="4">Mayo</option>
+                            <option value="5">Junio</option>
+                            <option value="6">Julio</option>
+                            <option value="7">Agosto</option>
+                            <option value="8">Septiembre</option>
+                            <option value="9">Octubre</option>
+                            <option value="10">Noviembre</option>
+                            <option value="11">Diciembre</option>
+                        </select>
+                    </div>
+                    <div class="materia-list" id="materiasList"></div>
+                    <button class="btn-nueva" onclick="mostrarModalTipoMateria()">➕ Nueva Materia</button>
+                    <button class="btn-nueva" onclick="mostrarFormularioAlumno()">➕ Nuevo Alumno</button>
                 </div>
-                <div id="mainArea">
-                    <!-- Aquí se mostrará el carousel o el contenido de la materia -->
+                <div class="content">
+                    <div id="alumnoFormContainer" class="hidden">
+                        <div class="alumno-form-container">
+                            <h3>➕ Agregar Nuevo Alumno</h3>
+                            <div class="form-grid">
+                                <input type="text" id="fn" placeholder="Nombre">
+                                <input type="text" id="fa" placeholder="Apellido">
+                                <input type="text" id="fd" placeholder="DNI">
+                                <input type="text" id="fp" placeholder="Pabellón">
+                            </div>
+                            <div class="materias-selector">
+                                <h4>Seleccionar Materias:</h4>
+                                <div class="materias-checkbox-container" id="materiasCheckboxContainer"></div>
+                            </div>
+                            <button class="btn-add" onclick="addAlumno()">Agregar Alumno</button>
+                        </div>
+                    </div>
+                    <div id="mainArea"></div>
                 </div>
             </div>
         </div>
     </div>
-    <!-- Modal para elegir tipo de materia -->
+
+    <!-- Modales existentes -->
     <div id="modalTipoMateria" class="modal-tipo">
         <div class="modal-tipo-content">
             <h3>Selecciona el tipo de materia</h3>
@@ -748,12 +866,11 @@
                     Actividad de Extensión Universitaria
                 </div>
                 <div class="tipo-materia-option taller" onclick="seleccionarTipoMateria('taller')">
-                    Proyecto de Extencion Universitaria
+                    Proyecto de Extensión Universitaria
                 </div>
             </div>
         </div>
     </div>
-    <!-- Modal para nueva materia -->
     <div id="modalMateria" class="modal">
         <div class="modal-content">
             <h3>Nueva Materia</h3>
@@ -764,7 +881,6 @@
             </div>
         </div>
     </div>
-    <!-- Modal para eliminar materia -->
     <div id="modalEliminarMateria" class="modal">
         <div class="modal-content">
             <h3>¿Eliminar esta materia?</h3>
@@ -775,7 +891,6 @@
             </div>
         </div>
     </div>
-    <!-- Modal para editar alumno -->
     <div id="modalEditarAlumno" class="modal">
         <div class="modal-content">
             <h3>Editar Alumno</h3>
@@ -791,17 +906,20 @@
             </div>
         </div>
     </div>
+
     <script>
         // Base de datos simulada por mes
         var db = {
             meses: [],
             tipoMateriaActual: 'extension',
             tipoMateriaSeleccionado: null,
-            mesActual: 0, // Inicializado en enero
+            mesActual: 0,
             materiaAEliminar: null,
             alumnoAEditar: null,
-            actual: null
+            actual: null,
+            userType: null // 'admin' o 'viewer'
         };
+
         // Inicializar la base de datos por mes
         function initDB() {
             for (let i = 0; i < 12; i++) {
@@ -812,51 +930,87 @@
                 });
             }
         }
+
         // Variables para el carousel
         let currentSlide = 0;
         let slides = [];
         let slideInterval;
+
         // Inicializar la aplicación
         function init() {
             initDB();
-            // Inicializar con el mes seleccionado en el selector (por defecto, enero)
             db.mesActual = parseInt(document.getElementById('mesSelector').value);
-            render();
             updateClock();
             setInterval(updateClock, 1000);
         }
+
         // Actualizar el reloj
         function updateClock() {
             const now = new Date();
             const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' };
             document.getElementById('clock').textContent = now.toLocaleDateString('es-ES', options);
         }
+
+        // Seleccionar tipo de login (admin/espectador)
+        function selectLoginType(type) {
+            db.userType = type;
+            if (type === 'admin') {
+                document.getElementById('passwordInput').style.display = 'block';
+            } else {
+                document.getElementById('passwordInput').style.display = 'none';
+            }
+        }
+
+        // Función de login
+        function login() {
+            if (db.userType === 'admin') {
+                const password = document.getElementById('passwordInput').value;
+                if (password !== 'admin123') {
+                    alert('Contraseña incorrecta');
+                    return;
+                }
+            }
+            document.getElementById('loginModal').style.display = 'none';
+            document.getElementById('appContent').style.display = 'block';
+            render();
+            // Si es espectador, ocultar botones de edición
+            if (db.userType === 'viewer') {
+                document.querySelectorAll('.btn-nueva, .btn-add, .btn-delete, .btn-editar, .delete-materia, .btn-delete-fecha').forEach(el => {
+                    el.style.display = 'none';
+                });
+            }
+        }
+
         // Mostrar modal para elegir tipo de materia
         function mostrarModalTipoMateria() {
+            if (db.userType === 'viewer') return;
             document.getElementById('modalTipoMateria').style.display = 'block';
         }
+
         // Seleccionar tipo de materia
         function seleccionarTipoMateria(tipo) {
             db.tipoMateriaSeleccionado = tipo;
             document.getElementById('modalTipoMateria').style.display = 'none';
             mostrarModalMateria();
         }
+
         // Mostrar modal para nueva materia
         function mostrarModalMateria() {
             document.getElementById('modalMateria').style.display = 'block';
         }
+
         // Cerrar modal
         function cerrarModal(id) {
             document.getElementById(id).style.display = 'none';
         }
-        // Crear una nueva materia (solo para el mes seleccionado)
+
+        // Crear una nueva materia
         function crearMateria() {
             var nom = document.getElementById('nombreMateria').value.trim();
             if (!nom) {
                 alert('Ingresa un nombre para la materia');
                 return;
             }
-            // Usar el mes seleccionado en el selector
             var mesSeleccionado = parseInt(document.getElementById('mesSelector').value);
             db.meses[mesSeleccionado].materias.push({
                 id: Date.now(),
@@ -869,14 +1023,17 @@
             document.getElementById('nombreMateria').value = '';
             render();
         }
+
         // Mostrar modal para eliminar materia
         function mostrarModalEliminarMateria(id) {
+            if (db.userType === 'viewer') return;
             var mesSeleccionado = parseInt(document.getElementById('mesSelector').value);
             var materia = db.meses[mesSeleccionado].materias.find(m => m.id === id);
             document.getElementById('nombreMateriaEliminar').textContent = materia.nombre;
             db.materiaAEliminar = id;
             document.getElementById('modalEliminarMateria').style.display = 'block';
         }
+
         // Confirmar eliminación de materia
         function confirmarEliminarMateria() {
             var mesSeleccionado = parseInt(document.getElementById('mesSelector').value);
@@ -889,14 +1046,17 @@
             cerrarModal('modalEliminarMateria');
             render();
         }
-        // Ver una materia específica (solo del mes seleccionado)
+
+        // Ver una materia específica
         function verMateria(id) {
             db.actual = id;
             document.getElementById('alumnoFormContainer').classList.add('hidden');
             render();
         }
-        // Mostrar el formulario para agregar alumno (solo materias del mes seleccionado)
+
+        // Mostrar el formulario para agregar alumno
         function mostrarFormularioAlumno() {
+            if (db.userType === 'viewer') return;
             var mesSeleccionado = parseInt(document.getElementById('mesSelector').value);
             var materiasMesActual = db.meses[mesSeleccionado].materias;
             var checkboxesHtml = '';
@@ -912,13 +1072,16 @@
             document.getElementById('alumnoFormContainer').classList.remove('hidden');
             document.getElementById('mainArea').classList.add('hidden');
         }
+
         // Ocultar el formulario de alumno
         function ocultarFormularioAlumno() {
             document.getElementById('alumnoFormContainer').classList.add('hidden');
             document.getElementById('mainArea').classList.remove('hidden');
         }
-        // Agregar un alumno a una o varias materias (solo al mes seleccionado)
+
+        // Agregar un alumno a una o varias materias
         function addAlumno() {
+            if (db.userType === 'viewer') return;
             var n = document.getElementById('fn').value.trim();
             var a = document.getElementById('fa').value.trim();
             var d = document.getElementById('fd').value.trim();
@@ -929,7 +1092,6 @@
                 alert('Completa todos los campos y selecciona al menos una materia');
                 return;
             }
-            // Usar el mes seleccionado en el selector
             var mesSeleccionado = parseInt(document.getElementById('mesSelector').value);
             let alumnoExistente = db.meses[mesSeleccionado].alumnos.find(al => al.dni === d);
             if (!alumnoExistente) {
@@ -944,7 +1106,6 @@
                 };
                 db.meses[mesSeleccionado].alumnos.push(alumnoExistente);
             }
-            // Agregar el alumno solo a las materias del mes seleccionado
             materiasSeleccionadas.forEach(mid => {
                 let materia = db.meses[mesSeleccionado].materias.find(m => m.id === mid);
                 if (materia) {
@@ -963,7 +1124,6 @@
                     }
                 }
             });
-            // Limpiar los campos y ocultar el formulario
             document.getElementById('fn').value = '';
             document.getElementById('fa').value = '';
             document.getElementById('fd').value = '';
@@ -971,8 +1131,10 @@
             ocultarFormularioAlumno();
             render();
         }
+
         // Eliminar un alumno de una materia
         function delAlumno(mid, aid) {
+            if (db.userType === 'viewer') return;
             if (confirm('¿Eliminar alumno?')) {
                 var mesSeleccionado = parseInt(document.getElementById('mesSelector').value);
                 var mat = db.meses[mesSeleccionado].materias.find(m => m.id === mid);
@@ -982,8 +1144,10 @@
                 }
             }
         }
+
         // Alternar la asistencia de un alumno
         function toggleAsist(mid, aid, f) {
+            if (db.userType === 'viewer') return;
             var mesSeleccionado = parseInt(document.getElementById('mesSelector').value);
             var mat = db.meses[mesSeleccionado].materias.find(m => m.id === mid);
             if (mat) {
@@ -994,8 +1158,10 @@
                 }
             }
         }
+
         // Agregar una nueva fecha/clase
         function addFecha() {
+            if (db.userType === 'viewer') return;
             var f = document.getElementById('ff').value.trim();
             if (!f) return;
             var mesSeleccionado = parseInt(document.getElementById('mesSelector').value);
@@ -1006,8 +1172,10 @@
                 render();
             }
         }
+
         // Eliminar una fecha/clase
         function deleteFecha() {
+            if (db.userType === 'viewer') return;
             var mesSeleccionado = parseInt(document.getElementById('mesSelector').value);
             var mat = db.meses[mesSeleccionado].materias.find(m => m.id === db.actual);
             if (!mat || mat.fechas.length === 0) {
@@ -1028,8 +1196,10 @@
                 }
             }
         }
+
         // Actualizar las observaciones de un alumno
         function updateObservaciones(mid, aid, valor) {
+            if (db.userType === 'viewer') return;
             var mesSeleccionado = parseInt(document.getElementById('mesSelector').value);
             var mat = db.meses[mesSeleccionado].materias.find(m => m.id === mid);
             if (mat) {
@@ -1039,18 +1209,21 @@
                 }
             }
         }
-        // Cambiar el tipo de materia (Extensión o Taller)
+
+        // Cambiar el tipo de materia
         function cambiarTipoMateria() {
             db.tipoMateriaActual = document.getElementById('tipoMateria').value;
             render();
         }
-        // Cambiar el mes seleccionado (limpia la selección actual)
+
+        // Cambiar el mes seleccionado
         function cambiarMes() {
             db.mesActual = parseInt(document.getElementById('mesSelector').value);
             db.actual = null;
             ocultarFormularioAlumno();
             render();
         }
+
         // Función para obtener el estado del carnet
         function getEstadoCarnet(fechaVencimiento) {
             const hoy = new Date();
@@ -1065,8 +1238,10 @@
                 return 'estado-verde';
             }
         }
+
         // Función para renovar el carnet
         function renovarCarnet(mid, aid) {
+            if (db.userType === 'viewer') return;
             var mesSeleccionado = parseInt(document.getElementById('mesSelector').value);
             var mat = db.meses[mesSeleccionado].materias.find(m => m.id === mid);
             if (mat) {
@@ -1077,8 +1252,10 @@
                 }
             }
         }
+
         // Mostrar modal para editar alumno
         function mostrarModalEditarAlumno(aid) {
+            if (db.userType === 'viewer') return;
             var mesSeleccionado = parseInt(document.getElementById('mesSelector').value);
             var mat = db.meses[mesSeleccionado].materias.find(m => m.id === db.actual);
             if (mat) {
@@ -1095,6 +1272,7 @@
                 }
             }
         }
+
         // Guardar la edición del alumno
         function guardarEdicionAlumno() {
             var n = document.getElementById('editNombre').value.trim();
@@ -1115,7 +1293,6 @@
             alumno.pabellon = p;
             alumno.fecha_inscripcion = fi;
             alumno.fecha_vencimiento_carnet = fv;
-            // Actualizar en todas las materias del mes seleccionado
             db.meses[mesSeleccionado].materias.forEach(m => {
                 var al = m.alumnos.find(a => a.id === alumno.id);
                 if (al) {
@@ -1130,99 +1307,15 @@
             cerrarModal('modalEditarAlumno');
             render();
         }
+
         // Inicializar el carousel
         function initCarousel() {
             slides = [
-                {
-                    icon: "📚",
-                    title: "La educación es el arma más poderosa para cambiar el mundo.",
-                    author: "— Nelson Mandela",
-                    background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
-                },
-                {
-                    icon: "🤝",
-                    title: "La comunidad es el corazón de la transformación social.",
-                    author: "— Paulo Freire",
-                    background: "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)"
-                },
-                {
-                    icon: "⚖️",
-                    title: "La igualdad no es un sueño, es un derecho que construimos juntos.",
-                    author: "— Rigoberta Menchú",
-                    background: "linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)"
-                },
-                {
-                    icon: "🌱",
-                    title: "Cultivar la mente es sembrar futuro.",
-                    author: "— Proverbio latinoamericano",
-                    background: "linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)"
-                },
-                {
-                    icon: "💡",
-                    title: "El trabajo en equipo divide el esfuerzo y multiplica los resultados.",
-                    author: "— Anónimo",
-                    background: "linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)"
-                },
-                {
-                    icon: "🌍",
-                    title: "La diversidad cultural es el patrimonio más valioso de la humanidad.",
-                    author: "— UNESCO",
-                    background: "linear-gradient(135deg, #fab1a0 0%, #e17055 100%)"
-                },
-                {
-                    icon: "🎓",
-                    title: "Aprender es descubrir lo que ya sabes. Enseñar es recordar a otros que lo saben tanto como tú.",
-                    author: "— Richard Bach",
-                    background: "linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%)"
-                },
-                {
-                    icon: "✨",
-                    title: "La creatividad es la inteligencia divirtiéndose.",
-                    author: "— Albert Einstein",
-                    background: "linear-gradient(135deg, #f12711 0%, #f5af19 100%)"
-                },
-                {
-                    icon: "🌟",
-                    title: "La excelencia no es un acto, es un hábito.",
-                    author: "— Aristóteles",
-                    background: "linear-gradient(135deg, #5433ff 0%, #20bdff 100%)"
-                },
-                {
-                    icon: "📖",
-                    title: "Un libro abierto es un cerebro que habla; cerrado, un amigo que espera.",
-                    author: "— Proverbio chino",
-                    background: "linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%)"
-                },
-                {
-                    icon: "🤲",
-                    title: "La solidaridad no es un gesto de caridad, es un acto de justicia.",
-                    author: "— Eduardo Galeano",
-                    background: "linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%)"
-                },
-                {
-                    icon: "🌈",
-                    title: "La inclusión no es un gesto de caridad, es un derecho humano fundamental.",
-                    author: "— Ban Ki-moon",
-                    background: "linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%)"
-                },
-                {
-                    icon: "💬",
-                    title: "El diálogo es el puente entre los corazones y las mentes.",
-                    author: "— Mahatma Gandhi",
-                    background: "linear-gradient(135deg, #ff758c 0%, #ff7eb3 100%)"
-                },
-                {
-                    icon: "🌿",
-                    title: "La sostenibilidad es el camino hacia un futuro donde todos podamos florecer.",
-                    author: "— Jane Goodall",
-                    background: "linear-gradient(135deg, #a8ff78 0%, #78ffd6 100%)"
-                },
-                {
-                    icon: "🚀",
-                    title: "La innovación distingue a un líder de un seguidor.",
-                    author: "— Steve Jobs",
-                    background: "linear-gradient(135deg, #7f00ff 0%, #e100ff 100%)"
-                }
+                { icon: "📚", title: "La educación es el arma más poderosa para cambiar el mundo.", author: "— Nelson Mandela", background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)" },
+                { icon: "🤝", title: "La comunidad es el corazón de la transformación social.", author: "— Paulo Freire", background: "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)" },
+                { icon: "⚖️", title: "La igualdad no es un sueño, es un derecho que construimos juntos.", author: "— Rigoberta Menchú", background: "linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)" },
+                { icon: "🌱", title: "Cultivar la mente es sembrar futuro.", author: "— Proverbio latinoamericano", background: "linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)" },
+                { icon: "💡", title: "El trabajo en equipo divide el esfuerzo y multiplica los resultados.", author: "— Anónimo", background: "linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)" }
             ];
             const carouselContainer = document.createElement('div');
             carouselContainer.className = 'carousel-container';
@@ -1240,7 +1333,6 @@
                 slidesContainer.appendChild(slideElement);
             });
             carouselContainer.appendChild(slidesContainer);
-            // Controles del carousel
             const controls = document.createElement('div');
             controls.className = 'carousel-controls';
             controls.innerHTML = `
@@ -1248,7 +1340,6 @@
                 <button onclick="nextSlide()">❯</button>
             `;
             carouselContainer.appendChild(controls);
-            // Indicadores del carousel
             const dots = document.createElement('div');
             dots.className = 'carousel-dots';
             slides.forEach((_, index) => {
@@ -1260,6 +1351,7 @@
             carouselContainer.appendChild(dots);
             return carouselContainer;
         }
+
         // Funciones para controlar el carousel
         function nextSlide() {
             slides[currentSlide].classList.remove('active');
@@ -1288,6 +1380,7 @@
                 document.querySelectorAll('.carousel-dots span')[currentSlide].classList.add('active');
             }, 500);
         }
+
         // Renderizar el contenido principal
         function renderContent() {
             var mesSeleccionado = parseInt(document.getElementById('mesSelector').value);
@@ -1303,13 +1396,11 @@
                     <p>Haz clic en "<strong>Nueva Materia</strong>"</p>
                 `;
                 document.getElementById('mainArea').appendChild(instruction);
-                // Iniciar el intervalo del carousel
                 slides = document.querySelectorAll('.carousel-slide');
                 clearInterval(slideInterval);
-                slideInterval = setInterval(nextSlide, 10000); // Cambia cada 10 segundos
+                slideInterval = setInterval(nextSlide, 10000);
                 return;
             }
-            // Si hay una materia seleccionada, mostrar su contenido
             var mat = db.meses[mesSeleccionado].materias.find(m => m.id === db.actual);
             if (!mat) return;
             var html = `
@@ -1351,7 +1442,6 @@
                     </td></tr>`;
                 });
                 html += '</tbody></table>';
-                // Estadísticas por alumno
                 mat.alumnos.forEach(al => {
                     var totalAsistencias = Object.values(al.asist).filter(Boolean).length;
                     var totalClases = mat.fechas.length;
@@ -1374,7 +1464,8 @@
             }
             document.getElementById('mainArea').innerHTML = html;
         }
-        // Renderizar la barra lateral con las materias del mes seleccionado
+
+        // Renderizar la barra lateral con las materias
         function renderSidebar() {
             var tipoActual = document.getElementById('tipoMateria').value;
             var mesSeleccionado = parseInt(document.getElementById('mesSelector').value);
@@ -1387,7 +1478,7 @@
                     var active = m.id === db.actual ? 'active' : '';
                     html += `<div class="materia-item">
                         <button class="materia-btn ${active}" onclick="verMateria(${m.id})">${m.nombre}</button>`;
-                    if (materiasFiltradas.length > 1) {
+                    if (materiasFiltradas.length > 1 && db.userType === 'admin') {
                         html += `<button class="delete-materia" onclick="mostrarModalEliminarMateria(${m.id})">×</button>`;
                     }
                     html += '</div>';
@@ -1395,15 +1486,15 @@
             }
             document.getElementById('materiasList').innerHTML = html;
         }
+
         // Función principal para renderizar todo
         function render() {
             renderSidebar();
             renderContent();
         }
+
         // Inicializar la aplicación
         init();
     </script>
 </body>
 </html>
-
-
