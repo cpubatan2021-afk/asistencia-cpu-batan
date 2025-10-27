@@ -958,27 +958,41 @@
                 document.getElementById('passwordInput').style.display = 'block';
             } else {
                 document.getElementById('passwordInput').style.display = 'none';
+                // Si es espectador, ingresar automáticamente
+                login();
             }
         }
 
         // Función de login
         function login() {
+            // Validar que se haya seleccionado un tipo de usuario
+            if (!db.userType) {
+                alert('Selecciona si eres Administrador o Espectador');
+                return;
+            }
+
+            // Si es administrador, validar contraseña
             if (db.userType === 'admin') {
                 const password = document.getElementById('passwordInput').value;
-                if (password !== 'admin123') {
+                if (password !== 'cpubatan20251') {
                     alert('Contraseña incorrecta');
                     return;
                 }
             }
+
+            // Ocultar modal y mostrar contenido
             document.getElementById('loginModal').style.display = 'none';
             document.getElementById('appContent').style.display = 'block';
-            render();
+
             // Si es espectador, ocultar botones de edición
             if (db.userType === 'viewer') {
                 document.querySelectorAll('.btn-nueva, .btn-add, .btn-delete, .btn-editar, .delete-materia, .btn-delete-fecha').forEach(el => {
                     el.style.display = 'none';
                 });
             }
+
+            // Renderizar la aplicación
+            render();
         }
 
         // Mostrar modal para elegir tipo de materia
