@@ -25,10 +25,13 @@
             min-height: 100vh;
             padding: 20px;
             margin: 0;
+            display: flex;
+            flex-direction: column;
         }
         .container {
             max-width: 1600px;
             margin: 0 auto;
+            flex: 1;
         }
         /* Estilo para el modal de login */
         #loginModal {
@@ -776,6 +779,17 @@
         .estado-rojo {
             background-color: var(--danger);
         }
+        /* Pie de página */
+        .footer {
+            background-color: var(--bg-light);
+            color: var(--text-secondary);
+            text-align: center;
+            padding: 20px;
+            margin-top: 40px;
+            border-radius: 15px;
+            box-shadow: var(--shadow);
+            font-size: 14px;
+        }
     </style>
 </head>
 <body>
@@ -793,7 +807,6 @@
             </div>
         </div>
     </div>
-
     <!-- Contenido principal (oculto hasta el login) -->
     <div id="appContent">
         <div class="container">
@@ -856,7 +869,6 @@
             </div>
         </div>
     </div>
-
     <!-- Modales existentes -->
     <div id="modalTipoMateria" class="modal-tipo">
         <div class="modal-tipo-content">
@@ -906,7 +918,13 @@
             </div>
         </div>
     </div>
-
+    <!-- Pie de página -->
+    <footer class="footer">
+         <p>Programa desarrollado por <strong>Daniel Fiego</strong> para la <strong>Comunidad Pastoral Universitaria</strong>.</p>
+        <p>© 2025 Todos los derechos reservados.</p>
+        <p>Este software está protegido por las leyes de propiedad intelectual y solo puede ser utilizado bajo los términos y condiciones establecidos por sus desarrolladores.</p>
+        <p>Código regido bajo las normas de <a href="https://www.argentina.gob.ar/normativa" target="_blank">propiedad intelectual de la República Argentina</a>.</p>
+    </footer>
     <script>
         // Base de datos simulada por mes
         var db = {
@@ -919,7 +937,6 @@
             actual: null,
             userType: null // 'admin' o 'viewer'
         };
-
         // Inicializar la base de datos por mes
         function initDB() {
             for (let i = 0; i < 12; i++) {
@@ -930,12 +947,10 @@
                 });
             }
         }
-
         // Variables para el carousel
         let currentSlide = 0;
         let slides = [];
         let slideInterval;
-
         // Inicializar la aplicación
         function init() {
             initDB();
@@ -943,14 +958,12 @@
             updateClock();
             setInterval(updateClock, 1000);
         }
-
         // Actualizar el reloj
         function updateClock() {
             const now = new Date();
             const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' };
             document.getElementById('clock').textContent = now.toLocaleDateString('es-ES', options);
         }
-
         // Seleccionar tipo de login (admin/espectador)
         function selectLoginType(type) {
             db.userType = type;
@@ -962,7 +975,6 @@
                 login();
             }
         }
-
         // Función de login
         function login() {
             // Validar que se haya seleccionado un tipo de usuario
@@ -970,7 +982,6 @@
                 alert('Selecciona si eres Administrador o Espectador');
                 return;
             }
-
             // Si es administrador, validar contraseña
             if (db.userType === 'admin') {
                 const password = document.getElementById('passwordInput').value;
@@ -979,45 +990,37 @@
                     return;
                 }
             }
-
             // Ocultar modal y mostrar contenido
             document.getElementById('loginModal').style.display = 'none';
             document.getElementById('appContent').style.display = 'block';
-
             // Si es espectador, ocultar botones de edición
             if (db.userType === 'viewer') {
                 document.querySelectorAll('.btn-nueva, .btn-add, .btn-delete, .btn-editar, .delete-materia, .btn-delete-fecha').forEach(el => {
                     el.style.display = 'none';
                 });
             }
-
             // Renderizar la aplicación
             render();
         }
-
         // Mostrar modal para elegir tipo de materia
         function mostrarModalTipoMateria() {
             if (db.userType === 'viewer') return;
             document.getElementById('modalTipoMateria').style.display = 'block';
         }
-
         // Seleccionar tipo de materia
         function seleccionarTipoMateria(tipo) {
             db.tipoMateriaSeleccionado = tipo;
             document.getElementById('modalTipoMateria').style.display = 'none';
             mostrarModalMateria();
         }
-
         // Mostrar modal para nueva materia
         function mostrarModalMateria() {
             document.getElementById('modalMateria').style.display = 'block';
         }
-
         // Cerrar modal
         function cerrarModal(id) {
             document.getElementById(id).style.display = 'none';
         }
-
         // Crear una nueva materia
         function crearMateria() {
             var nom = document.getElementById('nombreMateria').value.trim();
@@ -1037,7 +1040,6 @@
             document.getElementById('nombreMateria').value = '';
             render();
         }
-
         // Mostrar modal para eliminar materia
         function mostrarModalEliminarMateria(id) {
             if (db.userType === 'viewer') return;
@@ -1047,7 +1049,6 @@
             db.materiaAEliminar = id;
             document.getElementById('modalEliminarMateria').style.display = 'block';
         }
-
         // Confirmar eliminación de materia
         function confirmarEliminarMateria() {
             var mesSeleccionado = parseInt(document.getElementById('mesSelector').value);
@@ -1060,14 +1061,12 @@
             cerrarModal('modalEliminarMateria');
             render();
         }
-
         // Ver una materia específica
         function verMateria(id) {
             db.actual = id;
             document.getElementById('alumnoFormContainer').classList.add('hidden');
             render();
         }
-
         // Mostrar el formulario para agregar alumno
         function mostrarFormularioAlumno() {
             if (db.userType === 'viewer') return;
@@ -1086,13 +1085,11 @@
             document.getElementById('alumnoFormContainer').classList.remove('hidden');
             document.getElementById('mainArea').classList.add('hidden');
         }
-
         // Ocultar el formulario de alumno
         function ocultarFormularioAlumno() {
             document.getElementById('alumnoFormContainer').classList.add('hidden');
             document.getElementById('mainArea').classList.remove('hidden');
         }
-
         // Agregar un alumno a una o varias materias
         function addAlumno() {
             if (db.userType === 'viewer') return;
@@ -1145,7 +1142,6 @@
             ocultarFormularioAlumno();
             render();
         }
-
         // Eliminar un alumno de una materia
         function delAlumno(mid, aid) {
             if (db.userType === 'viewer') return;
@@ -1158,7 +1154,6 @@
                 }
             }
         }
-
         // Alternar la asistencia de un alumno
         function toggleAsist(mid, aid, f) {
             if (db.userType === 'viewer') return;
@@ -1172,7 +1167,6 @@
                 }
             }
         }
-
         // Agregar una nueva fecha/clase
         function addFecha() {
             if (db.userType === 'viewer') return;
@@ -1186,7 +1180,6 @@
                 render();
             }
         }
-
         // Eliminar una fecha/clase
         function deleteFecha() {
             if (db.userType === 'viewer') return;
@@ -1210,7 +1203,6 @@
                 }
             }
         }
-
         // Actualizar las observaciones de un alumno
         function updateObservaciones(mid, aid, valor) {
             if (db.userType === 'viewer') return;
@@ -1223,13 +1215,11 @@
                 }
             }
         }
-
         // Cambiar el tipo de materia
         function cambiarTipoMateria() {
             db.tipoMateriaActual = document.getElementById('tipoMateria').value;
             render();
         }
-
         // Cambiar el mes seleccionado
         function cambiarMes() {
             db.mesActual = parseInt(document.getElementById('mesSelector').value);
@@ -1237,7 +1227,6 @@
             ocultarFormularioAlumno();
             render();
         }
-
         // Función para obtener el estado del carnet
         function getEstadoCarnet(fechaVencimiento) {
             const hoy = new Date();
@@ -1252,7 +1241,6 @@
                 return 'estado-verde';
             }
         }
-
         // Función para renovar el carnet
         function renovarCarnet(mid, aid) {
             if (db.userType === 'viewer') return;
@@ -1266,7 +1254,6 @@
                 }
             }
         }
-
         // Mostrar modal para editar alumno
         function mostrarModalEditarAlumno(aid) {
             if (db.userType === 'viewer') return;
@@ -1286,7 +1273,6 @@
                 }
             }
         }
-
         // Guardar la edición del alumno
         function guardarEdicionAlumno() {
             var n = document.getElementById('editNombre').value.trim();
@@ -1321,7 +1307,6 @@
             cerrarModal('modalEditarAlumno');
             render();
         }
-
         // Inicializar el carousel
         function initCarousel() {
             slides = [
@@ -1365,7 +1350,6 @@
             carouselContainer.appendChild(dots);
             return carouselContainer;
         }
-
         // Funciones para controlar el carousel
         function nextSlide() {
             slides[currentSlide].classList.remove('active');
@@ -1394,7 +1378,6 @@
                 document.querySelectorAll('.carousel-dots span')[currentSlide].classList.add('active');
             }, 500);
         }
-
         // Renderizar el contenido principal
         function renderContent() {
             var mesSeleccionado = parseInt(document.getElementById('mesSelector').value);
@@ -1478,7 +1461,6 @@
             }
             document.getElementById('mainArea').innerHTML = html;
         }
-
         // Renderizar la barra lateral con las materias
         function renderSidebar() {
             var tipoActual = document.getElementById('tipoMateria').value;
@@ -1500,13 +1482,11 @@
             }
             document.getElementById('materiasList').innerHTML = html;
         }
-
         // Función principal para renderizar todo
         function render() {
             renderSidebar();
             renderContent();
         }
-
         // Inicializar la aplicación
         init();
     </script>
