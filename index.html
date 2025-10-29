@@ -700,24 +700,57 @@
             text-decoration: underline;
         }
     </style>
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.0/firebase-app.js";
+        import { getFirestore, collection, doc, setDoc, getDoc, onSnapshot, updateDoc, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore.js";
+        import { getAuth, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/9.6.0/firebase-auth.js";
+
+        // Configuración de Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyCgg_9oBHyr5ouu8WUYVokD0JWIvnA1oj0",
+            authDomain: "cpu-batan.firebaseapp.com",
+            projectId: "cpu-batan",
+            storageBucket: "cpu-batan.appspot.com",
+            messagingSenderId: "513877189909",
+            appId: "1:513877189909:web:3eb1114e62b082017e751c",
+            measurementId: "G-036Q0B9K7D"
+        };
+
+        // Inicializar Firebase
+        const app = initializeApp(firebaseConfig);
+        const dbFirestore = getFirestore(app);
+        const auth = getAuth(app);
+
+        // Exporta las instancias para usarlas en el resto del código
+        window.dbFirestore = dbFirestore;
+        window.auth = auth;
+        window.doc = doc;
+        window.setDoc = setDoc;
+        window.getDoc = getDoc;
+        window.onSnapshot = onSnapshot;
+        window.updateDoc = updateDoc;
+        window.arrayUnion = arrayUnion;
+        window.arrayRemove = arrayRemove;
+    </script>
 </head>
 <body onload="init()">
     <!-- Modal de autenticación -->
     <div id="authModal" class="modal" style="display: block;">
         <div class="modal-content">
-            <h3>Ingresar como Administrador</h3>
-            <input type="password" id="adminPassword" placeholder="Contraseña de administrador">
+            <h3>Ingresar como Administrador o Espectador</h3>
+            <input type="password" id="adminPassword" placeholder="Contraseña">
+            <p style="font-size: 12px; color: #b0b0b0;">Ingresa "espectador" para acceder sin permisos de edición.</p>
             <div class="modal-buttons">
                 <button class="confirm" onclick="checkAdminPassword()">Ingresar</button>
             </div>
         </div>
     </div>
-
     <div class="container">
         <div class="header">
             <h1>
                 <img
-                  src="https://raw.githubusercontent.com/cpubatan2021-afk/asistencia-cpu-batan/main/image(1).png"
+                  src="https://via.placeholder.com/80?text=CPU"
                   alt="Logo CPU"
                   class="logo-cpu"
                 >
@@ -840,10 +873,10 @@
         </div>
     </div>
     <script>
-        // Contraseña de administrador
+        // Contraseña de administrador y espectador
         const ADMIN_PASSWORD = "cpu20251";
+        const SPECTATOR_PASSWORD = "espectador";
         let isAdmin = false;
-
         // Base de datos simulada por mes
         var db = {
             meses: [],
@@ -858,37 +891,60 @@
         let currentSlide = 0;
         let slides = [];
         let slideInterval;
-        // Inicializar la base de datos por mes
-        function initDB() {
+
+        // Inicializar la base de datos por mes desde Firestore
+        async function initDB() {
             for (let i = 0; i < 12; i++) {
-                db.meses.push({
-                    id: i,
-                    materias: [],
-                    alumnos: []
-                });
+                const docRef = doc(dbFirestore, "meses", i.toString());
+                const docSnap = await getDoc(docRef);
+                if (docSnap.exists()) {
+                    db.meses[i] = docSnap.data();
+                } else {
+                    db.meses[i] = { id: i, materias: [], alumnos: [] };
+                    await setDoc(docRef, db.meses[i]);
+                }
             }
         }
+
         // Inicializar la aplicación
-        function init() {
-            initDB();
+        async function init() {
+            await initDB();
+            initFirestoreListener();
             db.mesActual = parseInt(document.getElementById('mesSelector').value);
             render();
             updateClock();
             setInterval(updateClock, 1000);
         }
-        // Verificar contraseña de administrador
+
+        // Listener para sincronizar cambios en tiempo real
+        function initFirestoreListener() {
+            for (let i = 0; i < 12; i++) {
+                const docRef = doc(dbFirestore, "meses", i.toString());
+                onSnapshot(docRef, (docSnap) => {
+                    if (docSnap.exists()) {
+                        db.meses[i] = docSnap.data();
+                        render();
+                    }
+                });
+            }
+        }
+
+        // Verificar contraseña de administrador o espectador
         function checkAdminPassword() {
             const password = document.getElementById("adminPassword").value;
             if (password === ADMIN_PASSWORD) {
                 isAdmin = true;
                 document.getElementById("authModal").style.display = "none";
                 render();
-            } else {
+            } else if (password === SPECTATOR_PASSWORD) {
                 isAdmin = false;
                 document.getElementById("authModal").style.display = "none";
                 render();
+            } else {
+                alert("Contraseña incorrecta. Inténtalo de nuevo.");
             }
         }
+
         // Actualizar el reloj
         function updateClock() {
             const now = new Date();
@@ -903,6 +959,7 @@
             };
             document.getElementById('clock').textContent = now.toLocaleDateString('es-ES', options);
         }
+
         // Mostrar modal para elegir tipo de materia
         function mostrarModalTipoMateria() {
             if (!isAdmin) {
@@ -911,22 +968,26 @@
             }
             document.getElementById('modalTipoMateria').style.display = 'block';
         }
+
         // Seleccionar tipo de materia
         function seleccionarTipoMateria(tipo) {
             db.tipoMateriaSeleccionado = tipo;
             document.getElementById('modalTipoMateria').style.display = 'none';
             mostrarModalMateria();
         }
+
         // Mostrar modal para nueva materia
         function mostrarModalMateria() {
             document.getElementById('modalMateria').style.display = 'block';
         }
+
         // Cerrar modal
         function cerrarModal(id) {
             document.getElementById(id).style.display = 'none';
         }
+
         // Crear una nueva materia (solo para el mes seleccionado)
-        function crearMateria() {
+        async function crearMateria() {
             if (!isAdmin) {
                 alert("No tienes permisos para realizar esta acción.");
                 return;
@@ -937,17 +998,21 @@
                 return;
             }
             var mesSeleccionado = parseInt(document.getElementById('mesSelector').value);
-            db.meses[mesSeleccionado].materias.push({
+            const nuevaMateria = {
                 id: Date.now(),
                 nombre: nom,
                 tipo: db.tipoMateriaSeleccionado,
                 fechas: ['Clase 1', 'Clase 2', 'Clase 3', 'Clase 4'],
                 alumnos: []
-            });
+            };
+            db.meses[mesSeleccionado].materias.push(nuevaMateria);
+            const docRef = doc(dbFirestore, "meses", mesSeleccionado.toString());
+            await setDoc(docRef, { materias: db.meses[mesSeleccionado].materias, alumnos: db.meses[mesSeleccionado].alumnos });
             cerrarModal('modalMateria');
             document.getElementById('nombreMateria').value = '';
             render();
         }
+
         // Mostrar modal para eliminar materia
         function mostrarModalEliminarMateria(id) {
             if (!isAdmin) {
@@ -960,8 +1025,9 @@
             db.materiaAEliminar = id;
             document.getElementById('modalEliminarMateria').style.display = 'block';
         }
+
         // Confirmar eliminación de materia
-        function confirmarEliminarMateria() {
+        async function confirmarEliminarMateria() {
             if (!isAdmin) {
                 alert("No tienes permisos para realizar esta acción.");
                 return;
@@ -973,15 +1039,19 @@
                 return;
             }
             db.meses[mesSeleccionado].materias = materiasMesActual.filter(m => m.id !== db.materiaAEliminar);
+            const docRef = doc(dbFirestore, "meses", mesSeleccionado.toString());
+            await setDoc(docRef, { materias: db.meses[mesSeleccionado].materias, alumnos: db.meses[mesSeleccionado].alumnos });
             cerrarModal('modalEliminarMateria');
             render();
         }
+
         // Ver una materia específica (solo del mes seleccionado)
         function verMateria(id) {
             db.actual = id;
             document.getElementById('alumnoFormContainer').classList.add('hidden');
             render();
         }
+
         // Mostrar el formulario para agregar alumno (solo materias del mes seleccionado)
         function mostrarFormularioAlumno() {
             if (!isAdmin) {
@@ -1004,13 +1074,15 @@
             document.getElementById('alumnoFormContainer').classList.remove('hidden');
             document.getElementById('mainArea').classList.add('hidden');
         }
+
         // Ocultar el formulario de alumno
         function ocultarFormularioAlumno() {
             document.getElementById('alumnoFormContainer').classList.add('hidden');
             document.getElementById('mainArea').classList.remove('hidden');
         }
+
         // Agregar un alumno a una o varias materias (solo al mes seleccionado)
-        function addAlumno() {
+        async function addAlumno() {
             if (!isAdmin) {
                 alert("No tienes permisos para realizar esta acción.");
                 return;
@@ -1026,13 +1098,12 @@
                 return;
             }
             var mesSeleccionado = parseInt(document.getElementById('mesSelector').value);
+            let hoy = new Date().toISOString().split('T')[0];
+            let unAnoDespues = new Date();
+            unAnoDespues.setFullYear(unAnoDespues.getFullYear() + 1);
+            let vencimiento = unAnoDespues.toISOString().split('T')[0];
             let alumnoExistente = db.meses[mesSeleccionado].alumnos.find(al => al.dni === d);
             if (!alumnoExistente) {
-                // Fechas por defecto (hoy y +1 año)
-                let hoy = new Date().toISOString().split('T')[0];
-                let unAnoDespues = new Date();
-                unAnoDespues.setFullYear(unAnoDespues.getFullYear() + 1);
-                let vencimiento = unAnoDespues.toISOString().split('T')[0];
                 alumnoExistente = {
                     id: Date.now(),
                     nombre: n,
@@ -1062,6 +1133,8 @@
                     }
                 }
             });
+            const docRef = doc(dbFirestore, "meses", mesSeleccionado.toString());
+            await setDoc(docRef, { materias: db.meses[mesSeleccionado].materias, alumnos: db.meses[mesSeleccionado].alumnos });
             document.getElementById('fn').value = '';
             document.getElementById('fa').value = '';
             document.getElementById('fd').value = '';
@@ -1069,8 +1142,9 @@
             ocultarFormularioAlumno();
             render();
         }
+
         // Eliminar un alumno de una materia
-        function delAlumno(mid, aid) {
+        async function delAlumno(mid, aid) {
             if (!isAdmin) {
                 alert("No tienes permisos para realizar esta acción.");
                 return;
@@ -1080,12 +1154,15 @@
                 var mat = db.meses[mesSeleccionado].materias.find(m => m.id === mid);
                 if (mat) {
                     mat.alumnos = mat.alumnos.filter(a => a.id !== aid);
+                    const docRef = doc(dbFirestore, "meses", mesSeleccionado.toString());
+                    await setDoc(docRef, { materias: db.meses[mesSeleccionado].materias, alumnos: db.meses[mesSeleccionado].alumnos });
                     render();
                 }
             }
         }
+
         // Alternar la asistencia de un alumno
-        function toggleAsist(mid, aid, f) {
+        async function toggleAsist(mid, aid, f) {
             if (!isAdmin) {
                 alert("No tienes permisos para realizar esta acción.");
                 return;
@@ -1096,12 +1173,15 @@
                 var al = mat.alumnos.find(a => a.id === aid);
                 if (al) {
                     al.asist[f] = !al.asist[f];
+                    const docRef = doc(dbFirestore, "meses", mesSeleccionado.toString());
+                    await setDoc(docRef, { materias: db.meses[mesSeleccionado].materias, alumnos: db.meses[mesSeleccionado].alumnos });
                     render();
                 }
             }
         }
+
         // Agregar una nueva fecha/clase
-        function addFecha() {
+        async function addFecha() {
             if (!isAdmin) {
                 alert("No tienes permisos para realizar esta acción.");
                 return;
@@ -1112,12 +1192,15 @@
             var mat = db.meses[mesSeleccionado].materias.find(m => m.id === db.actual);
             if (mat) {
                 mat.fechas.push(f);
+                const docRef = doc(dbFirestore, "meses", mesSeleccionado.toString());
+                await setDoc(docRef, { materias: db.meses[mesSeleccionado].materias, alumnos: db.meses[mesSeleccionado].alumnos });
                 document.getElementById('ff').value = '';
                 render();
             }
         }
+
         // Eliminar una fecha/clase
-        function deleteFecha() {
+        async function deleteFecha() {
             if (!isAdmin) {
                 alert("No tienes permisos para realizar esta acción.");
                 return;
@@ -1135,6 +1218,8 @@
                 if (idx >= 0 && idx < mat.fechas.length) {
                     if (confirm(`¿Eliminar "${mat.fechas[idx]}"?`)) {
                         mat.fechas.splice(idx, 1);
+                        const docRef = doc(dbFirestore, "meses", mesSeleccionado.toString());
+                        await setDoc(docRef, { materias: db.meses[mesSeleccionado].materias, alumnos: db.meses[mesSeleccionado].alumnos });
                         render();
                     }
                 } else {
@@ -1142,8 +1227,9 @@
                 }
             }
         }
+
         // Actualizar las observaciones de un alumno
-        function updateObservaciones(mid, aid, valor) {
+        async function updateObservaciones(mid, aid, valor) {
             if (!isAdmin) {
                 alert("No tienes permisos para realizar esta acción.");
                 return;
@@ -1154,14 +1240,18 @@
                 var al = mat.alumnos.find(a => a.id === aid);
                 if (al) {
                     al.observaciones = valor;
+                    const docRef = doc(dbFirestore, "meses", mesSeleccionado.toString());
+                    await setDoc(docRef, { materias: db.meses[mesSeleccionado].materias, alumnos: db.meses[mesSeleccionado].alumnos });
                 }
             }
         }
+
         // Cambiar el tipo de materia (Extensión o Taller)
         function cambiarTipoMateria() {
             db.tipoMateriaActual = document.getElementById('tipoMateria').value;
             render();
         }
+
         // Cambiar el mes seleccionado (limpia la selección actual)
         function cambiarMes() {
             db.mesActual = parseInt(document.getElementById('mesSelector').value);
@@ -1169,6 +1259,7 @@
             ocultarFormularioAlumno();
             render();
         }
+
         // Función para obtener el estado del carnet
         function getEstadoCarnet(fechaVencimiento) {
             const hoy = new Date();
@@ -1183,8 +1274,9 @@
                 return 'estado-verde';
             }
         }
+
         // Función para renovar el carnet
-        function renovarCarnet(mid, aid) {
+        async function renovarCarnet(mid, aid) {
             if (!isAdmin) {
                 alert("No tienes permisos para realizar esta acción.");
                 return;
@@ -1197,10 +1289,13 @@
                     let unAnoDespues = new Date();
                     unAnoDespues.setFullYear(unAnoDespues.getFullYear() + 1);
                     al.fecha_vencimiento_carnet = unAnoDespues.toISOString().split('T')[0];
+                    const docRef = doc(dbFirestore, "meses", mesSeleccionado.toString());
+                    await setDoc(docRef, { materias: db.meses[mesSeleccionado].materias, alumnos: db.meses[mesSeleccionado].alumnos });
                     render();
                 }
             }
         }
+
         // Mostrar modal para editar alumno
         function mostrarModalEditarAlumno(aid) {
             if (!isAdmin) {
@@ -1223,8 +1318,9 @@
                 }
             }
         }
+
         // Guardar la edición del alumno
-        function guardarEdicionAlumno() {
+        async function guardarEdicionAlumno() {
             if (!isAdmin) {
                 alert("No tienes permisos para realizar esta acción.");
                 return;
@@ -1259,9 +1355,12 @@
                     al.fecha_vencimiento_carnet = fv;
                 }
             });
+            const docRef = doc(dbFirestore, "meses", mesSeleccionado.toString());
+            await setDoc(docRef, { materias: db.meses[mesSeleccionado].materias, alumnos: db.meses[mesSeleccionado].alumnos });
             cerrarModal('modalEditarAlumno');
             render();
         }
+
         // Inicializar el carousel
         function initCarousel() {
             const slidesData = [
@@ -1392,6 +1491,7 @@
             carouselContainer.appendChild(dots);
             return carouselContainer;
         }
+
         // Funciones para controlar el carousel
         function nextSlide() {
             slides[currentSlide].classList.remove('active');
@@ -1400,6 +1500,7 @@
             slides[currentSlide].classList.add('active');
             document.querySelectorAll('.carousel-dots span')[currentSlide].classList.add('active');
         }
+
         function prevSlide() {
             slides[currentSlide].classList.remove('active');
             document.querySelectorAll('.carousel-dots span')[currentSlide].classList.remove('active');
@@ -1407,6 +1508,7 @@
             slides[currentSlide].classList.add('active');
             document.querySelectorAll('.carousel-dots span')[currentSlide].classList.add('active');
         }
+
         function goToSlide(index) {
             slides[currentSlide].classList.remove('active');
             document.querySelectorAll('.carousel-dots span')[currentSlide].classList.remove('active');
@@ -1414,6 +1516,7 @@
             slides[currentSlide].classList.add('active');
             document.querySelectorAll('.carousel-dots span')[currentSlide].classList.add('active');
         }
+
         // Renderizar el contenido principal
         function render() {
             var mesSeleccionado = parseInt(document.getElementById('mesSelector').value);
@@ -1435,6 +1538,7 @@
             // Renderizar contenido principal
             renderContent();
         }
+
         // Renderizar el contenido principal
         function renderContent() {
             var mesSeleccionado = parseInt(document.getElementById('mesSelector').value);
