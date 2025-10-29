@@ -705,19 +705,19 @@
     <!-- Modal de autenticación -->
     <div id="authModal" class="modal" style="display: block;">
         <div class="modal-content">
-            <h3>Ingresar como Administrador o Espectador</h3>
-            <input type="password" id="adminPassword" placeholder="Contraseña">
-            <p style="font-size: 12px; color: #b0b0b0;">Ingresa "espectador" para acceder sin permisos de edición.</p>
+            <h3>Ingresar como Administrador</h3>
+            <input type="password" id="adminPassword" placeholder="Contraseña de administrador">
             <div class="modal-buttons">
                 <button class="confirm" onclick="checkAdminPassword()">Ingresar</button>
             </div>
         </div>
     </div>
+
     <div class="container">
         <div class="header">
             <h1>
                 <img
-                  src="https://via.placeholder.com/80?text=CPU"
+                  src="https://raw.githubusercontent.com/cpubatan2021-afk/asistencia-cpu-batan/main/image(1).png"
                   alt="Logo CPU"
                   class="logo-cpu"
                 >
@@ -840,10 +840,10 @@
         </div>
     </div>
     <script>
-        // Contraseña de administrador y espectador
+        // Contraseña de administrador
         const ADMIN_PASSWORD = "cpu20251";
-        const SPECTATOR_PASSWORD = "espectador";
         let isAdmin = false;
+
         // Base de datos simulada por mes
         var db = {
             meses: [],
@@ -876,19 +876,17 @@
             updateClock();
             setInterval(updateClock, 1000);
         }
-        // Verificar contraseña de administrador o espectador
+        // Verificar contraseña de administrador
         function checkAdminPassword() {
             const password = document.getElementById("adminPassword").value;
             if (password === ADMIN_PASSWORD) {
                 isAdmin = true;
                 document.getElementById("authModal").style.display = "none";
                 render();
-            } else if (password === SPECTATOR_PASSWORD) {
+            } else {
                 isAdmin = false;
                 document.getElementById("authModal").style.display = "none";
                 render();
-            } else {
-                alert("Contraseña incorrecta. Inténtalo de nuevo.");
             }
         }
         // Actualizar el reloj
