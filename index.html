@@ -321,6 +321,7 @@
         .table-container {
             overflow-x: auto;
             max-width: 100%;
+            margin-bottom: 1rem;
         }
         table {
             width: 100%;
@@ -331,6 +332,7 @@
             overflow: hidden;
             font-size: 0.75rem;
             min-width: 600px;
+            white-space: nowrap;
         }
         thead {
             background-color: var(--accent);
@@ -340,7 +342,6 @@
             padding: 0.5rem;
             text-align: left;
             border-bottom: 1px solid #475569;
-            white-space: nowrap;
         }
         tr:hover {
             background-color: rgba(99, 102, 241, 0.1);
@@ -1289,7 +1290,7 @@
             }
             var mesSeleccionado = parseInt(document.getElementById('mesSelector').value);
             var tipoSeleccionado = document.getElementById('tipoMateria').value;
-            var materiasMesActual = db.meses[mesSeleccionado].materias;
+            var materiasMesActual = db.meses[mesSeleccionado] ? db.meses[mesSeleccionado].materias : [];
             var materiasFiltradas = materiasMesActual.filter(m => m.tipo === tipoSeleccionado);
             var materiasHtml = '';
             materiasFiltradas.forEach(m => {
@@ -1307,7 +1308,7 @@
         // Renderizar contenido principal
         function renderContent() {
             var mesSeleccionado = parseInt(document.getElementById('mesSelector').value);
-            var materiasMesActual = db.meses[mesSeleccionado].materias;
+            var materiasMesActual = db.meses[mesSeleccionado] ? db.meses[mesSeleccionado].materias : [];
             if (materiasMesActual.length === 0 || !db.actual) {
                 document.getElementById('mainArea').innerHTML = `
                     <div style="text-align: center; padding: 1.5rem; color: var(--text-secondary);">
@@ -1317,7 +1318,7 @@
                 `;
                 return;
             }
-            var mat = db.meses[mesSeleccionado].materias.find(m => m.id === db.actual);
+            var mat = materiasMesActual.find(m => m.id === db.actual);
             if (!mat) return;
             var html = `
                 <h2 style="color: var(--accent); text-align: center; margin-bottom: 1rem; font-size: 1.5rem;">📖 ${mat.nombre}</h2>
@@ -1346,7 +1347,7 @@
                                     <th>Inscripción</th>
                                     <th>Vencimiento</th>
                                     <th>Estado</th>
-                                    ${mat.fechas.map(f => `<th>${f}</th>`).join('')}
+                                    ${mat.fechas ? mat.fechas.map(f => `<th>${f}</th>`).join('') : ''}
                                     <th>Observaciones</th>
                                     <th>Acciones</th>
                                 </tr>
@@ -1368,18 +1369,20 @@
                                 ${estado.text}
                             </td>
                     `;
-                    mat.fechas.forEach(f => {
-                        var chk = al.asist[f] ? 'checked' : '';
-                        var ico = al.asist[f] ? '✅' : '❌';
-                        html += `
-                            <td>
-                                <div style="display: flex; align-items: center; gap: 0.3rem;">
-                                    <input type="checkbox" ${chk} ${userRole === 'admin' ? `onclick="toggleAsist(${mat.id}, ${al.id}, '${f}')"` : 'disabled'}>
-                                    <span style="font-size: 0.8rem;">${ico}</span>
-                                </div>
-                            </td>
-                        `;
-                    });
+                    if (mat.fechas) {
+                        mat.fechas.forEach(f => {
+                            var chk = al.asist && al.asist[f] ? 'checked' : '';
+                            var ico = al.asist && al.asist[f] ? '✅' : '❌';
+                            html += `
+                                <td>
+                                    <div style="display: flex; align-items: center; gap: 0.3rem;">
+                                        <input type="checkbox" ${chk} ${userRole === 'admin' ? `onclick="toggleAsist(${mat.id}, ${al.id}, '${f}')"` : 'disabled'}>
+                                        <span style="font-size: 0.8rem;">${ico}</span>
+                                    </div>
+                                </td>
+                            `;
+                        });
+                    }
                     html += `
                             <td>
                                 <textarea
