@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Control de Asistencia - CPU Batán</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-analytics-compat.js"></script>
     <style>
         :root {
             --bg-dark: #0f172a;
@@ -506,6 +510,23 @@
     </style>
 </head>
 <body onload="init()">
+    <!-- Firebase Configuration -->
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyCgg_9oBHyr5ouu8WUYVokD0JWIvnA1oj0",
+            authDomain: "cpu-batan.firebaseapp.com",
+            databaseURL: "https://cpu-batan-default-rtdb.firebaseio.com",
+            projectId: "cpu-batan",
+            storageBucket: "cpu-batan.appspot.com",
+            messagingSenderId: "513877189909",
+            appId: "1:513877189909:web:1d186224b1ecb7bf7e751c",
+            measurementId: "G-Y0SCDERTK3"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+    </script>
+
     <!-- Login Modal -->
     <div id="loginModal" class="login-modal">
         <div class="login-modal-content">
@@ -521,7 +542,7 @@
         <div class="header">
             <div class="header-content">
                 <h1>
-                    Comunidad Pastoral Universitaria
+                    CPU Batán
                     <img src="https://raw.githubusercontent.com/cpubatan2021-afk/asistencia-cpu-batan/main/image%20(1).png" alt="Logo CPU" class="logo-cpu">
                 </h1>
                 <p>📚 Control de Asistencia</p>
@@ -753,8 +774,8 @@
 
         // Variables para el carrusel
         let currentCarruselIndex = 0;
-        const carruselItems = document.querySelectorAll('.carrusel-item');
-        const carrusel = document.querySelector('.carrusel');
+        let carruselItems;
+        let carrusel;
 
         // Función para mover el carrusel
         function moveCarrusel(n) {
@@ -767,20 +788,27 @@
             carrusel.style.transform = `translateX(-${currentCarruselIndex * 100}%)`;
         }
 
-        // Auto-avance del carrusel
-        setInterval(() => {
-            moveCarrusel(1);
-        }, 5000);
-
         // Inicializar la base de datos
         function initDB() {
-            for (let i = 0; i < 12; i++) {
-                db.meses.push({
-                    id: i,
-                    materias: [],
-                    alumnos: []
-                });
-            }
+            database.ref('meses').on('value', (snapshot) => {
+                const data = snapshot.val();
+                if (data) {
+                    db.meses = data;
+                } else {
+                    // Si no hay datos, inicializar con estructura vacía
+                    db.meses = [];
+                    for (let i = 0; i < 12; i++) {
+                        db.meses.push({
+                            id: i,
+                            materias: [],
+                            alumnos: []
+                        });
+                    }
+                    // Guardar estructura inicial en Firebase
+                    database.ref('meses').set(db.meses);
+                }
+                render();
+            });
         }
 
         // Inicializar la aplicación
@@ -790,6 +818,13 @@
             updateClock();
             setInterval(updateClock, 1000);
             document.getElementById('loginModal').style.display = 'flex';
+
+            // Inicializar carrusel
+            carruselItems = document.querySelectorAll('.carrusel-item');
+            carrusel = document.querySelector('.carrusel');
+            setInterval(() => {
+                moveCarrusel(1);
+            }, 5000);
         }
 
         // Actualizar el reloj
@@ -861,13 +896,20 @@
                 return;
             }
             var mesSeleccionado = parseInt(document.getElementById('mesSelector').value);
-            db.meses[mesSeleccionado].materias.push({
+            const newMateria = {
                 id: Date.now(),
                 nombre: nom,
                 tipo: db.tipoMateriaSeleccionado,
                 fechas: [],
                 alumnos: []
-            });
+            };
+
+            // Agregar a la base de datos local
+            db.meses[mesSeleccionado].materias.push(newMateria);
+
+            // Guardar en Firebase
+            database.ref(`meses/${mesSeleccionado}/materias`).set(db.meses[mesSeleccionado].materias);
+
             cerrarModal('modalMateria');
             document.getElementById('nombreMateria').value = '';
             render();
@@ -899,6 +941,10 @@
                 return;
             }
             db.meses[mesSeleccionado].materias = materiasMesActual.filter(m => m.id !== db.materiaAEliminar);
+
+            // Guardar en Firebase
+            database.ref(`meses/${mesSeleccionado}/materias`).set(db.meses[mesSeleccionado].materias);
+
             cerrarModal('modalEliminarMateria');
             render();
         }
@@ -948,12 +994,15 @@
             var p = document.getElementById('fp').value.trim();
             var checkboxes = document.querySelectorAll('#materiasCheckboxContainer input[type="checkbox"]:checked');
             var materiasSeleccionadas = Array.from(checkboxes).map(cb => parseInt(cb.value));
+
             if (!n || !a || !d || !p || materiasSeleccionadas.length === 0) {
                 alert('Completa todos los campos y selecciona al menos una materia');
                 return;
             }
+
             var mesSeleccionado = parseInt(document.getElementById('mesSelector').value);
             let alumnoExistente = db.meses[mesSeleccionado].alumnos.find(al => al.dni === d);
+
             if (!alumnoExistente) {
                 let hoy = new Date().toISOString().split('T')[0];
                 let unAnoDespues = new Date();
@@ -970,6 +1019,7 @@
                 };
                 db.meses[mesSeleccionado].alumnos.push(alumnoExistente);
             }
+
             materiasSeleccionadas.forEach(mid => {
                 let materia = db.meses[mesSeleccionado].materias.find(m => m.id === mid);
                 if (materia) {
@@ -988,6 +1038,11 @@
                     }
                 }
             });
+
+            // Guardar en Firebase
+            database.ref(`meses/${mesSeleccionado}`).set(db.meses[mesSeleccionado]);
+
+            // Limpiar formulario
             document.getElementById('fn').value = '';
             document.getElementById('fa').value = '';
             document.getElementById('fd').value = '';
@@ -1007,6 +1062,10 @@
                 var mat = db.meses[mesSeleccionado].materias.find(m => m.id === mid);
                 if (mat) {
                     mat.alumnos = mat.alumnos.filter(a => a.id !== aid);
+
+                    // Guardar en Firebase
+                    database.ref(`meses/${mesSeleccionado}/materias`).set(db.meses[mesSeleccionado].materias);
+
                     render();
                 }
             }
@@ -1024,6 +1083,10 @@
             var mat = db.meses[mesSeleccionado].materias.find(m => m.id === db.actual);
             if (mat) {
                 mat.fechas.push(f);
+
+                // Guardar en Firebase
+                database.ref(`meses/${mesSeleccionado}/materias`).set(db.meses[mesSeleccionado].materias);
+
                 render();
             }
         }
@@ -1047,6 +1110,10 @@
                 if (idx >= 0 && idx < mat.fechas.length) {
                     if (confirm(`¿Eliminar "${mat.fechas[idx]}"?`)) {
                         mat.fechas.splice(idx, 1);
+
+                        // Guardar en Firebase
+                        database.ref(`meses/${mesSeleccionado}/materias`).set(db.meses[mesSeleccionado].materias);
+
                         render();
                     }
                 } else {
@@ -1067,6 +1134,10 @@
                 var al = mat.alumnos.find(a => a.id === aid);
                 if (al) {
                     al.asist[f] = !al.asist[f];
+
+                    // Guardar en Firebase
+                    database.ref(`meses/${mesSeleccionado}/materias`).set(db.meses[mesSeleccionado].materias);
+
                     render();
                 }
             }
@@ -1084,6 +1155,9 @@
                 var al = mat.alumnos.find(a => a.id === aid);
                 if (al) {
                     al.observaciones = valor;
+
+                    // Guardar en Firebase
+                    database.ref(`meses/${mesSeleccionado}/materias`).set(db.meses[mesSeleccionado].materias);
                 }
             }
         }
@@ -1131,6 +1205,10 @@
                     let unAnoDespues = new Date();
                     unAnoDespues.setFullYear(unAnoDespues.getFullYear() + 1);
                     al.fecha_vencimiento_carnet = unAnoDespues.toISOString().split('T')[0];
+
+                    // Guardar en Firebase
+                    database.ref(`meses/${mesSeleccionado}/materias`).set(db.meses[mesSeleccionado].materias);
+
                     render();
                 }
             }
@@ -1190,6 +1268,10 @@
                     al.fecha_vencimiento_carnet = fv;
                 }
             });
+
+            // Guardar en Firebase
+            database.ref(`meses/${mesSeleccionado}`).set(db.meses[mesSeleccionado]);
+
             cerrarModal('modalEditarAlumno');
             render();
         }
@@ -1350,7 +1432,9 @@
             }
             let materias = [];
             meses.forEach(mesIndex => {
-                materias = materias.concat(db.meses[mesIndex].materias.filter(m => m.tipo === tipoMateria));
+                if (db.meses[mesIndex]) {
+                    materias = materias.concat(db.meses[mesIndex].materias.filter(m => m.tipo === tipoMateria));
+                }
             });
             let options = '<option value="">Selecciona una materia</option>';
             materias.forEach(materia => {
@@ -1375,30 +1459,36 @@
             let estadisticasPorAlumno = {};
             let alumnos = {};
             meses.forEach(mesIndex => {
-                const materiasMes = db.meses[mesIndex].materias;
-                const materia = materiasMes.find(m => m.id === materiaId);
-                if (materia) {
-                    totalClases += materia.fechas.length;
-                    materia.alumnos.forEach(alumno => {
-                        if (!alumnos[alumno.id]) {
-                            alumnos[alumno.id] = {
-                                nombre: `${alumno.nombre} ${alumno.apellido}`,
-                                dni: alumno.dni,
-                                pabellon: alumno.pabellon,
-                                asistencias: 0,
-                                faltas: 0
-                            };
+                if (db.meses[mesIndex]) {
+                    const materiasMes = db.meses[mesIndex].materias;
+                    const materia = materiasMes.find(m => m.id === materiaId);
+                    if (materia) {
+                        totalClases += materia.fechas ? materia.fechas.length : 0;
+                        if (materia.alumnos) {
+                            materia.alumnos.forEach(alumno => {
+                                if (!alumnos[alumno.id]) {
+                                    alumnos[alumno.id] = {
+                                        nombre: `${alumno.nombre} ${alumno.apellido}`,
+                                        dni: alumno.dni,
+                                        pabellon: alumno.pabellon,
+                                        asistencias: 0,
+                                        faltas: 0
+                                    };
+                                }
+                                if (materia.fechas) {
+                                    materia.fechas.forEach(fecha => {
+                                        if (alumno.asist && alumno.asist[fecha]) {
+                                            alumnos[alumno.id].asistencias++;
+                                            totalAsistencias++;
+                                        } else {
+                                            alumnos[alumno.id].faltas++;
+                                            totalFaltas++;
+                                        }
+                                    });
+                                }
+                            });
                         }
-                        materia.fechas.forEach(fecha => {
-                            if (alumno.asist && alumno.asist[fecha]) {
-                                alumnos[alumno.id].asistencias++;
-                                totalAsistencias++;
-                            } else {
-                                alumnos[alumno.id].faltas++;
-                                totalFaltas++;
-                            }
-                        });
-                    });
+                    }
                 }
             });
             let estadisticasPorAlumnoArray = [];
