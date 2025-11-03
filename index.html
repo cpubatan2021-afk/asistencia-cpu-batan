@@ -2,346 +2,597 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Control de Asistencia - CPU Batán</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Control de Asistencia - Comunidad Pastoral Universitaria</title>
     <style>
         :root {
-            --bg-dark: #0f172a;
-            --bg-light: #1e293b;
-            --text-primary: #e2e8f0;
-            --text-secondary: #94a3b8;
-            --accent: #6366f1;
-            --accent-secondary: #8b5cf6;
-            --success: #10b981;
-            --danger: #ef4444;
-            --warning: #f59e0b;
-            --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            --border-radius: 0.5rem;
-            --font-family: 'Poppins', sans-serif;
-        }
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: var(--font-family);
+            --bg-dark: #121212;
+            --bg-light: #1e1e1e;
+            --text-primary: #e0e0e0;
+            --text-secondary: #b0b0b0;
+            --accent: #667eea;
+            --accent-secondary: #f093fb;
+            --success: #43e97b;
+            --danger: #ff4757;
+            --warning: #fee140;
+            --shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+            --transition: all 0.3s ease;
         }
         body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: var(--bg-dark);
             color: var(--text-primary);
             min-height: 100vh;
-            padding: 0.5rem;
+            padding: 20px;
+            margin: 0;
             display: flex;
             flex-direction: column;
-            overflow-x: hidden;
         }
         .container {
-            max-width: 100%;
+            max-width: 1600px;
             margin: 0 auto;
             flex: 1;
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-            width: 100%;
         }
-        /* Header */
         .header {
-            background: linear-gradient(135deg, var(--bg-light), #334155);
-            padding: 1.5rem;
-            border-radius: var(--border-radius);
+            background-color: var(--bg-light);
+            padding: 30px;
+            border-radius: 15px;
             text-align: center;
+            margin-bottom: 20px;
             box-shadow: var(--shadow);
             position: relative;
-            margin-bottom: 1rem;
-        }
-        .header-content {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 0.5rem;
-            margin-bottom: 1rem;
         }
         .header h1 {
             color: var(--accent);
-            font-size: 2rem;
-            font-weight: 600;
+            margin: 0;
+            font-size: 2.5em;
+            text-shadow: 0 0 10px rgba(102, 126, 234, 0.5);
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 0.75rem;
+            gap: 10px;
         }
         .logo-cpu {
-            width: 2.5rem;
+            width: 80px;
             height: auto;
-            filter: drop-shadow(0 0 8px rgba(99, 102, 241, 0.7));
+            margin-right: 10px;
         }
         .clock {
-            font-size: 0.8rem;
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            font-size: 18px;
             color: var(--text-secondary);
             background-color: rgba(0, 0, 0, 0.3);
-            padding: 0.5rem;
-            border-radius: 0.375rem;
+            padding: 8px 15px;
+            border-radius: 8px;
             font-family: monospace;
-            margin-top: 0.5rem;
         }
-        .logout-btn-container {
-            position: absolute;
-            top: 0.75rem;
-            right: 0.75rem;
-        }
-
-        /* Carrusel */
-        .carrusel-container {
-            position: relative;
-            max-width: 100%;
-            margin: 1rem auto;
-            overflow: hidden;
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow);
-            background-color: var(--bg-light);
-            height: 120px;
-        }
-        .carrusel {
-            display: flex;
-            height: 100%;
-            transition: transform 0.5s ease;
-        }
-        .carrusel-item {
-            min-width: 100%;
-            padding: 1rem;
-            text-align: center;
-            color: var(--text-primary);
-            background: linear-gradient(135deg, var(--bg-light), #334155);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-        }
-        .carrusel-item h3 {
-            color: var(--accent);
-            font-size: 1rem;
-            margin-bottom: 0.5rem;
-            font-weight: 600;
-        }
-        .carrusel-item p {
-            color: var(--text-secondary);
-            font-size: 0.85rem;
-            font-style: italic;
-        }
-        .carrusel-btn {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            background-color: rgba(0, 0, 0, 0.5);
-            color: white;
-            border: none;
-            padding: 0.5rem;
-            cursor: pointer;
-            border-radius: 50%;
-            font-size: 1.2rem;
-            z-index: 10;
-            transition: var(--transition);
-        }
-        .carrusel-btn:hover {
-            background-color: rgba(0, 0, 0, 0.8);
-        }
-        .carrusel-btn.prev {
-            left: 0.5rem;
-        }
-        .carrusel-btn.next {
-            right: 0.5rem;
-        }
-
-        /* Layout */
         .layout {
             display: grid;
-            grid-template-columns: 1fr;
-            gap: 1rem;
+            grid-template-columns: 300px 1fr;
+            gap: 20px;
             flex: 1;
         }
-        /* Sidebar */
         .sidebar {
             background-color: var(--bg-light);
-            border-radius: var(--border-radius);
-            padding: 1rem;
+            border-radius: 15px;
+            padding: 20px;
             box-shadow: var(--shadow);
-            display: flex;
-            flex-direction: column;
-            gap: 0.75rem;
         }
         .sidebar h2 {
             color: var(--accent);
-            font-size: 1.25rem;
-            font-weight: 600;
-            margin-bottom: 1rem;
+            margin: 0 0 15px 0;
         }
-        /* Materia List */
         .materia-list {
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-            max-height: 50vh;
+            margin-bottom: 10px;
+            max-height: 300px;
             overflow-y: auto;
-            padding-right: 0.5rem;
         }
         .materia-item {
             position: relative;
+            margin-bottom: 8px;
         }
         .materia-btn {
             width: 100%;
-            padding: 0.75rem;
+            padding: 12px;
+            padding-right: 40px;
             background-color: var(--accent-secondary);
             color: white;
             border: none;
-            border-radius: 0.5rem;
+            border-radius: 10px;
             cursor: pointer;
-            font-weight: 500;
+            font-size: 15px;
+            font-weight: bold;
             text-align: left;
             transition: var(--transition);
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-size: 0.9rem;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
         }
         .materia-btn.active {
             background-color: var(--accent);
-            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.3);
+            box-shadow: 0 0 15px rgba(102, 126, 234, 0.7);
         }
-        .materia-btn:hover:not(.active) {
-            background-color: #7c3aed;
+        .materia-btn:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
         }
         .delete-materia {
             position: absolute;
-            right: 0.5rem;
+            right: 10px;
             top: 50%;
             transform: translateY(-50%);
-            background: rgba(0, 0, 0, 0.3);
+            background: rgba(255, 255, 255, 0.2);
             border: none;
             color: white;
-            width: 1.5rem;
-            height: 1.5rem;
+            width: 24px;
+            height: 24px;
             border-radius: 50%;
             cursor: pointer;
             font-weight: bold;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.8rem;
+            font-size: 16px;
         }
-        /* Buttons */
-        .btn {
-            padding: 0.5rem 1rem;
-            border-radius: 0.5rem;
+        .btn-nueva {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--accent);
+            color: white;
             border: none;
+            border-radius: 10px;
             cursor: pointer;
-            font-weight: 500;
+            font-size: 15px;
+            font-weight: bold;
+            margin-top: 10px;
             transition: var(--transition);
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-            font-size: 0.85rem;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
         }
-        .btn-primary {
+        .btn-nueva:hover {
+            background-color: #5a6fd1;
+            transform: translateY(-2px);
+        }
+        .content {
+            background-color: var(--bg-light);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: var(--shadow);
+        }
+        /* Carousel */
+        .carousel-container {
+            position: relative;
+            max-width: 800px;
+            margin: 0 auto;
+            overflow: hidden;
+            border-radius: 15px;
+            box-shadow: var(--shadow);
+            height: 300px;
+        }
+        .carousel-slides {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+        .carousel-slide {
+            display: none;
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            color: white;
+            text-align: center;
+            padding: 40px 20px;
+            box-sizing: border-box;
+            opacity: 0;
+            transition: opacity 1.5s ease-in-out;
+            top: 0;
+            left: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-shadow: 0 0 10px rgba(0, 0, 0, 0.7);
+            background-size: cover;
+            background-position: center;
+        }
+        .carousel-slide.active {
+            display: flex;
+            opacity: 1;
+        }
+        .carousel-slide h3 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            font-weight: bold;
+            text-shadow: 0 0 10px rgba(0, 0, 0, 0.7);
+        }
+        .carousel-slide p {
+            font-size: 18px;
+            opacity: 0.9;
+            text-shadow: 0 0 5px rgba(0, 0, 0, 0.7);
+        }
+        .carousel-slide .slide-icon {
+            font-size: 50px;
+            margin-bottom: 20px;
+            text-shadow: 0 0 10px rgba(0, 0, 0, 0.7);
+        }
+        .carousel-controls {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .carousel-controls button {
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            margin: 0 10px;
+            cursor: pointer;
+            font-size: 18px;
+            transition: var(--transition);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+        }
+        .carousel-controls button:hover {
+            transform: scale(1.1);
+        }
+        .carousel-dots {
+            display: flex;
+            justify-content: center;
+            margin-top: 15px;
+        }
+        .carousel-dots span {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--text-secondary);
+            margin: 0 5px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .carousel-dots span.active {
+            background: var(--accent);
+            transform: scale(1.2);
+        }
+        .empty-instruction {
+            text-align: center;
+            margin-top: 30px;
+            color: var(--text-secondary);
+            font-size: 18px;
+        }
+        .empty-instruction strong {
+            color: var(--accent);
+        }
+        /* Modal para tipo de materia */
+        .modal-tipo {
+            display: none;
+            position: fixed;
+            z-index: 1001;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+        }
+        .modal-tipo-content {
+            background-color: var(--bg-light);
+            margin: 15% auto;
+            padding: 30px;
+            border-radius: 15px;
+            border: 1px solid var(--accent);
+            width: 50%;
+            max-width: 400px;
+            text-align: center;
+            box-shadow: var(--shadow);
+        }
+        .modal-tipo-content h3 {
+            color: var(--accent);
+            margin-top: 0;
+            margin-bottom: 20px;
+        }
+        .tipo-materia-options {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .tipo-materia-option {
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: bold;
+        }
+        .tipo-materia-option.extension {
             background-color: var(--accent);
             color: white;
         }
-        .btn-primary:hover {
-            background-color: #5856eb;
-        }
-        .btn-success {
-            background-color: var(--success);
+        .tipo-materia-option.taller {
+            background-color: var(--accent-secondary);
             color: white;
         }
-        .btn-success:hover {
-            background-color: #0d9488;
+        .tipo-materia-option:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
         }
-        .btn-danger {
-            background-color: var(--danger);
-            color: white;
-        }
-        .btn-danger:hover {
-            background-color: #dc2626;
-        }
-        .btn-warning {
-            background-color: var(--warning);
-            color: white;
-        }
-        .btn-warning:hover {
-            background-color: #d97706;
-        }
-        .btn-block {
-            width: 100%;
-        }
-        /* Content */
-        .content {
-            background-color: var(--bg-light);
-            border-radius: var(--border-radius);
-            padding: 1rem;
+        /* Rest of your existing styles */
+        .form-box {
+            background: linear-gradient(135deg, #2d3436 0%, #636e72 100%);
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 25px;
             box-shadow: var(--shadow);
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
         }
-        /* Tabs */
-        .tabs {
-            display: flex;
-            border-bottom: 1px solid #475569;
-            margin-bottom: 1rem;
-        }
-        .tab {
-            padding: 0.5rem 1rem;
-            cursor: pointer;
-            background-color: transparent;
-            border: none;
-            color: var(--text-secondary);
-            font-weight: 500;
-            transition: var(--transition);
-            border-bottom: 2px solid transparent;
-            font-size: 0.9rem;
-        }
-        .tab.active {
-            color: var(--accent);
-            border-bottom-color: var(--accent);
-        }
-        .tab:hover:not(.active) {
+        .form-box h3 {
+            margin: 0 0 15px 0;
             color: var(--text-primary);
         }
-        /* Tables */
-        .table-container {
-            overflow-x: auto;
-            max-width: 100%;
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+        .form-grid input,
+        .form-grid select {
+            padding: 12px;
+            border: 2px solid #444;
+            border-radius: 8px;
+            font-size: 14px;
+            background-color: #2d3436;
+            color: var(--text-primary);
+            transition: var(--transition);
+        }
+        .form-grid input:focus,
+        .form-grid select:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 10px rgba(102, 126, 234, 0.5);
+        }
+        .materias-selector {
+            grid-column: 1 / -1;
+            margin-top: 10px;
+        }
+        .materias-checkbox-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            max-height: 200px;
+            overflow-y: auto;
+            padding: 10px;
+            background-color: #2d3436;
+            border-radius: 8px;
+            border: 1px solid var(--accent);
+        }
+        .materia-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .materia-checkbox input[type="checkbox"] {
+            margin: 0;
+        }
+        .btn-add {
+            padding: 12px 25px;
+            background-color: var(--success);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 10px;
+            transition: var(--transition);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+        }
+        .btn-add:hover {
+            transform: translateY(-2px);
+        }
+        .materia-title {
+            color: var(--accent);
+            font-size: 2em;
+            text-align: center;
+            margin-bottom: 20px;
+            text-shadow: 0 0 10px rgba(102, 126, 234, 0.3);
+        }
+        .fecha-box {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .fecha-box input {
+            flex: 1;
+            padding: 10px;
+            border: 2px solid var(--accent);
+            border-radius: 8px;
+            background-color: #2d3436;
+            color: var(--text-primary);
+            transition: var(--transition);
+        }
+        .fecha-box input:focus {
+            border-color: var(--accent-secondary);
+            box-shadow: 0 0 10px rgba(240, 147, 251, 0.5);
+        }
+        .btn-fecha {
+            padding: 10px 20px;
+            background-color: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: var(--transition);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+        }
+        .btn-fecha:hover {
+            transform: translateY(-2px);
+        }
+        .btn-delete-fecha {
+            padding: 10px 20px;
+            background-color: var(--danger);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: var(--transition);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+        }
+        .btn-delete-fecha:hover {
+            transform: translateY(-2px);
+        }
+        .observaciones-input {
+            width: 100%;
+            padding: 8px;
+            border: 2px solid #444;
+            border-radius: 6px;
+            font-size: 13px;
+            background-color: #2d3436;
+            color: var(--text-primary);
+            resize: vertical;
+            min-height: 40px;
+            transition: var(--transition);
+        }
+        .observaciones-input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 10px rgba(102, 126, 234, 0.5);
         }
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 1rem;
+            margin-bottom: 25px;
             box-shadow: var(--shadow);
-            border-radius: var(--border-radius);
-            overflow: hidden;
-            font-size: 0.75rem;
-            min-width: 600px;
         }
         thead {
             background-color: var(--accent);
             color: white;
+            text-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
         }
         th, td {
-            padding: 0.5rem;
+            padding: 12px;
             text-align: left;
-            border-bottom: 1px solid #475569;
-            white-space: nowrap;
+            border-bottom: 1px solid #444;
         }
-        tr:hover {
-            background-color: rgba(99, 102, 241, 0.1);
+        .check-box {
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
-        /* Modals */
+        input[type="checkbox"] {
+            width: 22px;
+            height: 22px;
+            cursor: pointer;
+            accent-color: var(--accent);
+        }
+        .btn-delete {
+            padding: 8px 15px;
+            background-color: var(--danger);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+        }
+        .btn-delete:hover {
+            transform: translateY(-2px);
+        }
+        .btn-renovar {
+            padding: 8px 15px;
+            background-color: var(--success);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+        }
+        .btn-renovar:hover {
+            transform: translateY(-2px);
+        }
+        .btn-editar {
+            padding: 8px 15px;
+            background-color: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+        }
+        .btn-editar:hover {
+            transform: translateY(-2px);
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .stat {
+            padding: 25px;
+            border-radius: 12px;
+            color: white;
+            text-align: center;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+        }
+        .stat:hover {
+            transform: translateY(-5px);
+        }
+        .stat h4 {
+            font-size: 13px;
+            margin: 0 0 10px 0;
+            opacity: 0.9;
+        }
+        .stat p {
+            font-size: 36px;
+            font-weight: bold;
+            margin: 0;
+            text-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+        }
+        .empty {
+            text-align: center;
+            padding: 50px;
+            color: var(--text-secondary);
+        }
+        .hidden {
+            display: none;
+        }
+        .tipo-materia {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .tipo-materia select {
+            padding: 10px;
+            border-radius: 8px;
+            border: 2px solid var(--accent);
+            background-color: #2d3436;
+            color: var(--text-primary);
+            transition: var(--transition);
+        }
+        .mes-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .mes-selector select {
+            padding: 10px;
+            border-radius: 8px;
+            border: 2px solid var(--accent);
+            background-color: #2d3436;
+            color: var(--text-primary);
+            transition: var(--transition);
+        }
+        .alumno-form-container {
+            background: linear-gradient(135deg, #2d3436 0%, #636e72 100%);
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            box-shadow: var(--shadow);
+        }
+        .alumno-form-container h3 {
+            margin: 0 0 15px 0;
+            color: var(--text-primary);
+        }
+        /* Modal */
         .modal {
             display: none;
             position: fixed;
@@ -351,86 +602,95 @@
             width: 100%;
             height: 100%;
             background-color: rgba(0, 0, 0, 0.7);
-            backdrop-filter: blur(5px);
         }
         .modal-content {
             background-color: var(--bg-light);
-            margin: 10% auto;
-            padding: 1.5rem;
-            border-radius: var(--border-radius);
+            margin: 15% auto;
+            padding: 20px;
+            border-radius: 15px;
             border: 1px solid var(--accent);
-            width: 95%;
+            width: 50%;
             max-width: 500px;
             box-shadow: var(--shadow);
-            position: relative;
         }
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1rem;
-            padding-bottom: 0.75rem;
-            border-bottom: 1px solid #475569;
-        }
-        .modal-title {
+        .modal-content h3 {
             color: var(--accent);
-            font-size: 1.25rem;
-            font-weight: 600;
+            margin-top: 0;
         }
-        .modal-close {
-            background: none;
-            border: none;
-            color: var(--text-secondary);
-            font-size: 1.25rem;
-            cursor: pointer;
+        .modal-content input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border: 2px solid var(--accent);
+            background-color: #2d3436;
+            color: var(--text-primary);
             transition: var(--transition);
         }
-        .modal-close:hover {
-            color: var(--text-primary);
+        .modal-content input:focus {
+            border-color: var(--accent-secondary);
+            box-shadow: 0 0 10px rgba(240, 147, 251, 0.5);
         }
-        .modal-body {
-            margin-bottom: 1rem;
-        }
-        .modal-footer {
+        .modal-buttons {
             display: flex;
             justify-content: flex-end;
-            gap: 0.75rem;
+            gap: 10px;
+            margin-top: 20px;
         }
-        /* Estadísticas */
-        .stats-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 1rem;
-            margin-bottom: 1rem;
+        .modal-buttons button {
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            transition: var(--transition);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
         }
-        .stat-card {
-            background: linear-gradient(135deg, var(--bg-light), #334155);
-            padding: 1rem;
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow);
-            text-align: center;
+        .modal-buttons .confirm {
+            background-color: var(--success);
+            color: white;
         }
-        .stat-card h4 {
-            color: var(--text-secondary);
-            font-size: 0.85rem;
-            margin-bottom: 0.5rem;
+        .modal-buttons .confirm:hover {
+            transform: translateY(-2px);
         }
-        .stat-card p {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--text-primary);
-            margin: 0;
+        .modal-buttons .cancel {
+            background-color: var(--danger);
+            color: white;
         }
-        /* Footer */
+        .modal-buttons .cancel:hover {
+            transform: translateY(-2px);
+        }
+        /* Indicadores visuales */
+        .estado-carnet {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            margin-right: 8px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+        }
+        .estado-verde {
+            background-color: var(--success);
+        }
+        .estado-amarillo {
+            background-color: var(--warning);
+        }
+        .estado-rojo {
+            background-color: var(--danger);
+        }
+        /* Pie de página */
         .footer {
             background-color: var(--bg-light);
-            padding: 1rem;
+            padding: 20px;
             text-align: center;
-            border-radius: var(--border-radius);
-            margin-top: 1rem;
+            border-radius: 15px;
+            margin-top: 20px;
             box-shadow: var(--shadow);
-            font-size: 0.75rem;
+            font-size: 14px;
             color: var(--text-secondary);
+        }
+        .footer p {
+            margin: 5px 0;
         }
         .footer a {
             color: var(--accent);
@@ -439,160 +699,44 @@
         .footer a:hover {
             text-decoration: underline;
         }
-        /* Login Modal */
-        .login-modal {
-            display: flex;
-            position: fixed;
-            z-index: 2000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(5px);
-        }
-        .login-modal-content {
-            background-color: var(--bg-light);
-            margin: auto;
-            padding: 1.5rem;
-            border-radius: var(--border-radius);
-            border: 1px solid var(--accent);
-            width: 90%;
-            max-width: 350px;
-            text-align: center;
-            box-shadow: var(--shadow);
-        }
-        /* Responsive */
-        @media (min-width: 768px) {
-            .layout {
-                grid-template-columns: 300px 1fr;
-                gap: 1.5rem;
-            }
-            .header h1 {
-                font-size: 2.2rem;
-            }
-            .sidebar {
-                padding: 1.5rem;
-            }
-            .sidebar h2 {
-                font-size: 1.3rem;
-            }
-            .materia-btn {
-                padding: 0.75rem;
-                font-size: 1rem;
-            }
-            .content {
-                padding: 1.5rem;
-            }
-            table {
-                font-size: 0.9rem;
-            }
-            th, td {
-                padding: 0.75rem 1rem;
-            }
-        }
-        .hidden {
-            display: none;
-        }
-        select, input[type="text"], input[type="date"], textarea {
-            width: 100%;
-            padding: 0.5rem;
-            border-radius: 0.5rem;
-            border: 1px solid #475569;
-            background-color: #2d3748;
-            color: var(--text-primary);
-            font-size: 0.9rem;
-        }
     </style>
 </head>
 <body onload="init()">
-    <!-- Login Modal -->
-    <div id="loginModal" class="login-modal">
-        <div class="login-modal-content">
-            <h3>🔐 Iniciar Sesión</h3>
-            <input type="password" id="loginPassword" placeholder="Contraseña de administrador" class="btn-block" style="margin-bottom: 1rem;">
-            <div class="modal-footer">
-                <button class="btn btn-primary btn-block" onclick="login()">Ingresar</button>
+    <!-- Modal de autenticación -->
+    <div id="authModal" class="modal" style="display: block;">
+        <div class="modal-content">
+            <h3>Ingresar como Administrador</h3>
+            <input type="password" id="adminPassword" placeholder="Contraseña de administrador">
+            <div class="modal-buttons">
+                <button class="confirm" onclick="checkAdminPassword()">Ingresar</button>
             </div>
         </div>
     </div>
+
     <div class="container">
-        <!-- Header -->
         <div class="header">
-            <div class="header-content">
-                <h1>
-                    Comunidad Pastoral Universitaria
-                    <img src="https://via.placeholder.com/80?text=CPU" alt="Logo CPU" class="logo-cpu">
-                </h1>
-                <p>📚 Control de Asistencia</p>
-            </div>
+            <h1>
+                <img
+                  src="https://raw.githubusercontent.com/cpubatan2021-afk/asistencia-cpu-batan/main/image(1).png"
+                  alt="Logo CPU"
+                  class="logo-cpu"
+                >
+                Comunidad Pastoral Universitaria
+            </h1>
+            <p>📚 Control de Asistencia</p>
             <div class="clock" id="clock"></div>
-            <div class="logout-btn-container">
-                <button id="logoutBtn" class="btn btn-danger" style="padding: 0.3rem 0.75rem; font-size: 0.75rem;" onclick="logout()">Cerrar Sesión</button>
-            </div>
         </div>
-
-        <!-- Carrusel -->
-        <div class="carrusel-container">
-            <div class="carrusel">
-                <div class="carrusel-item active">
-                    <h3>"La cultura es el espejo de una comunidad."</h3>
-                    <p>— Anónimo</p>
-                </div>
-                <div class="carrusel-item">
-                    <h3>"La comunidad es el corazón de la sociedad."</h3>
-                    <p>— Anónimo</p>
-                </div>
-                <div class="carrusel-item">
-                    <h3>"La diversidad cultural enriquece a la comunidad."</h3>
-                    <p>— Anónimo</p>
-                </div>
-                <div class="carrusel-item">
-                    <h3>"Una comunidad unida es una comunidad fuerte."</h3>
-                    <p>— Anónimo</p>
-                </div>
-                <div class="carrusel-item">
-                    <h3>"La cultura es la identidad de un pueblo."</h3>
-                    <p>— Anónimo</p>
-                </div>
-                <div class="carrusel-item">
-                    <h3>"La educación es la base de una comunidad próspera."</h3>
-                    <p>— Anónimo</p>
-                </div>
-                <div class="carrusel-item">
-                    <h3>"La solidaridad construye comunidades resilientes."</h3>
-                    <p>— Anónimo</p>
-                </div>
-                <div class="carrusel-item">
-                    <h3>"La cultura es el legado que dejamos a las futuras generaciones."</h3>
-                    <p>— Anónimo</p>
-                </div>
-                <div class="carrusel-item">
-                    <h3>"La participación activa fortalece a la comunidad."</h3>
-                    <p>— Anónimo</p>
-                </div>
-                <div class="carrusel-item">
-                    <h3>"La comunidad es el lugar donde todos pertenecemos."</h3>
-                    <p>— Anónimo</p>
-                </div>
-            </div>
-            <button class="carrusel-btn prev" onclick="moveCarrusel(-1)">❮</button>
-            <button class="carrusel-btn next" onclick="moveCarrusel(1)">❯</button>
-        </div>
-
-        <!-- Layout -->
         <div class="layout">
-            <!-- Sidebar -->
             <div class="sidebar">
                 <h2>📋 Materias</h2>
-                <div>
-                    <select id="tipoMateria" class="btn-block" onchange="render()">
-                        <option value="extension">Extensión Universitaria</option>
-                        <option value="taller">Taller Universitario</option>
+                <div class="tipo-materia">
+                    <select id="tipoMateria" onchange="render()">
+                        <option value="extension">Actividades de Extensión Universitaria</option>
+                        <option value="taller">Proyecto de Extensión Universitaria</option>
                     </select>
                 </div>
-                <div>
-                    <select id="mesSelector" class="btn-block" onchange="cambiarMes()">
+                <div class="mes-selector">
+                    <select id="mesSelector" onchange="cambiarMes()">
                         <option value="0">Enero</option>
                         <option value="1">Febrero</option>
                         <option value="2">Marzo</option>
@@ -608,171 +752,113 @@
                     </select>
                 </div>
                 <div class="materia-list" id="materiasList"></div>
-                <button id="btnNuevaMateria" class="btn btn-primary btn-block" onclick="mostrarModalTipoMateria()">➕ Nueva Materia</button>
-                <button id="btnNuevoAlumno" class="btn btn-primary btn-block" onclick="mostrarFormularioAlumno()">➕ Nuevo Alumno</button>
+                <button class="btn-nueva" onclick="mostrarModalTipoMateria()">➕ Nueva Materia</button>
+                <button class="btn-nueva" onclick="mostrarFormularioAlumno()">➕ Nuevo Alumno</button>
             </div>
-            <!-- Content -->
             <div class="content">
-                <!-- Tabs -->
-                <div class="tabs">
-                    <button class="tab active" onclick="cambiarPestania('asistencia')">Asistencia</button>
-                    <button class="tab" onclick="cambiarPestania('estadisticas')">Estadísticas</button>
-                </div>
-                <!-- Asistencia Tab -->
-                <div id="asistencia" class="tab-content">
-                    <div id="alumnoFormContainer" class="hidden" style="background: linear-gradient(135deg, #2d3748, #4a5568); padding: 1rem; border-radius: var(--border-radius); margin-bottom: 1rem; box-shadow: var(--shadow);">
-                        <h3 style="color: var(--accent); margin-bottom: 0.75rem;">➕ Agregar Nuevo Alumno</h3>
-                        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.75rem; margin-bottom: 0.75rem;">
+                <div id="alumnoFormContainer" class="hidden">
+                    <div class="alumno-form-container">
+                        <h3>➕ Agregar Nuevo Alumno</h3>
+                        <div class="form-grid">
                             <input type="text" id="fn" placeholder="Nombre">
                             <input type="text" id="fa" placeholder="Apellido">
                             <input type="text" id="fd" placeholder="DNI">
                             <input type="text" id="fp" placeholder="Pabellón">
                         </div>
-                        <div style="margin-bottom: 0.75rem;">
-                            <h4 style="margin-bottom: 0.5rem;">Seleccionar Materias:</h4>
-                            <div id="materiasCheckboxContainer" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.5rem; max-height: 150px; overflow-y: auto; padding: 0.5rem; background-color: #2d3748; border-radius: 0.5rem; border: 1px solid var(--accent);"></div>
+                        <div class="materias-selector">
+                            <h4>Seleccionar Materias:</h4>
+                            <div class="materias-checkbox-container" id="materiasCheckboxContainer"></div>
                         </div>
-                        <button class="btn btn-success btn-block" onclick="addAlumno()">Agregar Alumno</button>
-                    </div>
-                    <div class="table-container">
-                        <div id="mainArea"></div>
+                        <button class="btn-add" onclick="addAlumno()">Agregar Alumno</button>
                     </div>
                 </div>
-                <!-- Estadísticas Tab -->
-                <div id="estadisticas" class="tab-content hidden">
-                    <div style="display: flex; flex-direction: column; gap: 0.75rem; margin-bottom: 1rem;">
-                        <select id="estadisticasSemestreSelector" onchange="cargarMateriasEstadisticas()">
-                            <option value="primer">Primer Semestre</option>
-                            <option value="segundo">Segundo Semestre</option>
-                        </select>
-                        <select id="estadisticasTipoMateria" onchange="cargarMateriasEstadisticas()">
-                            <option value="extension">Extensión Universitaria</option>
-                            <option value="taller">Taller Universitario</option>
-                        </select>
-                        <select id="estadisticasMateriaSelector" onchange="cargarEstadisticas()">
-                            <option value="">Selecciona una materia</option>
-                        </select>
-                    </div>
-                    <div id="estadisticasContainer"></div>
+                <div id="mainArea">
+                    <!-- Aquí se mostrará el carousel o el contenido de la materia -->
                 </div>
             </div>
         </div>
-        <!-- Footer -->
-        <div class="footer">
-            <p>Programa desarrollado por <strong>Daniel Fiego</strong> para la <strong>Comunidad Pastoral Universitaria de Batán</strong>.</p>
-            <p>© 2025 Todos los derechos reservados.</p>
+    </div>
+    <!-- Pie de página -->
+    <div class="footer">
+        <p>Programa desarrollado por <strong>Daniel Fiego</strong> para la <strong>Comunidad Pastoral Universitaria</strong>.</p>
+        <p>© 2025 Todos los derechos reservados.</p>
+        <p>Este software está protegido por las leyes de propiedad intelectual y solo puede ser utilizado bajo los términos y condiciones establecidos por sus desarrolladores.</p>
+        <p>Código regido bajo las normas de <a href="https://www.argentina.gob.ar/normativa" target="_blank">propiedad intelectual de la República Argentina</a>.</p>
+    </div>
+    <!-- Modal para elegir tipo de materia -->
+    <div id="modalTipoMateria" class="modal-tipo">
+        <div class="modal-tipo-content">
+            <h3>Selecciona el tipo de materia</h3>
+            <div class="tipo-materia-options">
+                <div class="tipo-materia-option extension" onclick="seleccionarTipoMateria('extension')">
+                    Actividades de Extensión Universitaria
+                </div>
+                <div class="tipo-materia-option taller" onclick="seleccionarTipoMateria('taller')">
+                    Proyecto de Extensión Universitaria
+                </div>
+            </div>
         </div>
     </div>
-    <!-- Modals -->
-    <!-- Modal Tipo Materia -->
-    <div id="modalTipoMateria" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title">Selecciona el tipo de materia</h3>
-                <button class="modal-close" onclick="cerrarModal('modalTipoMateria')">×</button>
-            </div>
-            <div class="modal-body" style="display: flex; justify-content: center; gap: 0.75rem;">
-                <button class="btn btn-primary" style="flex: 1;" onclick="seleccionarTipoMateria('extension')">Extensión Universitaria</button>
-                <button class="btn" style="flex: 1; background-color: var(--accent-secondary);" onclick="seleccionarTipoMateria('taller')">Taller Universitario</button>
-            </div>
-        </div>
-    </div>
-    <!-- Modal Nueva Materia -->
+    <!-- Modal para nueva materia -->
     <div id="modalMateria" class="modal">
         <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title">Nueva Materia</h3>
-                <button class="modal-close" onclick="cerrarModal('modalMateria')">×</button>
-            </div>
-            <div class="modal-body">
-                <input type="text" id="nombreMateria" placeholder="Nombre de la materia" style="width: 100%; margin-bottom: 1rem;">
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-danger" onclick="cerrarModal('modalMateria')">Cancelar</button>
-                <button class="btn btn-success" onclick="crearMateria()">Confirmar</button>
+            <h3>Nueva Materia</h3>
+            <input type="text" id="nombreMateria" placeholder="Nombre de la materia">
+            <div class="modal-buttons">
+                <button class="cancel" onclick="cerrarModal('modalMateria')">Cancelar</button>
+                <button class="confirm" onclick="crearMateria()">Confirmar</button>
             </div>
         </div>
     </div>
-    <!-- Modal Eliminar Materia -->
+    <!-- Modal para eliminar materia -->
     <div id="modalEliminarMateria" class="modal">
         <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title">¿Eliminar esta materia?</h3>
-                <button class="modal-close" onclick="cerrarModal('modalEliminarMateria')">×</button>
-            </div>
-            <div class="modal-body">
-                <p id="nombreMateriaEliminar" style="text-align: center; font-size: 1rem; margin-bottom: 1rem;"></p>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-danger" onclick="cerrarModal('modalEliminarMateria')">Cancelar</button>
-                <button class="btn btn-success" onclick="confirmarEliminarMateria()">Confirmar</button>
+            <h3>¿Eliminar esta materia?</h3>
+            <p id="nombreMateriaEliminar"></p>
+            <div class="modal-buttons">
+                <button class="cancel" onclick="cerrarModal('modalEliminarMateria')">Cancelar</button>
+                <button class="confirm" onclick="confirmarEliminarMateria()">Confirmar</button>
             </div>
         </div>
     </div>
-    <!-- Modal Editar Alumno -->
+    <!-- Modal para editar alumno -->
     <div id="modalEditarAlumno" class="modal">
         <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title">Editar Alumno</h3>
-                <button class="modal-close" onclick="cerrarModal('modalEditarAlumno')">×</button>
-            </div>
-            <div class="modal-body">
-                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.75rem; margin-bottom: 0.75rem;">
-                    <input type="text" id="editNombre" placeholder="Nombre">
-                    <input type="text" id="editApellido" placeholder="Apellido">
-                    <input type="text" id="editDNI" placeholder="DNI">
-                    <input type="text" id="editPabellon" placeholder="Pabellón">
-                </div>
-                <div style="margin-bottom: 0.75rem;">
-                    <label for="editFechaInscripcion" style="display: block; margin-bottom: 0.3rem;">Fecha de Inscripción:</label>
-                    <input type="date" id="editFechaInscripcion" style="width: 100%;">
-                </div>
-                <div style="margin-bottom: 0.75rem;">
-                    <label for="editFechaVencimiento" style="display: block; margin-bottom: 0.3rem;">Fecha de Vencimiento:</label>
-                    <input type="date" id="editFechaVencimiento" style="width: 100%;">
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-danger" onclick="cerrarModal('modalEditarAlumno')">Cancelar</button>
-                <button class="btn btn-success" onclick="guardarEdicionAlumno()">Guardar</button>
+            <h3>Editar Alumno</h3>
+            <input type="text" id="editNombre" placeholder="Nombre">
+            <input type="text" id="editApellido" placeholder="Apellido">
+            <input type="text" id="editDNI" placeholder="DNI">
+            <input type="text" id="editPabellon" placeholder="Pabellón">
+            <label for="editFechaInscripcion">Fecha de Inscripción:</label>
+            <input type="date" id="editFechaInscripcion">
+            <label for="editFechaVencimiento">Fecha de Vencimiento:</label>
+            <input type="date" id="editFechaVencimiento">
+            <div class="modal-buttons">
+                <button class="cancel" onclick="cerrarModal('modalEditarAlumno')">Cancelar</button>
+                <button class="confirm" onclick="guardarEdicionAlumno()">Guardar</button>
             </div>
         </div>
     </div>
     <script>
-        // Variables globales
-        var userRole = 'espectador'; // 'espectador' o 'admin'
+        // Contraseña de administrador
+        const ADMIN_PASSWORD = "cpu20251";
+        let isAdmin = false;
+
+        // Base de datos simulada por mes
         var db = {
             meses: [],
             tipoMateriaActual: 'extension',
             tipoMateriaSeleccionado: null,
-            mesActual: 0,
+            mesActual: 0, // Inicializado en enero
             materiaAEliminar: null,
             alumnoAEditar: null,
             actual: null
         };
-
-        // Variables para el carrusel
-        let currentCarruselIndex = 0;
-        const carruselItems = document.querySelectorAll('.carrusel-item');
-        const carrusel = document.querySelector('.carrusel');
-
-        // Función para mover el carrusel
-        function moveCarrusel(n) {
-            currentCarruselIndex += n;
-            if (currentCarruselIndex >= carruselItems.length) {
-                currentCarruselIndex = 0;
-            } else if (currentCarruselIndex < 0) {
-                currentCarruselIndex = carruselItems.length - 1;
-            }
-            carrusel.style.transform = `translateX(-${currentCarruselIndex * 100}%)`;
-        }
-
-        // Auto-avance del carrusel
-        setInterval(() => {
-            moveCarrusel(1);
-        }, 5000);
-
-        // Inicializar la base de datos
+        // Variables para el carousel
+        let currentSlide = 0;
+        let slides = [];
+        let slideInterval;
+        // Inicializar la base de datos por mes
         function initDB() {
             for (let i = 0; i < 12; i++) {
                 db.meses.push({
@@ -782,16 +868,27 @@
                 });
             }
         }
-
         // Inicializar la aplicación
         function init() {
             initDB();
             db.mesActual = parseInt(document.getElementById('mesSelector').value);
+            render();
             updateClock();
             setInterval(updateClock, 1000);
-            document.getElementById('loginModal').style.display = 'flex';
         }
-
+        // Verificar contraseña de administrador
+        function checkAdminPassword() {
+            const password = document.getElementById("adminPassword").value;
+            if (password === ADMIN_PASSWORD) {
+                isAdmin = true;
+                document.getElementById("authModal").style.display = "none";
+                render();
+            } else {
+                isAdmin = false;
+                document.getElementById("authModal").style.display = "none";
+                render();
+            }
+        }
         // Actualizar el reloj
         function updateClock() {
             const now = new Date();
@@ -806,55 +903,34 @@
             };
             document.getElementById('clock').textContent = now.toLocaleDateString('es-ES', options);
         }
-
-        // Login
-        function login() {
-            const password = document.getElementById('loginPassword').value;
-            if (password === 'admin123') {
-                userRole = 'admin';
-            } else {
-                userRole = 'espectador';
-            }
-            document.getElementById('loginPassword').value = '';
-            document.getElementById('loginModal').style.display = 'none';
-            render();
-        }
-
-        // Logout
-        function logout() {
-            userRole = 'espectador';
-            document.getElementById('loginModal').style.display = 'flex';
-            render();
-        }
-
         // Mostrar modal para elegir tipo de materia
         function mostrarModalTipoMateria() {
-            if (userRole !== 'admin') {
-                alert('Solo los administradores pueden crear materias.');
+            if (!isAdmin) {
+                alert("No tienes permisos para realizar esta acción.");
                 return;
             }
             document.getElementById('modalTipoMateria').style.display = 'block';
         }
-
         // Seleccionar tipo de materia
         function seleccionarTipoMateria(tipo) {
             db.tipoMateriaSeleccionado = tipo;
-            cerrarModal('modalTipoMateria');
+            document.getElementById('modalTipoMateria').style.display = 'none';
             mostrarModalMateria();
         }
-
         // Mostrar modal para nueva materia
         function mostrarModalMateria() {
             document.getElementById('modalMateria').style.display = 'block';
         }
-
         // Cerrar modal
         function cerrarModal(id) {
             document.getElementById(id).style.display = 'none';
         }
-
-        // Crear una nueva materia
+        // Crear una nueva materia (solo para el mes seleccionado)
         function crearMateria() {
+            if (!isAdmin) {
+                alert("No tienes permisos para realizar esta acción.");
+                return;
+            }
             var nom = document.getElementById('nombreMateria').value.trim();
             if (!nom) {
                 alert('Ingresa un nombre para la materia');
@@ -865,56 +941,51 @@
                 id: Date.now(),
                 nombre: nom,
                 tipo: db.tipoMateriaSeleccionado,
-                fechas: [],
+                fechas: ['Clase 1', 'Clase 2', 'Clase 3', 'Clase 4'],
                 alumnos: []
             });
             cerrarModal('modalMateria');
             document.getElementById('nombreMateria').value = '';
             render();
         }
-
         // Mostrar modal para eliminar materia
         function mostrarModalEliminarMateria(id) {
-            if (userRole !== 'admin') {
-                alert('Solo los administradores pueden eliminar materias.');
+            if (!isAdmin) {
+                alert("No tienes permisos para realizar esta acción.");
                 return;
             }
             var mesSeleccionado = parseInt(document.getElementById('mesSelector').value);
             var materia = db.meses[mesSeleccionado].materias.find(m => m.id === id);
-            if (!materia) {
-                alert('Materia no encontrada.');
-                return;
-            }
             document.getElementById('nombreMateriaEliminar').textContent = materia.nombre;
             db.materiaAEliminar = id;
             document.getElementById('modalEliminarMateria').style.display = 'block';
         }
-
         // Confirmar eliminación de materia
         function confirmarEliminarMateria() {
+            if (!isAdmin) {
+                alert("No tienes permisos para realizar esta acción.");
+                return;
+            }
             var mesSeleccionado = parseInt(document.getElementById('mesSelector').value);
             var materiasMesActual = db.meses[mesSeleccionado].materias;
             if (materiasMesActual.length === 1) {
-                alert('Debe haber al menos una materia en el mes seleccionado.');
+                alert('Debe haber al menos una materia en el mes seleccionado');
                 return;
             }
             db.meses[mesSeleccionado].materias = materiasMesActual.filter(m => m.id !== db.materiaAEliminar);
             cerrarModal('modalEliminarMateria');
             render();
         }
-
-        // Ver una materia específica
+        // Ver una materia específica (solo del mes seleccionado)
         function verMateria(id) {
             db.actual = id;
             document.getElementById('alumnoFormContainer').classList.add('hidden');
-            document.getElementById('mainArea').classList.remove('hidden');
             render();
         }
-
-        // Mostrar el formulario para agregar alumno
+        // Mostrar el formulario para agregar alumno (solo materias del mes seleccionado)
         function mostrarFormularioAlumno() {
-            if (userRole !== 'admin') {
-                alert('Solo los administradores pueden agregar alumnos.');
+            if (!isAdmin) {
+                alert("No tienes permisos para realizar esta acción.");
                 return;
             }
             var mesSeleccionado = parseInt(document.getElementById('mesSelector').value);
@@ -923,9 +994,9 @@
             var checkboxesHtml = '';
             materiasMesActual.forEach(m => {
                 checkboxesHtml += `
-                    <div style="display: flex; align-items: center; gap: 0.3rem;">
+                    <div class="materia-checkbox">
                         <input type="checkbox" id="materia-${m.id}" value="${m.id}">
-                        <label for="materia-${m.id}" style="font-size: 0.8rem;">${m.nombre}</label>
+                        <label for="materia-${m.id}">${m.nombre}</label>
                     </div>
                 `;
             });
@@ -933,15 +1004,17 @@
             document.getElementById('alumnoFormContainer').classList.remove('hidden');
             document.getElementById('mainArea').classList.add('hidden');
         }
-
         // Ocultar el formulario de alumno
         function ocultarFormularioAlumno() {
             document.getElementById('alumnoFormContainer').classList.add('hidden');
             document.getElementById('mainArea').classList.remove('hidden');
         }
-
-        // Agregar un alumno
+        // Agregar un alumno a una o varias materias (solo al mes seleccionado)
         function addAlumno() {
+            if (!isAdmin) {
+                alert("No tienes permisos para realizar esta acción.");
+                return;
+            }
             var n = document.getElementById('fn').value.trim();
             var a = document.getElementById('fa').value.trim();
             var d = document.getElementById('fd').value.trim();
@@ -955,6 +1028,7 @@
             var mesSeleccionado = parseInt(document.getElementById('mesSelector').value);
             let alumnoExistente = db.meses[mesSeleccionado].alumnos.find(al => al.dni === d);
             if (!alumnoExistente) {
+                // Fechas por defecto (hoy y +1 año)
                 let hoy = new Date().toISOString().split('T')[0];
                 let unAnoDespues = new Date();
                 unAnoDespues.setFullYear(unAnoDespues.getFullYear() + 1);
@@ -995,11 +1069,10 @@
             ocultarFormularioAlumno();
             render();
         }
-
-        // Eliminar un alumno
+        // Eliminar un alumno de una materia
         function delAlumno(mid, aid) {
-            if (userRole !== 'admin') {
-                alert('Solo los administradores pueden eliminar alumnos.');
+            if (!isAdmin) {
+                alert("No tienes permisos para realizar esta acción.");
                 return;
             }
             if (confirm('¿Eliminar alumno?')) {
@@ -1011,27 +1084,42 @@
                 }
             }
         }
-
-        // Agregar una nueva fecha/clase
-        function addFecha() {
-            if (userRole !== 'admin') {
-                alert('Solo los administradores pueden agregar fechas.');
+        // Alternar la asistencia de un alumno
+        function toggleAsist(mid, aid, f) {
+            if (!isAdmin) {
+                alert("No tienes permisos para realizar esta acción.");
                 return;
             }
-            var f = prompt('Ingresa el nombre de la nueva fecha/clase:');
+            var mesSeleccionado = parseInt(document.getElementById('mesSelector').value);
+            var mat = db.meses[mesSeleccionado].materias.find(m => m.id === mid);
+            if (mat) {
+                var al = mat.alumnos.find(a => a.id === aid);
+                if (al) {
+                    al.asist[f] = !al.asist[f];
+                    render();
+                }
+            }
+        }
+        // Agregar una nueva fecha/clase
+        function addFecha() {
+            if (!isAdmin) {
+                alert("No tienes permisos para realizar esta acción.");
+                return;
+            }
+            var f = document.getElementById('ff').value.trim();
             if (!f) return;
             var mesSeleccionado = parseInt(document.getElementById('mesSelector').value);
             var mat = db.meses[mesSeleccionado].materias.find(m => m.id === db.actual);
             if (mat) {
                 mat.fechas.push(f);
+                document.getElementById('ff').value = '';
                 render();
             }
         }
-
         // Eliminar una fecha/clase
         function deleteFecha() {
-            if (userRole !== 'admin') {
-                alert('Solo los administradores pueden eliminar fechas.');
+            if (!isAdmin) {
+                alert("No tienes permisos para realizar esta acción.");
                 return;
             }
             var mesSeleccionado = parseInt(document.getElementById('mesSelector').value);
@@ -1054,28 +1142,10 @@
                 }
             }
         }
-
-        // Alternar la asistencia
-        function toggleAsist(mid, aid, f) {
-            if (userRole !== 'admin') {
-                alert('Solo los administradores pueden modificar la asistencia.');
-                return;
-            }
-            var mesSeleccionado = parseInt(document.getElementById('mesSelector').value);
-            var mat = db.meses[mesSeleccionado].materias.find(m => m.id === mid);
-            if (mat) {
-                var al = mat.alumnos.find(a => a.id === aid);
-                if (al) {
-                    al.asist[f] = !al.asist[f];
-                    render();
-                }
-            }
-        }
-
-        // Actualizar observaciones
+        // Actualizar las observaciones de un alumno
         function updateObservaciones(mid, aid, valor) {
-            if (userRole !== 'admin') {
-                alert('Solo los administradores pueden editar observaciones.');
+            if (!isAdmin) {
+                alert("No tienes permisos para realizar esta acción.");
                 return;
             }
             var mesSeleccionado = parseInt(document.getElementById('mesSelector').value);
@@ -1087,40 +1157,36 @@
                 }
             }
         }
-
-        // Cambiar tipo de materia
+        // Cambiar el tipo de materia (Extensión o Taller)
         function cambiarTipoMateria() {
             db.tipoMateriaActual = document.getElementById('tipoMateria').value;
             render();
         }
-
-        // Cambiar mes
+        // Cambiar el mes seleccionado (limpia la selección actual)
         function cambiarMes() {
             db.mesActual = parseInt(document.getElementById('mesSelector').value);
             db.actual = null;
             ocultarFormularioAlumno();
             render();
         }
-
-        // Obtener estado del carnet
+        // Función para obtener el estado del carnet
         function getEstadoCarnet(fechaVencimiento) {
             const hoy = new Date();
             const vencimiento = new Date(fechaVencimiento);
             const diffTime = vencimiento - hoy;
             const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
             if (diffDays < 0) {
-                return { class: 'estado-rojo', text: 'Vencido' };
+                return 'estado-rojo';
             } else if (diffDays <= 15) {
-                return { class: 'estado-amarillo', text: 'Por vencer' };
+                return 'estado-amarillo';
             } else {
-                return { class: 'estado-verde', text: 'Vigente' };
+                return 'estado-verde';
             }
         }
-
-        // Renovar carnet
+        // Función para renovar el carnet
         function renovarCarnet(mid, aid) {
-            if (userRole !== 'admin') {
-                alert('Solo los administradores pueden renovar carnets.');
+            if (!isAdmin) {
+                alert("No tienes permisos para realizar esta acción.");
                 return;
             }
             var mesSeleccionado = parseInt(document.getElementById('mesSelector').value);
@@ -1135,11 +1201,10 @@
                 }
             }
         }
-
         // Mostrar modal para editar alumno
         function mostrarModalEditarAlumno(aid) {
-            if (userRole !== 'admin') {
-                alert('Solo los administradores pueden editar alumnos.');
+            if (!isAdmin) {
+                alert("No tienes permisos para realizar esta acción.");
                 return;
             }
             var mesSeleccionado = parseInt(document.getElementById('mesSelector').value);
@@ -1158,9 +1223,12 @@
                 }
             }
         }
-
-        // Guardar edición de alumno
+        // Guardar la edición del alumno
         function guardarEdicionAlumno() {
+            if (!isAdmin) {
+                alert("No tienes permisos para realizar esta acción.");
+                return;
+            }
             var n = document.getElementById('editNombre').value.trim();
             var a = document.getElementById('editApellido').value.trim();
             var d = document.getElementById('editDNI').value.trim();
@@ -1179,6 +1247,7 @@
             alumno.pabellon = p;
             alumno.fecha_inscripcion = fi;
             alumno.fecha_vencimiento_carnet = fv;
+            // Actualizar en todas las materias del mes seleccionado
             db.meses[mesSeleccionado].materias.forEach(m => {
                 var al = m.alumnos.find(a => a.id === alumno.id);
                 if (al) {
@@ -1193,298 +1262,256 @@
             cerrarModal('modalEditarAlumno');
             render();
         }
-
-        // Renderizar contenido
+        // Inicializar el carousel
+        function initCarousel() {
+            const slidesData = [
+                {
+                    icon: "📚",
+                    title: "La educación es el arma más poderosa para cambiar el mundo.",
+                    author: "— Nelson Mandela",
+                    background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
+                },
+                {
+                    icon: "🤝",
+                    title: "La comunidad es el corazón de la transformación social.",
+                    author: "— Paulo Freire",
+                    background: "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)"
+                },
+                {
+                    icon: "⚖️",
+                    title: "La igualdad no es un sueño, es un derecho que construimos juntos.",
+                    author: "— Rigoberta Menchú",
+                    background: "linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)"
+                },
+                {
+                    icon: "🌱",
+                    title: "Cultivar la mente es sembrar futuro.",
+                    author: "— Proverbio latinoamericano",
+                    background: "linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)"
+                },
+                {
+                    icon: "💡",
+                    title: "El trabajo en equipo divide el esfuerzo y multiplica los resultados.",
+                    author: "— Anónimo",
+                    background: "linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)"
+                },
+                {
+                    icon: "🌍",
+                    title: "La diversidad cultural es el patrimonio más valioso de la humanidad.",
+                    author: "— UNESCO",
+                    background: "linear-gradient(135deg, #fab1a0 0%, #e17055 100%)"
+                },
+                {
+                    icon: "🎓",
+                    title: "Aprender es descubrir lo que ya sabes. Enseñar es recordar a otros que lo saben tanto como tú.",
+                    author: "— Richard Bach",
+                    background: "linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%)"
+                },
+                {
+                    icon: "✨",
+                    title: "La creatividad es la inteligencia divirtiéndose.",
+                    author: "— Albert Einstein",
+                    background: "linear-gradient(135deg, #f12711 0%, #f5af19 100%)"
+                },
+                {
+                    icon: "🌟",
+                    title: "La excelencia no es un acto, es un hábito.",
+                    author: "— Aristóteles",
+                    background: "linear-gradient(135deg, #5433ff 0%, #20bdff 100%)"
+                },
+                {
+                    icon: "📖",
+                    title: "Un libro abierto es un cerebro que habla; cerrado, un amigo que espera.",
+                    author: "— Proverbio chino",
+                    background: "linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%)"
+                },
+                {
+                    icon: "🤲",
+                    title: "La solidaridad no es un gesto de caridad, es un acto de justicia.",
+                    author: "— Eduardo Galeano",
+                    background: "linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%)"
+                },
+                {
+                    icon: "🌈",
+                    title: "La inclusión no es un gesto de caridad, es un derecho humano fundamental.",
+                    author: "— Ban Ki-moon",
+                    background: "linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%)"
+                },
+                {
+                    icon: "💬",
+                    title: "El diálogo es el puente entre los corazones y las mentes.",
+                    author: "— Mahatma Gandhi",
+                    background: "linear-gradient(135deg, #ff758c 0%, #ff7eb3 100%)"
+                },
+                {
+                    icon: "🌿",
+                    title: "La sostenibilidad es el camino hacia un futuro donde todos podamos florecer.",
+                    author: "— Jane Goodall",
+                    background: "linear-gradient(135deg, #a8ff78 0%, #78ffd6 100%)"
+                },
+                {
+                    icon: "🚀",
+                    title: "La innovación distingue a un líder de un seguidor.",
+                    author: "— Steve Jobs",
+                    background: "linear-gradient(135deg, #7f00ff 0%, #e100ff 100%)"
+                }
+            ];
+            const carouselContainer = document.createElement('div');
+            carouselContainer.className = 'carousel-container';
+            const slidesContainer = document.createElement('div');
+            slidesContainer.className = 'carousel-slides';
+            slidesData.forEach((slide, index) => {
+                const slideElement = document.createElement('div');
+                slideElement.className = `carousel-slide ${index === 0 ? 'active' : ''}`;
+                slideElement.style.background = slide.background;
+                slideElement.innerHTML = `
+                    <div class="slide-icon">${slide.icon}</div>
+                    <h3>${slide.title}</h3>
+                    <p>${slide.author}</p>
+                `;
+                slidesContainer.appendChild(slideElement);
+            });
+            carouselContainer.appendChild(slidesContainer);
+            // Controles del carousel
+            const controls = document.createElement('div');
+            controls.className = 'carousel-controls';
+            controls.innerHTML = `
+                <button onclick="prevSlide()">❮</button>
+                <button onclick="nextSlide()">❯</button>
+            `;
+            carouselContainer.appendChild(controls);
+            // Indicadores del carousel
+            const dots = document.createElement('div');
+            dots.className = 'carousel-dots';
+            slidesData.forEach((_, index) => {
+                const dot = document.createElement('span');
+                dot.onclick = () => goToSlide(index);
+                if (index === 0) dot.className = 'active';
+                dots.appendChild(dot);
+            });
+            carouselContainer.appendChild(dots);
+            return carouselContainer;
+        }
+        // Funciones para controlar el carousel
+        function nextSlide() {
+            slides[currentSlide].classList.remove('active');
+            document.querySelectorAll('.carousel-dots span')[currentSlide].classList.remove('active');
+            currentSlide = (currentSlide + 1) % slides.length;
+            slides[currentSlide].classList.add('active');
+            document.querySelectorAll('.carousel-dots span')[currentSlide].classList.add('active');
+        }
+        function prevSlide() {
+            slides[currentSlide].classList.remove('active');
+            document.querySelectorAll('.carousel-dots span')[currentSlide].classList.remove('active');
+            currentSlide = (currentSlide - 1 + slides.length) % slides.length;
+            slides[currentSlide].classList.add('active');
+            document.querySelectorAll('.carousel-dots span')[currentSlide].classList.add('active');
+        }
+        function goToSlide(index) {
+            slides[currentSlide].classList.remove('active');
+            document.querySelectorAll('.carousel-dots span')[currentSlide].classList.remove('active');
+            currentSlide = index;
+            slides[currentSlide].classList.add('active');
+            document.querySelectorAll('.carousel-dots span')[currentSlide].classList.add('active');
+        }
+        // Renderizar el contenido principal
         function render() {
-            if (userRole === 'admin') {
-                document.getElementById('btnNuevaMateria').style.display = 'block';
-                document.getElementById('btnNuevoAlumno').style.display = 'block';
-                document.getElementById('logoutBtn').style.display = 'block';
-            } else {
-                document.getElementById('btnNuevaMateria').style.display = 'none';
-                document.getElementById('btnNuevoAlumno').style.display = 'none';
-                document.getElementById('logoutBtn').style.display = 'none';
-            }
             var mesSeleccionado = parseInt(document.getElementById('mesSelector').value);
             var tipoSeleccionado = document.getElementById('tipoMateria').value;
             var materiasMesActual = db.meses[mesSeleccionado].materias;
+            // Filtrar materias por tipo
             var materiasFiltradas = materiasMesActual.filter(m => m.tipo === tipoSeleccionado);
+            // Renderizar lista de materias filtradas
             var materiasHtml = '';
             materiasFiltradas.forEach(m => {
                 materiasHtml += `
                     <div class="materia-item">
                         <button class="materia-btn ${db.actual === m.id ? 'active' : ''}" onclick="verMateria(${m.id})">${m.nombre}</button>
-                        ${userRole === 'admin' ? `<button class="delete-materia" onclick="mostrarModalEliminarMateria(${m.id})">×</button>` : ''}
+                        ${isAdmin ? `<button class="delete-materia" onclick="mostrarModalEliminarMateria(${m.id})">×</button>` : ''}
                     </div>
                 `;
             });
             document.getElementById('materiasList').innerHTML = materiasHtml;
+            // Renderizar contenido principal
             renderContent();
         }
-
-        // Renderizar contenido principal
+        // Renderizar el contenido principal
         function renderContent() {
             var mesSeleccionado = parseInt(document.getElementById('mesSelector').value);
             var materiasMesActual = db.meses[mesSeleccionado].materias;
             if (materiasMesActual.length === 0 || !db.actual) {
-                document.getElementById('mainArea').innerHTML = `
-                    <div style="text-align: center; padding: 1.5rem; color: var(--text-secondary);">
-                        <p>📚 <strong>Crea una materia para comenzar</strong> 📚</p>
-                        <p>Haz clic en "<strong>Nueva Materia</strong>"</p>
-                    </div>
+                const carousel = initCarousel();
+                document.getElementById('mainArea').innerHTML = '';
+                document.getElementById('mainArea').appendChild(carousel);
+                const instruction = document.createElement('div');
+                instruction.className = 'empty-instruction';
+                instruction.innerHTML = `
+                    <p>👆 <strong>Comienza creando una materia</strong> 👆</p>
+                    <p>Haz clic en "<strong>Nueva Materia</strong>"</p>
                 `;
+                document.getElementById('mainArea').appendChild(instruction);
+                slides = document.querySelectorAll('.carousel-slide');
+                clearInterval(slideInterval);
+                slideInterval = setInterval(nextSlide, 10000);
                 return;
             }
+            // Si hay una materia seleccionada, mostrar su contenido
             var mat = db.meses[mesSeleccionado].materias.find(m => m.id === db.actual);
             if (!mat) return;
             var html = `
-                <h2 style="color: var(--accent); text-align: center; margin-bottom: 1rem; font-size: 1.5rem;">📖 ${mat.nombre}</h2>
+                <h2 class="materia-title">📖 ${mat.nombre}</h2>
+                ${isAdmin ? `
+                <div class="fecha-box">
+                    <input type="text" id="ff" placeholder="Nueva fecha">
+                    <button class="btn-fecha" onclick="addFecha()">➕ Agregar Columna</button>
+                    <button class="btn-delete-fecha" onclick="deleteFecha()">🗑️ Eliminar Columna</button>
+                </div>` : ''}
             `;
-            if (userRole === 'admin') {
-                html += `
-                    <div style="display: flex; gap: 0.75rem; margin-bottom: 1rem;">
-                        <input type="text" id="ff" placeholder="Nueva fecha/clase" style="flex: 1; padding: 0.5rem; border-radius: 0.5rem; border: 1px solid #475569; background-color: #2d3748; color: var(--text-primary);">
-                        <button class="btn btn-success" onclick="addFecha()">➕ Agregar</button>
-                        <button class="btn btn-danger" onclick="deleteFecha()">🗑️ Eliminar</button>
-                    </div>
-                `;
-            }
             if (!mat.alumnos || mat.alumnos.length === 0) {
-                html += '<div style="text-align: center; padding: 1.5rem; color: var(--text-secondary);">No hay alumnos registrados en esta materia.</div>';
+                html += '<div class="empty">No hay alumnos</div>';
             } else {
-                html += `
-                    <div class="table-container">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Nombre</th>
-                                    <th>Apellido</th>
-                                    <th>DNI</th>
-                                    <th>Pabellón</th>
-                                    <th>Inscripción</th>
-                                    <th>Vencimiento</th>
-                                    <th>Estado</th>
-                                    ${mat.fechas.map(f => `<th>${f}</th>`).join('')}
-                                    <th>Observaciones</th>
-                                    <th>Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                `;
+                html += '<table><thead><tr><th>Nombre</th><th>Apellido</th><th>DNI</th><th>Pabellón</th><th>Fecha Inscripción</th><th>Fecha Vencimiento</th><th>Estado</th>';
+                mat.fechas.forEach(f => {
+                    html += `<th>${f}</th>`;
+                });
+                html += '<th>Observaciones</th><th>Acciones</th></tr></thead><tbody>';
                 mat.alumnos.forEach(al => {
-                    const estado = getEstadoCarnet(al.fecha_vencimiento_carnet);
-                    html += `
-                        <tr>
-                            <td><strong>${al.nombre}</strong></td>
-                            <td>${al.apellido}</td>
-                            <td>${al.dni}</td>
-                            <td>${al.pabellon}</td>
-                            <td>${al.fecha_inscripcion}</td>
-                            <td>${al.fecha_vencimiento_carnet}</td>
-                            <td>
-                                <span style="display: inline-block; width: 0.6rem; height: 0.6rem; border-radius: 50%; background-color: ${estado.class === 'estado-rojo' ? 'var(--danger)' : estado.class === 'estado-amarillo' ? 'var(--warning)' : 'var(--success)'};"></span>
-                                ${estado.text}
-                            </td>
-                    `;
+                    const estadoCarnet = getEstadoCarnet(al.fecha_vencimiento_carnet);
+                    html += `<tr>
+                        <td><b>${al.nombre}</b></td>
+                        <td>${al.apellido}</td>
+                        <td>${al.dni}</td>
+                        <td>${al.pabellon}</td>
+                        <td>${al.fecha_inscripcion}</td>
+                        <td>${al.fecha_vencimiento_carnet}</td>
+                        <td><span class="estado-carnet ${estadoCarnet}"></span></td>`;
                     mat.fechas.forEach(f => {
                         var chk = al.asist[f] ? 'checked' : '';
                         var ico = al.asist[f] ? '✅' : '❌';
-                        html += `
-                            <td>
-                                <div style="display: flex; align-items: center; gap: 0.3rem;">
-                                    <input type="checkbox" ${chk} ${userRole === 'admin' ? `onclick="toggleAsist(${mat.id}, ${al.id}, '${f}')"` : 'disabled'}>
-                                    <span style="font-size: 0.8rem;">${ico}</span>
-                                </div>
-                            </td>
-                        `;
+                        html += `<td>
+                            <div class="check-box">
+                                <input type="checkbox" ${chk} ${isAdmin ? `onclick="toggleAsist(${mat.id},${al.id},'${f}')"` : 'disabled'}>
+                                <span>${ico}</span>
+                            </div>
+                        </td>`;
                     });
-                    html += `
-                            <td>
-                                <textarea
-                                    style="width: 100%; padding: 0.4rem; border-radius: 0.375rem; border: 1px solid #475569; background-color: #2d3748; color: var(--text-primary); resize: vertical; min-height: 2rem; font-size: 0.8rem;"
-                                    placeholder="Observaciones..."
-                                    ${userRole === 'admin' ? `onchange="updateObservaciones(${mat.id}, ${al.id}, this.value)"` : 'readonly'}
-                                >${al.observaciones || ''}</textarea>
-                            </td>
-                            <td>
-                                ${userRole === 'admin' ? `
-                                    <div style="display: flex; flex-direction: column; gap: 0.3rem;">
-                                        <button class="btn btn-warning" style="font-size: 0.7rem; padding: 0.3rem;" onclick="renovarCarnet(${mat.id}, ${al.id})">Renovar</button>
-                                        <button class="btn btn-primary" style="font-size: 0.7rem; padding: 0.3rem;" onclick="mostrarModalEditarAlumno(${al.id})">Editar</button>
-                                        <button class="btn btn-danger" style="font-size: 0.7rem; padding: 0.3rem;" onclick="delAlumno(${mat.id}, ${al.id})">Eliminar</button>
-                                    </div>
-                                ` : ''}
-                            </td>
-                        </tr>
-                    `;
+                    html += `<td>
+                        <textarea class="observaciones-input" placeholder="Escribir observaciones..." ${isAdmin ? `onchange="updateObservaciones(${mat.id},${al.id},this.value)"` : 'readonly'}>
+                            ${al.observaciones || ''}
+                        </textarea>
+                    </td>
+                    <td>
+                        ${isAdmin ? `
+                            <button class="btn-renovar" onclick="renovarCarnet(${mat.id},${al.id})">Renovar</button>
+                            <button class="btn-editar" onclick="mostrarModalEditarAlumno(${al.id})">Editar</button>
+                            <button class="btn-delete" onclick="delAlumno(${mat.id},${al.id})">Eliminar</button>
+                        ` : ''}
+                    </td>
+                    </tr>`;
                 });
-                html += `
-                            </tbody>
-                        </table>
-                    </div>
-                `;
+                html += '</tbody></table>';
             }
             document.getElementById('mainArea').innerHTML = html;
-        }
-
-        // Cambiar pestaña
-        function cambiarPestania(tab) {
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
-            document.querySelector(`.tab[onclick="cambiarPestania('${tab}')"]`).classList.add('active');
-            document.getElementById(tab).classList.remove('hidden');
-            if (tab === 'estadisticas') {
-                cargarMateriasEstadisticas();
-            }
-        }
-
-        // Cargar materias en el selector de estadísticas
-        function cargarMateriasEstadisticas() {
-            const semestreSeleccionado = document.getElementById('estadisticasSemestreSelector').value;
-            const tipoMateria = document.getElementById('estadisticasTipoMateria').value;
-            let meses;
-            if (semestreSeleccionado === 'primer') {
-                meses = [0, 1, 2, 3, 4, 5]; // Enero a Junio
-            } else {
-                meses = [6, 7, 8, 9, 10, 11]; // Julio a Diciembre
-            }
-            let materias = [];
-            meses.forEach(mesIndex => {
-                materias = materias.concat(db.meses[mesIndex].materias.filter(m => m.tipo === tipoMateria));
-            });
-            let options = '<option value="">Selecciona una materia</option>';
-            materias.forEach(materia => {
-                options += `<option value="${materia.id}">${materia.nombre}</option>`;
-            });
-            document.getElementById('estadisticasMateriaSelector').innerHTML = options;
-            cargarEstadisticas();
-        }
-
-        // Calcular estadísticas
-        function calcularEstadisticas(materiaId) {
-            const semestreSeleccionado = document.getElementById('estadisticasSemestreSelector').value;
-            let meses;
-            if (semestreSeleccionado === 'primer') {
-                meses = [0, 1, 2, 3, 4, 5]; // Enero a Junio
-            } else {
-                meses = [6, 7, 8, 9, 10, 11]; // Julio a Diciembre
-            }
-            let totalAsistencias = 0;
-            let totalFaltas = 0;
-            let totalClases = 0;
-            let estadisticasPorAlumno = {};
-            let alumnos = {};
-            meses.forEach(mesIndex => {
-                const materiasMes = db.meses[mesIndex].materias;
-                const materia = materiasMes.find(m => m.id === materiaId);
-                if (materia) {
-                    totalClases += materia.fechas.length;
-                    materia.alumnos.forEach(alumno => {
-                        if (!alumnos[alumno.id]) {
-                            alumnos[alumno.id] = {
-                                nombre: `${alumno.nombre} ${alumno.apellido}`,
-                                dni: alumno.dni,
-                                pabellon: alumno.pabellon,
-                                asistencias: 0,
-                                faltas: 0
-                            };
-                        }
-                        materia.fechas.forEach(fecha => {
-                            if (alumno.asist && alumno.asist[fecha]) {
-                                alumnos[alumno.id].asistencias++;
-                                totalAsistencias++;
-                            } else {
-                                alumnos[alumno.id].faltas++;
-                                totalFaltas++;
-                            }
-                        });
-                    });
-                }
-            });
-            let estadisticasPorAlumnoArray = [];
-            for (let alumnoId in alumnos) {
-                const alumno = alumnos[alumnoId];
-                const porcentajeAsistencia = totalClases > 0 ? Math.round((alumno.asistencias / totalClases) * 100) : 0;
-                estadisticasPorAlumnoArray.push({
-                    id: alumnoId,
-                    nombre: alumno.nombre,
-                    dni: alumno.dni,
-                    pabellon: alumno.pabellon,
-                    asistencias: alumno.asistencias,
-                    faltas: alumno.faltas,
-                    porcentajeAsistencia
-                });
-            }
-            let porcentajeGeneral = totalClases * Object.keys(alumnos).length > 0
-                ? Math.round((totalAsistencias / (totalClases * Object.keys(alumnos).length)) * 100)
-                : 0;
-            return {
-                totalAsistencias,
-                totalFaltas,
-                porcentajeGeneral,
-                estadisticasPorAlumno: estadisticasPorAlumnoArray
-            };
-        }
-
-        // Mostrar estadísticas
-        function mostrarEstadisticas(estadisticas) {
-            let html = `
-                <div class="stats-container">
-                    <div class="stat-card" style="background: linear-gradient(135deg, var(--accent), #5856eb);">
-                        <h4>Asistencias Totales</h4>
-                        <p>${estadisticas.totalAsistencias}</p>
-                    </div>
-                    <div class="stat-card" style="background: linear-gradient(135deg, var(--danger), #dc2626);">
-                        <h4>Faltas Totales</h4>
-                        <p>${estadisticas.totalFaltas}</p>
-                    </div>
-                    <div class="stat-card" style="background: linear-gradient(135deg, var(--success), #0d9488);">
-                        <h4>% Asistencia General</h4>
-                        <p>${estadisticas.porcentajeGeneral}%</p>
-                    </div>
-                </div>
-                <h3 style="color: var(--accent); margin-bottom: 0.75rem; font-size: 1.2rem;">Listado de Alumnos</h3>
-                <div class="table-container">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Nombre</th>
-                                <th>DNI</th>
-                                <th>Pabellón</th>
-                                <th>Asistencias</th>
-                                <th>Faltas</th>
-                                <th>% Asistencia</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-            `;
-            estadisticas.estadisticasPorAlumno.forEach(alumno => {
-                html += `
-                    <tr>
-                        <td style="font-size: 0.8rem;">${alumno.nombre}</td>
-                        <td style="font-size: 0.8rem;">${alumno.dni}</td>
-                        <td style="font-size: 0.8rem;">${alumno.pabellon}</td>
-                        <td style="font-size: 0.8rem;">${alumno.asistencias}</td>
-                        <td style="font-size: 0.8rem;">${alumno.faltas}</td>
-                        <td style="font-size: 0.8rem;">${alumno.porcentajeAsistencia}%</td>
-                    </tr>
-                `;
-            });
-            html += `
-                        </tbody>
-                    </table>
-                </div>
-            `;
-            document.getElementById('estadisticasContainer').innerHTML = html;
-        }
-
-        // Cargar estadísticas
-        function cargarEstadisticas() {
-            const materiaSeleccionadaId = parseInt(document.getElementById('estadisticasMateriaSelector').value);
-            if (materiaSeleccionadaId) {
-                const estadisticas = calcularEstadisticas(materiaSeleccionadaId);
-                mostrarEstadisticas(estadisticas);
-            }
         }
     </script>
 </body>
