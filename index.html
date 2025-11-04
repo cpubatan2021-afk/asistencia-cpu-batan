@@ -48,6 +48,7 @@
             flex-direction: column;
             gap: 1rem;
             width: 100%;
+            overflow-x: auto;
         }
         /* Header */
         .header {
@@ -163,6 +164,7 @@
             grid-template-columns: 1fr;
             gap: 1rem;
             flex: 1;
+            overflow-x: auto;
         }
         /* Sidebar */
         .sidebar {
@@ -292,6 +294,7 @@
             display: flex;
             flex-direction: column;
             gap: 1rem;
+            overflow-x: auto;
         }
         /* Tabs */
         .tabs {
@@ -321,7 +324,6 @@
         .table-container {
             overflow-x: auto;
             max-width: 100%;
-            margin-bottom: 1rem;
         }
         table {
             width: 100%;
@@ -332,7 +334,6 @@
             overflow: hidden;
             font-size: 0.75rem;
             min-width: 600px;
-            white-space: nowrap;
         }
         thead {
             background-color: var(--accent);
@@ -342,6 +343,7 @@
             padding: 0.5rem;
             text-align: left;
             border-bottom: 1px solid #475569;
+            white-space: nowrap;
         }
         tr:hover {
             background-color: rgba(99, 102, 241, 0.1);
@@ -1002,8 +1004,16 @@
             }
 
             var mesSeleccionado = parseInt(document.getElementById('mesSelector').value);
+
+            // Inicializar db.meses[mesSeleccionado].alumnos si no existe
+            if (!db.meses[mesSeleccionado].alumnos) {
+                db.meses[mesSeleccionado].alumnos = [];
+            }
+
+            // Verificar si el alumno ya existe
             let alumnoExistente = db.meses[mesSeleccionado].alumnos.find(al => al.dni === d);
 
+            // Si no existe, crear un nuevo alumno
             if (!alumnoExistente) {
                 let hoy = new Date().toISOString().split('T')[0];
                 let unAnoDespues = new Date();
@@ -1021,9 +1031,15 @@
                 db.meses[mesSeleccionado].alumnos.push(alumnoExistente);
             }
 
+            // Agregar el alumno a las materias seleccionadas
             materiasSeleccionadas.forEach(mid => {
                 let materia = db.meses[mesSeleccionado].materias.find(m => m.id === mid);
                 if (materia) {
+                    // Inicializar materia.alumnos si no existe
+                    if (!materia.alumnos) {
+                        materia.alumnos = [];
+                    }
+                    // Verificar si el alumno ya está en la materia
                     if (!materia.alumnos.some(al => al.id === alumnoExistente.id)) {
                         materia.alumnos.push({
                             id: alumnoExistente.id,
@@ -1318,7 +1334,7 @@
                 `;
                 return;
             }
-            var mat = materiasMesActual.find(m => m.id === db.actual);
+            var mat = db.meses[mesSeleccionado].materias.find(m => m.id === db.actual);
             if (!mat) return;
             var html = `
                 <h2 style="color: var(--accent); text-align: center; margin-bottom: 1rem; font-size: 1.5rem;">📖 ${mat.nombre}</h2>
