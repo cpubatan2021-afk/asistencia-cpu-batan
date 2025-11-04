@@ -95,7 +95,6 @@
             top: 0.75rem;
             right: 0.75rem;
         }
-
         /* Carrusel */
         .carrusel-container {
             position: relative;
@@ -157,7 +156,6 @@
         .carrusel-btn.next {
             right: 0.5rem;
         }
-
         /* Layout */
         .layout {
             display: grid;
@@ -525,11 +523,9 @@
             appId: "1:513877189909:web:1d186224b1ecb7bf7e751c",
             measurementId: "G-Y0SCDERTK3"
         };
-
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
     </script>
-
     <!-- Login Modal -->
     <div id="loginModal" class="login-modal">
         <div class="login-modal-content">
@@ -555,7 +551,6 @@
                 <button id="logoutBtn" class="btn btn-danger" style="padding: 0.3rem 0.75rem; font-size: 0.75rem;" onclick="logout()">Cerrar Sesión</button>
             </div>
         </div>
-
         <!-- Carrusel -->
         <div class="carrusel-container">
             <div class="carrusel">
@@ -603,7 +598,6 @@
             <button class="carrusel-btn prev" onclick="moveCarrusel(-1)">❮</button>
             <button class="carrusel-btn next" onclick="moveCarrusel(1)">❯</button>
         </div>
-
         <!-- Layout -->
         <div class="layout">
             <!-- Sidebar -->
@@ -774,7 +768,6 @@
             alumnoAEditar: null,
             actual: null
         };
-
         // Variables para el carrusel
         let currentCarruselIndex = 0;
         let carruselItems;
@@ -798,7 +791,7 @@
                 if (data) {
                     db.meses = data;
                 } else {
-                    // Si no hay datos, inicializar con estructura vacía
+                    // Inicializa todos los meses si no hay datos
                     db.meses = [];
                     for (let i = 0; i < 12; i++) {
                         db.meses.push({
@@ -807,7 +800,7 @@
                             alumnos: []
                         });
                     }
-                    // Guardar estructura inicial en Firebase
+                    // Guarda la estructura inicial en Firebase
                     database.ref('meses').set(db.meses);
                 }
                 render();
@@ -821,7 +814,6 @@
             updateClock();
             setInterval(updateClock, 1000);
             document.getElementById('loginModal').style.display = 'flex';
-
             // Inicializar carrusel
             carruselItems = document.querySelectorAll('.carrusel-item');
             carrusel = document.querySelector('.carrusel');
@@ -906,13 +898,10 @@
                 fechas: [],
                 alumnos: []
             };
-
-            // Agregar a la base de datos local
+            // Agrega la materia al mes seleccionado
             db.meses[mesSeleccionado].materias.push(newMateria);
-
-            // Guardar en Firebase
+            // Guarda en Firebase
             database.ref(`meses/${mesSeleccionado}/materias`).set(db.meses[mesSeleccionado].materias);
-
             cerrarModal('modalMateria');
             document.getElementById('nombreMateria').value = '';
             render();
@@ -944,10 +933,8 @@
                 return;
             }
             db.meses[mesSeleccionado].materias = materiasMesActual.filter(m => m.id !== db.materiaAEliminar);
-
-            // Guardar en Firebase
+            // Guarda en Firebase
             database.ref(`meses/${mesSeleccionado}/materias`).set(db.meses[mesSeleccionado].materias);
-
             cerrarModal('modalEliminarMateria');
             render();
         }
@@ -997,22 +984,17 @@
             var p = document.getElementById('fp').value.trim();
             var checkboxes = document.querySelectorAll('#materiasCheckboxContainer input[type="checkbox"]:checked');
             var materiasSeleccionadas = Array.from(checkboxes).map(cb => parseInt(cb.value));
-
             if (!n || !a || !d || !p || materiasSeleccionadas.length === 0) {
                 alert('Completa todos los campos y selecciona al menos una materia');
                 return;
             }
-
             var mesSeleccionado = parseInt(document.getElementById('mesSelector').value);
-
             // Inicializar db.meses[mesSeleccionado].alumnos si no existe
             if (!db.meses[mesSeleccionado].alumnos) {
                 db.meses[mesSeleccionado].alumnos = [];
             }
-
             // Verificar si el alumno ya existe
             let alumnoExistente = db.meses[mesSeleccionado].alumnos.find(al => al.dni === d);
-
             // Si no existe, crear un nuevo alumno
             if (!alumnoExistente) {
                 let hoy = new Date().toISOString().split('T')[0];
@@ -1030,7 +1012,6 @@
                 };
                 db.meses[mesSeleccionado].alumnos.push(alumnoExistente);
             }
-
             // Agregar el alumno a las materias seleccionadas
             materiasSeleccionadas.forEach(mid => {
                 let materia = db.meses[mesSeleccionado].materias.find(m => m.id === mid);
@@ -1055,10 +1036,8 @@
                     }
                 }
             });
-
             // Guardar en Firebase
             database.ref(`meses/${mesSeleccionado}`).set(db.meses[mesSeleccionado]);
-
             // Limpiar formulario
             document.getElementById('fn').value = '';
             document.getElementById('fa').value = '';
@@ -1079,10 +1058,8 @@
                 var mat = db.meses[mesSeleccionado].materias.find(m => m.id === mid);
                 if (mat) {
                     mat.alumnos = mat.alumnos.filter(a => a.id !== aid);
-
                     // Guardar en Firebase
                     database.ref(`meses/${mesSeleccionado}/materias`).set(db.meses[mesSeleccionado].materias);
-
                     render();
                 }
             }
@@ -1100,10 +1077,8 @@
             var mat = db.meses[mesSeleccionado].materias.find(m => m.id === db.actual);
             if (mat) {
                 mat.fechas.push(f);
-
                 // Guardar en Firebase
                 database.ref(`meses/${mesSeleccionado}/materias`).set(db.meses[mesSeleccionado].materias);
-
                 render();
             }
         }
@@ -1127,10 +1102,8 @@
                 if (idx >= 0 && idx < mat.fechas.length) {
                     if (confirm(`¿Eliminar "${mat.fechas[idx]}"?`)) {
                         mat.fechas.splice(idx, 1);
-
                         // Guardar en Firebase
                         database.ref(`meses/${mesSeleccionado}/materias`).set(db.meses[mesSeleccionado].materias);
-
                         render();
                     }
                 } else {
@@ -1151,10 +1124,8 @@
                 var al = mat.alumnos.find(a => a.id === aid);
                 if (al) {
                     al.asist[f] = !al.asist[f];
-
                     // Guardar en Firebase
                     database.ref(`meses/${mesSeleccionado}/materias`).set(db.meses[mesSeleccionado].materias);
-
                     render();
                 }
             }
@@ -1172,7 +1143,6 @@
                 var al = mat.alumnos.find(a => a.id === aid);
                 if (al) {
                     al.observaciones = valor;
-
                     // Guardar en Firebase
                     database.ref(`meses/${mesSeleccionado}/materias`).set(db.meses[mesSeleccionado].materias);
                 }
@@ -1222,10 +1192,8 @@
                     let unAnoDespues = new Date();
                     unAnoDespues.setFullYear(unAnoDespues.getFullYear() + 1);
                     al.fecha_vencimiento_carnet = unAnoDespues.toISOString().split('T')[0];
-
                     // Guardar en Firebase
                     database.ref(`meses/${mesSeleccionado}/materias`).set(db.meses[mesSeleccionado].materias);
-
                     render();
                 }
             }
@@ -1285,10 +1253,8 @@
                     al.fecha_vencimiento_carnet = fv;
                 }
             });
-
             // Guardar en Firebase
             database.ref(`meses/${mesSeleccionado}`).set(db.meses[mesSeleccionado]);
-
             cerrarModal('modalEditarAlumno');
             render();
         }
@@ -1598,8 +1564,3 @@
     </script>
 </body>
 </html>
-
-
-
-
-
