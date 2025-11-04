@@ -898,10 +898,14 @@
                 fechas: [],
                 alumnos: []
             };
+            // Asegúrate de que db.meses[mesSeleccionado] esté definido
+            if (!db.meses[mesSeleccionado]) {
+                db.meses[mesSeleccionado] = { id: mesSeleccionado, materias: [], alumnos: [] };
+            }
             // Agrega la materia al mes seleccionado
             db.meses[mesSeleccionado].materias.push(newMateria);
             // Guarda en Firebase
-            database.ref(`meses/${mesSeleccionado}/materias`).set(db.meses[mesSeleccionado].materias);
+            database.ref(`meses/${mesSeleccionado}`).set(db.meses[mesSeleccionado]);
             cerrarModal('modalMateria');
             document.getElementById('nombreMateria').value = '';
             render();
@@ -934,7 +938,7 @@
             }
             db.meses[mesSeleccionado].materias = materiasMesActual.filter(m => m.id !== db.materiaAEliminar);
             // Guarda en Firebase
-            database.ref(`meses/${mesSeleccionado}/materias`).set(db.meses[mesSeleccionado].materias);
+            database.ref(`meses/${mesSeleccionado}`).set(db.meses[mesSeleccionado]);
             cerrarModal('modalEliminarMateria');
             render();
         }
@@ -1059,7 +1063,7 @@
                 if (mat) {
                     mat.alumnos = mat.alumnos.filter(a => a.id !== aid);
                     // Guardar en Firebase
-                    database.ref(`meses/${mesSeleccionado}/materias`).set(db.meses[mesSeleccionado].materias);
+                    database.ref(`meses/${mesSeleccionado}`).set(db.meses[mesSeleccionado]);
                     render();
                 }
             }
@@ -1078,7 +1082,7 @@
             if (mat) {
                 mat.fechas.push(f);
                 // Guardar en Firebase
-                database.ref(`meses/${mesSeleccionado}/materias`).set(db.meses[mesSeleccionado].materias);
+                database.ref(`meses/${mesSeleccionado}`).set(db.meses[mesSeleccionado]);
                 render();
             }
         }
@@ -1103,7 +1107,7 @@
                     if (confirm(`¿Eliminar "${mat.fechas[idx]}"?`)) {
                         mat.fechas.splice(idx, 1);
                         // Guardar en Firebase
-                        database.ref(`meses/${mesSeleccionado}/materias`).set(db.meses[mesSeleccionado].materias);
+                        database.ref(`meses/${mesSeleccionado}`).set(db.meses[mesSeleccionado]);
                         render();
                     }
                 } else {
@@ -1125,7 +1129,7 @@
                 if (al) {
                     al.asist[f] = !al.asist[f];
                     // Guardar en Firebase
-                    database.ref(`meses/${mesSeleccionado}/materias`).set(db.meses[mesSeleccionado].materias);
+                    database.ref(`meses/${mesSeleccionado}`).set(db.meses[mesSeleccionado]);
                     render();
                 }
             }
@@ -1144,7 +1148,7 @@
                 if (al) {
                     al.observaciones = valor;
                     // Guardar en Firebase
-                    database.ref(`meses/${mesSeleccionado}/materias`).set(db.meses[mesSeleccionado].materias);
+                    database.ref(`meses/${mesSeleccionado}`).set(db.meses[mesSeleccionado]);
                 }
             }
         }
@@ -1193,7 +1197,7 @@
                     unAnoDespues.setFullYear(unAnoDespues.getFullYear() + 1);
                     al.fecha_vencimiento_carnet = unAnoDespues.toISOString().split('T')[0];
                     // Guardar en Firebase
-                    database.ref(`meses/${mesSeleccionado}/materias`).set(db.meses[mesSeleccionado].materias);
+                    database.ref(`meses/${mesSeleccionado}`).set(db.meses[mesSeleccionado]);
                     render();
                 }
             }
