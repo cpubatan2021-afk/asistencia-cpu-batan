@@ -9,6 +9,8 @@
     <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-database-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-analytics-compat.js"></script>
+    <!-- SheetJS para Excel -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
         :root {
             --bg-dark: #0f172a;
@@ -514,7 +516,7 @@
     <!-- Firebase Configuration -->
     <script>
         const firebaseConfig = {
-            apiKey: "AIzaSyCgg_9oBHyr5ouu8WUYVokD0JWIvnA1oj0",
+            apiKey: "AIzaSyCgg_9oBHyr5ouu8WVokD0JWIvnA1oj0",
             authDomain: "cpu-batan.firebaseapp.com",
             databaseURL: "https://cpu-batan-default-rtdb.firebaseio.com",
             projectId: "cpu-batan",
@@ -628,6 +630,9 @@
                 <div class="materia-list" id="materiasList"></div>
                 <button id="btnNuevaMateria" class="btn btn-primary btn-block" onclick="mostrarModalTipoMateria()">➕ Nueva Materia</button>
                 <button id="btnNuevoAlumno" class="btn btn-primary btn-block" onclick="mostrarFormularioAlumno()">➕ Nuevo Alumno</button>
+                <button id="btnExportarExcel" class="btn btn-success btn-block" onclick="exportarAlumnosAExcel()">📥 Exportar a Excel</button>
+                <button id="btnImportarExcel" class="btn btn-warning btn-block" onclick="document.getElementById('fileInput').click()">📤 Importar desde Excel</button>
+                <input type="file" id="fileInput" accept=".xlsx, .xls" style="display: none;" onchange="importarAlumnosDesdeExcel(event)">
             </div>
             <!-- Content -->
             <div class="content">
@@ -653,6 +658,10 @@
                         <button class="btn btn-success btn-block" onclick="addAlumno()">Agregar Alumno</button>
                     </div>
                     <div class="table-container">
+                        <div style="margin-bottom: 1rem;">
+                            <input type="text" id="searchAlumno" placeholder="Buscar alumno por nombre, apellido o DNI..."
+                                   style="width: 100%; padding: 0.5rem; border-radius: 0.5rem; border: 1px solid #475569; background-color: #2d3748; color: var(--text-primary);">
+                        </div>
                         <div id="mainArea"></div>
                     </div>
                 </div>
@@ -756,6 +765,21 @@
             </div>
         </div>
     </div>
+    <!-- Modal Historial Alumno -->
+    <div id="modalHistorialAlumno" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Historial del Alumno</h3>
+                <button class="modal-close" onclick="cerrarModal('modalHistorialAlumno')">×</button>
+            </div>
+            <div class="modal-body">
+                <div id="historialAlumnoContent"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" onclick="cerrarModal('modalHistorialAlumno')">Cerrar</button>
+            </div>
+        </div>
+    </div>
     <script>
         // Variables globales
         var userRole = 'espectador'; // 'espectador' o 'admin'
@@ -772,7 +796,6 @@
         let currentCarruselIndex = 0;
         let carruselItems;
         let carrusel;
-
         // Función para mover el carrusel
         function moveCarrusel(n) {
             currentCarruselIndex += n;
@@ -783,7 +806,6 @@
             }
             carrusel.style.transform = `translateX(-${currentCarruselIndex * 100}%)`;
         }
-
         // Inicializar la base de datos
         function initDB() {
             database.ref('meses').on('value', (snapshot) => {
@@ -806,7 +828,6 @@
                 render();
             });
         }
-
         // Inicializar la aplicación
         function init() {
             initDB();
@@ -820,8 +841,28 @@
             setInterval(() => {
                 moveCarrusel(1);
             }, 5000);
+            // Evento para la búsqueda de alumnos
+            document.getElementById('searchAlumno').addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase();
+                const rows = document.querySelectorAll('#mainArea table tbody tr');
+                rows.forEach(row => {
+                    const nombre = row.cells[0].textContent.toLowerCase();
+                    const apellido = row.cells[1].textContent.toLowerCase();
+                    const dni = row.cells[2].textContent.toLowerCase();
+                    if (nombre.includes(searchTerm) || apellido.includes(searchTerm) || dni.includes(searchTerm)) {
+                        row.style.display = '';
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
+                // Si se encontró un alumno, mostrar su historial
+                const visibleRows = Array.from(rows).filter(row => row.style.display !== 'none');
+                if (visibleRows.length === 1) {
+                    const dni = visibleRows[0].cells[2].textContent;
+                    mostrarHistorialAlumno(dni);
+                }
+            });
         }
-
         // Actualizar el reloj
         function updateClock() {
             const now = new Date();
@@ -836,11 +877,10 @@
             };
             document.getElementById('clock').textContent = now.toLocaleDateString('es-ES', options);
         }
-
         // Login
         function login() {
             const password = document.getElementById('loginPassword').value;
-            if (password === 'admin123') {
+            if (password === 'CPUbatan2021') {
                 userRole = 'admin';
             } else {
                 userRole = 'espectador';
@@ -849,14 +889,12 @@
             document.getElementById('loginModal').style.display = 'none';
             render();
         }
-
         // Logout
         function logout() {
             userRole = 'espectador';
             document.getElementById('loginModal').style.display = 'flex';
             render();
         }
-
         // Mostrar modal para elegir tipo de materia
         function mostrarModalTipoMateria() {
             if (userRole !== 'admin') {
@@ -865,24 +903,20 @@
             }
             document.getElementById('modalTipoMateria').style.display = 'block';
         }
-
         // Seleccionar tipo de materia
         function seleccionarTipoMateria(tipo) {
             db.tipoMateriaSeleccionado = tipo;
             cerrarModal('modalTipoMateria');
             mostrarModalMateria();
         }
-
         // Mostrar modal para nueva materia
         function mostrarModalMateria() {
             document.getElementById('modalMateria').style.display = 'block';
         }
-
         // Cerrar modal
         function cerrarModal(id) {
             document.getElementById(id).style.display = 'none';
         }
-
         // Crear una nueva materia
         function crearMateria() {
             var nom = document.getElementById('nombreMateria').value.trim();
@@ -910,7 +944,6 @@
             document.getElementById('nombreMateria').value = '';
             render();
         }
-
         // Mostrar modal para eliminar materia
         function mostrarModalEliminarMateria(id) {
             if (userRole !== 'admin') {
@@ -927,7 +960,6 @@
             db.materiaAEliminar = id;
             document.getElementById('modalEliminarMateria').style.display = 'block';
         }
-
         // Confirmar eliminación de materia
         function confirmarEliminarMateria() {
             var mesSeleccionado = parseInt(document.getElementById('mesSelector').value);
@@ -942,7 +974,6 @@
             cerrarModal('modalEliminarMateria');
             render();
         }
-
         // Ver una materia específica
         function verMateria(id) {
             db.actual = id;
@@ -950,7 +981,6 @@
             document.getElementById('mainArea').classList.remove('hidden');
             render();
         }
-
         // Mostrar el formulario para agregar alumno
         function mostrarFormularioAlumno() {
             if (userRole !== 'admin') {
@@ -973,13 +1003,11 @@
             document.getElementById('alumnoFormContainer').classList.remove('hidden');
             document.getElementById('mainArea').classList.add('hidden');
         }
-
         // Ocultar el formulario de alumno
         function ocultarFormularioAlumno() {
             document.getElementById('alumnoFormContainer').classList.add('hidden');
             document.getElementById('mainArea').classList.remove('hidden');
         }
-
         // Agregar un alumno
         function addAlumno() {
             var n = document.getElementById('fn').value.trim();
@@ -1050,7 +1078,6 @@
             ocultarFormularioAlumno();
             render();
         }
-
         // Eliminar un alumno
         function delAlumno(mid, aid) {
             if (userRole !== 'admin') {
@@ -1068,7 +1095,6 @@
                 }
             }
         }
-
         // Agregar una nueva fecha/clase
         function addFecha() {
             if (userRole !== 'admin') {
@@ -1081,12 +1107,11 @@
             var mat = db.meses[mesSeleccionado].materias.find(m => m.id === db.actual);
             if (mat) {
                 mat.fechas.push(f);
-                // Guardar en Firebase
+                // Guarda en Firebase
                 database.ref(`meses/${mesSeleccionado}`).set(db.meses[mesSeleccionado]);
                 render();
             }
         }
-
         // Eliminar una fecha/clase
         function deleteFecha() {
             if (userRole !== 'admin') {
@@ -1106,7 +1131,7 @@
                 if (idx >= 0 && idx < mat.fechas.length) {
                     if (confirm(`¿Eliminar "${mat.fechas[idx]}"?`)) {
                         mat.fechas.splice(idx, 1);
-                        // Guardar en Firebase
+                        // Guarda en Firebase
                         database.ref(`meses/${mesSeleccionado}`).set(db.meses[mesSeleccionado]);
                         render();
                     }
@@ -1115,7 +1140,6 @@
                 }
             }
         }
-
         // Alternar la asistencia
         function toggleAsist(mid, aid, f) {
             if (userRole !== 'admin') {
@@ -1127,14 +1151,14 @@
             if (mat) {
                 var al = mat.alumnos.find(a => a.id === aid);
                 if (al) {
+                    if (!al.asist) al.asist = {};
                     al.asist[f] = !al.asist[f];
-                    // Guardar en Firebase
+                    // Guarda en Firebase
                     database.ref(`meses/${mesSeleccionado}`).set(db.meses[mesSeleccionado]);
                     render();
                 }
             }
         }
-
         // Actualizar observaciones
         function updateObservaciones(mid, aid, valor) {
             if (userRole !== 'admin') {
@@ -1147,18 +1171,16 @@
                 var al = mat.alumnos.find(a => a.id === aid);
                 if (al) {
                     al.observaciones = valor;
-                    // Guardar en Firebase
+                    // Guarda en Firebase
                     database.ref(`meses/${mesSeleccionado}`).set(db.meses[mesSeleccionado]);
                 }
             }
         }
-
         // Cambiar tipo de materia
         function cambiarTipoMateria() {
             db.tipoMateriaActual = document.getElementById('tipoMateria').value;
             render();
         }
-
         // Cambiar mes
         function cambiarMes() {
             db.mesActual = parseInt(document.getElementById('mesSelector').value);
@@ -1166,7 +1188,6 @@
             ocultarFormularioAlumno();
             render();
         }
-
         // Obtener estado del carnet
         function getEstadoCarnet(fechaVencimiento) {
             const hoy = new Date();
@@ -1181,7 +1202,6 @@
                 return { class: 'estado-verde', text: 'Vigente' };
             }
         }
-
         // Renovar carnet
         function renovarCarnet(mid, aid) {
             if (userRole !== 'admin') {
@@ -1196,13 +1216,12 @@
                     let unAnoDespues = new Date();
                     unAnoDespues.setFullYear(unAnoDespues.getFullYear() + 1);
                     al.fecha_vencimiento_carnet = unAnoDespues.toISOString().split('T')[0];
-                    // Guardar en Firebase
+                    // Guarda en Firebase
                     database.ref(`meses/${mesSeleccionado}`).set(db.meses[mesSeleccionado]);
                     render();
                 }
             }
         }
-
         // Mostrar modal para editar alumno
         function mostrarModalEditarAlumno(aid) {
             if (userRole !== 'admin') {
@@ -1225,7 +1244,6 @@
                 }
             }
         }
-
         // Guardar edición de alumno
         function guardarEdicionAlumno() {
             var n = document.getElementById('editNombre').value.trim();
@@ -1257,22 +1275,63 @@
                     al.fecha_vencimiento_carnet = fv;
                 }
             });
-            // Guardar en Firebase
+            // Guarda en Firebase
             database.ref(`meses/${mesSeleccionado}`).set(db.meses[mesSeleccionado]);
             cerrarModal('modalEditarAlumno');
             render();
         }
-
+        // Mostrar historial del alumno
+        function mostrarHistorialAlumno(dni) {
+            const mesSeleccionado = parseInt(document.getElementById('mesSelector').value);
+            let historial = [];
+            db.meses[mesSeleccionado].materias.forEach(materia => {
+                const alumno = materia.alumnos.find(a => a.dni === dni);
+                if (alumno) {
+                    historial.push({
+                        materia: materia.nombre,
+                        asistencias: alumno.asist,
+                        observaciones: alumno.observaciones,
+                        fechaInscripcion: alumno.fecha_inscripcion,
+                        fechaVencimiento: alumno.fecha_vencimiento_carnet
+                    });
+                }
+            });
+            let historialHtml = '';
+            if (historial.length > 0) {
+                historialHtml = `
+                    <h4 style="margin-bottom: 0.75rem;">Historial del Alumno (DNI: ${dni})</h4>
+                    <div style="max-height: 300px; overflow-y: auto; margin-bottom: 0.75rem;">
+                        ${historial.map(h => `
+                            <div style="padding: 0.75rem; margin-bottom: 0.5rem; background-color: #2d3748; border-radius: 0.5rem; border-left: 4px solid var(--accent);">
+                                <p style="margin: 0; font-weight: 600; color: var(--accent);">${h.materia}</p>
+                                <p style="margin: 0.25rem 0; font-size: 0.8rem;">Inscripción: ${h.fechaInscripcion}</p>
+                                <p style="margin: 0.25rem 0; font-size: 0.8rem;">Vencimiento: ${h.fechaVencimiento}</p>
+                                <p style="margin: 0.25rem 0; font-size: 0.8rem;">Observaciones: ${h.observaciones || 'Ninguna'}</p>
+                                <p style="margin: 0.25rem 0; font-size: 0.8rem;">Asistencias: ${JSON.stringify(h.asistencias)}</p>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            } else {
+                historialHtml = '<p>No se encontró historial para este alumno.</p>';
+            }
+            document.getElementById('historialAlumnoContent').innerHTML = historialHtml;
+            document.getElementById('modalHistorialAlumno').style.display = 'block';
+        }
         // Renderizar contenido
         function render() {
             if (userRole === 'admin') {
                 document.getElementById('btnNuevaMateria').style.display = 'block';
                 document.getElementById('btnNuevoAlumno').style.display = 'block';
                 document.getElementById('logoutBtn').style.display = 'block';
+                document.getElementById('btnExportarExcel').style.display = 'block';
+                document.getElementById('btnImportarExcel').style.display = 'block';
             } else {
                 document.getElementById('btnNuevaMateria').style.display = 'none';
                 document.getElementById('btnNuevoAlumno').style.display = 'none';
                 document.getElementById('logoutBtn').style.display = 'none';
+                document.getElementById('btnExportarExcel').style.display = 'none';
+                document.getElementById('btnImportarExcel').style.display = 'none';
             }
             var mesSeleccionado = parseInt(document.getElementById('mesSelector').value);
             var tipoSeleccionado = document.getElementById('tipoMateria').value;
@@ -1290,7 +1349,6 @@
             document.getElementById('materiasList').innerHTML = materiasHtml;
             renderContent();
         }
-
         // Renderizar contenido principal
         function renderContent() {
             var mesSeleccionado = parseInt(document.getElementById('mesSelector').value);
@@ -1306,6 +1364,14 @@
             }
             var mat = db.meses[mesSeleccionado].materias.find(m => m.id === db.actual);
             if (!mat) return;
+            // Ordenar alumnos alfabéticamente
+            if (mat.alumnos) {
+                mat.alumnos.sort((a, b) => {
+                    const nombreA = `${a.nombre} ${a.apellido}`.toLowerCase();
+                    const nombreB = `${b.nombre} ${b.apellido}`.toLowerCase();
+                    return nombreA.localeCompare(nombreB);
+                });
+            }
             var html = `
                 <h2 style="color: var(--accent); text-align: center; margin-bottom: 1rem; font-size: 1.5rem;">📖 ${mat.nombre}</h2>
             `;
@@ -1397,7 +1463,6 @@
             }
             document.getElementById('mainArea').innerHTML = html;
         }
-
         // Cambiar pestaña
         function cambiarPestania(tab) {
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
@@ -1408,7 +1473,6 @@
                 cargarMateriasEstadisticas();
             }
         }
-
         // Cargar materias en el selector de estadísticas
         function cargarMateriasEstadisticas() {
             const semestreSeleccionado = document.getElementById('estadisticasSemestreSelector').value;
@@ -1432,7 +1496,6 @@
             document.getElementById('estadisticasMateriaSelector').innerHTML = options;
             cargarEstadisticas();
         }
-
         // Calcular estadísticas
         function calcularEstadisticas(materiaId) {
             const semestreSeleccionado = document.getElementById('estadisticasSemestreSelector').value;
@@ -1504,7 +1567,6 @@
                 estadisticasPorAlumno: estadisticasPorAlumnoArray
             };
         }
-
         // Mostrar estadísticas
         function mostrarEstadisticas(estadisticas) {
             let html = `
@@ -1556,7 +1618,6 @@
             `;
             document.getElementById('estadisticasContainer').innerHTML = html;
         }
-
         // Cargar estadísticas
         function cargarEstadisticas() {
             const materiaSeleccionadaId = parseInt(document.getElementById('estadisticasMateriaSelector').value);
@@ -1564,6 +1625,117 @@
                 const estadisticas = calcularEstadisticas(materiaSeleccionadaId);
                 mostrarEstadisticas(estadisticas);
             }
+        }
+        // Exportar alumnos a Excel
+        function exportarAlumnosAExcel() {
+            if (userRole !== 'admin') {
+                alert('Solo los administradores pueden exportar datos.');
+                return;
+            }
+            var mesSeleccionado = parseInt(document.getElementById('mesSelector').value);
+            var mat = db.meses[mesSeleccionado].materias.find(m => m.id === db.actual);
+            if (!mat || !mat.alumnos || mat.alumnos.length === 0) {
+                alert('No hay alumnos para exportar.');
+                return;
+            }
+            // Crear datos para el Excel
+            const data = mat.alumnos.map(alumno => ({
+                'Nombre': alumno.nombre,
+                'Apellido': alumno.apellido,
+                'DNI': alumno.dni,
+                'Pabellón': alumno.pabellon,
+                'Fecha de Inscripción': alumno.fecha_inscripcion,
+                'Fecha de Vencimiento': alumno.fecha_vencimiento_carnet,
+                'Observaciones': alumno.observaciones || 'Ninguna',
+                'Asistencias': JSON.stringify(alumno.asist || {})
+            }));
+            // Crear libro de Excel
+            const ws = XLSX.utils.json_to_sheet(data);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, 'Alumnos');
+            // Descargar el archivo
+            XLSX.writeFile(wb, `Alumnos_${mat.nombre}.xlsx`);
+        }
+        // Importar alumnos desde Excel
+        function importarAlumnosDesdeExcel(event) {
+            if (userRole !== 'admin') {
+                alert('Solo los administradores pueden importar datos.');
+                return;
+            }
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const data = new Uint8Array(e.target.result);
+                const workbook = XLSX.read(data, { type: 'array' });
+                const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+                const jsonData = XLSX.utils.sheet_to_json(firstSheet);
+                if (jsonData.length === 0) {
+                    alert('El archivo Excel está vacío o no tiene el formato correcto.');
+                    return;
+                }
+                // Validar columnas obligatorias
+                const requiredColumns = ['Nombre', 'Apellido', 'DNI', 'Pabellón'];
+                const hasAllColumns = requiredColumns.every(col => jsonData[0].hasOwnProperty(col));
+                if (!hasAllColumns) {
+                    alert('El archivo Excel debe contener al menos las columnas: Nombre, Apellido, DNI, Pabellón.');
+                    return;
+                }
+                // Procesar cada alumno
+                var mesSeleccionado = parseInt(document.getElementById('mesSelector').value);
+                var tipoSeleccionado = document.getElementById('tipoMateria').value;
+                var materiasMesActual = db.meses[mesSeleccionado].materias.filter(m => m.tipo === tipoSeleccionado);
+                if (materiasMesActual.length === 0) {
+                    alert('No hay materias disponibles para importar alumnos.');
+                    return;
+                }
+                // Seleccionar materia (por ahora, la primera)
+                var materiaSeleccionada = materiasMesActual[0];
+                jsonData.forEach(row => {
+                    // Validar datos obligatorios
+                    if (!row.Nombre || !row.Apellido || !row.DNI || !row.Pabellón) {
+                        console.warn('Falta información obligatoria en una fila:', row);
+                        return;
+                    }
+                    // Verificar si el alumno ya existe
+                    let alumnoExistente = db.meses[mesSeleccionado].alumnos.find(al => al.dni === row.DNI);
+                    if (!alumnoExistente) {
+                        let hoy = new Date().toISOString().split('T')[0];
+                        let unAnoDespues = new Date();
+                        unAnoDespues.setFullYear(unAnoDespues.getFullYear() + 1);
+                        let vencimiento = unAnoDespues.toISOString().split('T')[0];
+                        alumnoExistente = {
+                            id: Date.now(),
+                            nombre: row.Nombre,
+                            apellido: row.Apellido,
+                            dni: row.DNI,
+                            pabellon: row.Pabellón,
+                            fecha_inscripcion: row['Fecha de Inscripción'] || hoy,
+                            fecha_vencimiento_carnet: row['Fecha de Vencimiento'] || vencimiento
+                        };
+                        db.meses[mesSeleccionado].alumnos.push(alumnoExistente);
+                    }
+                    // Agregar el alumno a la materia seleccionada
+                    if (!materiaSeleccionada.alumnos.some(al => al.dni === row.DNI)) {
+                        materiaSeleccionada.alumnos.push({
+                            id: alumnoExistente.id,
+                            nombre: row.Nombre,
+                            apellido: row.Apellido,
+                            dni: row.DNI,
+                            pabellon: row.Pabellón,
+                            fecha_inscripcion: row['Fecha de Inscripción'] || alumnoExistente.fecha_inscripcion,
+                            fecha_vencimiento_carnet: row['Fecha de Vencimiento'] || alumnoExistente.fecha_vencimiento_carnet,
+                            asist: row.Asistencias ? JSON.parse(row.Asistencias) : {},
+                            observaciones: row.Observaciones || ''
+                        });
+                    }
+                });
+                // Guardar en Firebase
+                database.ref(`meses/${mesSeleccionado}`).set(db.meses[mesSeleccionado]);
+                alert('Alumnos importados correctamente.');
+                render();
+            };
+            reader.readAsArrayBuffer(file);
         }
     </script>
 </body>
