@@ -1,0 +1,71 @@
+{
+  "meses": [
+    {
+      "id": 0,
+      "materias": [
+        {
+          "id": 1776177206070,
+          "nombre": "genero",
+          "fechas": [],
+          "alumnos": []
+        }
+      ],
+      "alumnos": []
+    },
+    {
+      "id": 1,
+      "materias": [],
+      "alumnos": []
+    },
+    {
+      "id": 2,
+      "materias": [],
+      "alumnos": []
+    },
+    {
+      "id": 3,
+      "materias": [],
+      "alumnos": []
+    },
+    {
+      "id": 4,
+      "materias": [],
+      "alumnos": []
+    },
+    {
+      "id": 5,
+      "materias": [],
+      "alumnos": []
+    },
+    {
+      "id": 6,
+      "materias": [],
+      "alumnos": []
+    },
+    {
+      "id": 7,
+      "materias": [],
+      "alumnos": []
+    },
+    {
+      "id": 8,
+      "materias": [],
+      "alumnos": []
+    },
+    {
+      "id": 9,
+      "materias": [],
+      "alumnos": []
+    },
+    {
+      "id": 10,
+      "materias": [],
+      "alumnos": []
+    },
+    {
+      "id": 11,
+      "materias": [],
+      "alumnos": []
+    }
+  ]
+}
