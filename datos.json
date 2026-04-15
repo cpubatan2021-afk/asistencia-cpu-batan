@@ -12,108 +12,10 @@
       ],
       "alumnos": [
         {
-          "id": "1776271129604-31xpo",
-          "nombre": "VERON BORDON MAURO",
-          "apellido": "YOEL",
-          "dni": "37789155",
-          "pabellon": "5",
-          "fecha_inscripcion": "2026-04-15",
-          "fecha_vencimiento_carnet": "2027-04-15",
-          "asist": {
-            "2026-03-25": true,
-            "2026-04-08": true
-          },
-          "observaciones": ""
-        },
-        {
-          "id": "1776271129604-kpbu5",
-          "nombre": "PORCEL",
-          "apellido": "NAZARDIN",
-          "dni": "44461258",
-          "pabellon": "5",
-          "fecha_inscripcion": "2026-04-15",
-          "fecha_vencimiento_carnet": "2027-04-15",
-          "asist": {
-            "2026-03-25": true,
-            "2026-04-08": true
-          },
-          "observaciones": ""
-        },
-        {
-          "id": "1776271129604-fcez8",
-          "nombre": "ROSALES TORRES MAXIMILIANO",
-          "apellido": "NAHUEL",
-          "dni": "41571579",
-          "pabellon": "5",
-          "fecha_inscripcion": "2026-04-15",
-          "fecha_vencimiento_carnet": "2027-04-15",
-          "asist": {
-            "2026-03-25": true,
-            "2026-04-08": true
-          },
-          "observaciones": ""
-        },
-        {
-          "id": "1776271129604-j603u",
-          "nombre": "GONCEBATTE",
-          "apellido": "MAXIMILIANO",
-          "dni": "31186397",
-          "pabellon": "11",
-          "fecha_inscripcion": "2026-04-15",
-          "fecha_vencimiento_carnet": "2027-04-15",
-          "asist": {
-            "2026-03-25": true,
-            "2026-04-08": true
-          },
-          "observaciones": ""
-        },
-        {
-          "id": "1776271129604-mlonn",
-          "nombre": "COLMAN HUERTA",
-          "apellido": "MAURO",
-          "dni": "43739318",
-          "pabellon": "5",
-          "fecha_inscripcion": "2026-04-15",
-          "fecha_vencimiento_carnet": "2027-04-15",
-          "asist": {
-            "2026-03-25": true,
-            "2026-04-08": true
-          },
-          "observaciones": ""
-        },
-        {
-          "id": "1776271129604-y01vl",
-          "nombre": "VALDEZ ROMANO",
-          "apellido": "MATIAS",
-          "dni": "38955199",
-          "pabellon": "5",
-          "fecha_inscripcion": "2026-04-15",
-          "fecha_vencimiento_carnet": "2027-04-15",
-          "asist": {
-            "2026-03-25": true,
-            "2026-04-08": true
-          },
-          "observaciones": ""
-        },
-        {
-          "id": "1776271129604-8ths6",
-          "nombre": "JUANTO GARCIA LEANDRO",
-          "apellido": "MANUEL",
-          "dni": "47231414",
-          "pabellon": "5",
-          "fecha_inscripcion": "2026-04-15",
-          "fecha_vencimiento_carnet": "2027-04-15",
-          "asist": {
-            "2026-03-25": true,
-            "2026-04-08": true
-          },
-          "observaciones": ""
-        },
-        {
-          "id": "1776271129604-opd0f",
-          "nombre": "PEREZ WILLIAMS",
-          "apellido": "MAHUEL",
-          "dni": "37373739",
+          "id": "1776271129604-jxj2v",
+          "nombre": "LAZARTE VICTOR",
+          "apellido": "ALEJANDRO",
+          "dni": "37012139",
           "pabellon": "?",
           "fecha_inscripcion": "2026-04-15",
           "fecha_vencimiento_carnet": "2027-04-15",
@@ -124,150 +26,10 @@
           "observaciones": ""
         },
         {
-          "id": "1776271129604-qapzo",
-          "nombre": "VIDAL SANZANA",
-          "apellido": "LUIS",
-          "dni": "33367713",
-          "pabellon": "?",
-          "fecha_inscripcion": "2026-04-15",
-          "fecha_vencimiento_carnet": "2027-04-15",
-          "asist": {
-            "2026-03-25": true,
-            "2026-04-08": true
-          },
-          "observaciones": ""
-        },
-        {
-          "id": "1776271129604-tcmsk",
-          "nombre": "EIBAR CARBALLO",
-          "apellido": "JONATHAN",
-          "dni": "58608300",
-          "pabellon": "5",
-          "fecha_inscripcion": "2026-04-15",
-          "fecha_vencimiento_carnet": "2027-04-15",
-          "asist": {
-            "2026-03-25": true,
-            "2026-04-08": true
-          },
-          "observaciones": ""
-        },
-        {
-          "id": "1776271129604-32hla",
-          "nombre": "VELIZ",
-          "apellido": "JESUS",
-          "dni": "?",
-          "pabellon": "13",
-          "fecha_inscripcion": "2026-04-15",
-          "fecha_vencimiento_carnet": "2027-04-15",
-          "asist": {
-            "2026-03-25": true,
-            "2026-04-08": true
-          },
-          "observaciones": ""
-        },
-        {
-          "id": "1776271129604-hfcjo",
-          "nombre": "GIMENEZ ALBARRACIN",
-          "apellido": "IVAN",
-          "dni": "37405407",
-          "pabellon": "5",
-          "fecha_inscripcion": "2026-04-15",
-          "fecha_vencimiento_carnet": "2027-04-15",
-          "asist": {
-            "2026-03-25": true,
-            "2026-04-08": true
-          },
-          "observaciones": ""
-        },
-        {
-          "id": "1776271129604-jei56",
-          "nombre": "CARRA",
-          "apellido": "FEDERICO",
-          "dni": "42961253",
-          "pabellon": "5",
-          "fecha_inscripcion": "2026-04-15",
-          "fecha_vencimiento_carnet": "2027-04-15",
-          "asist": {
-            "2026-03-25": true,
-            "2026-04-08": true
-          },
-          "observaciones": ""
-        },
-        {
-          "id": "1776271129604-41qdc",
-          "nombre": "MIRANDA CRISTIAN",
-          "apellido": "FABIAN",
-          "dni": "30237659",
-          "pabellon": "5",
-          "fecha_inscripcion": "2026-04-15",
-          "fecha_vencimiento_carnet": "2027-04-15",
-          "asist": {
-            "2026-03-25": true,
-            "2026-04-08": true
-          },
-          "observaciones": ""
-        },
-        {
-          "id": "1776271129604-sbo6z",
-          "nombre": "ZARATE",
-          "apellido": "DIEGO",
-          "dni": "25635342",
-          "pabellon": "5",
-          "fecha_inscripcion": "2026-04-15",
-          "fecha_vencimiento_carnet": "2027-04-15",
-          "asist": {
-            "2026-03-25": true,
-            "2026-04-08": true
-          },
-          "observaciones": ""
-        },
-        {
-          "id": "1776271129604-u7pxu",
-          "nombre": "CASTELLANO",
-          "apellido": "DIEGO",
-          "dni": "?",
-          "pabellon": "14",
-          "fecha_inscripcion": "2026-04-15",
-          "fecha_vencimiento_carnet": "2027-04-15",
-          "asist": {
-            "2026-03-25": true,
-            "2026-04-08": true
-          },
-          "observaciones": ""
-        },
-        {
-          "id": "1776271129604-c32fr",
-          "nombre": "FIEGO",
-          "apellido": "DANIEL",
-          "dni": "31721603",
-          "pabellon": "16",
-          "fecha_inscripcion": "2026-04-15",
-          "fecha_vencimiento_carnet": "2027-04-15",
-          "asist": {
-            "2026-03-25": true,
-            "2026-04-08": true
-          },
-          "observaciones": ""
-        },
-        {
-          "id": "1776271129604-e385n",
-          "nombre": "SANCHEZ",
-          "apellido": "DAMIAN",
-          "dni": "44692444",
-          "pabellon": "5",
-          "fecha_inscripcion": "2026-04-15",
-          "fecha_vencimiento_carnet": "2027-04-15",
-          "asist": {
-            "2026-03-25": true,
-            "2026-04-08": true
-          },
-          "observaciones": ""
-        },
-        {
-          "id": "1776271129604-1gtrq",
-          "nombre": "ALVARO SANCHEZ",
-          "apellido": "DAMIAN",
-          "dni": "44692444",
+          "id": "1776271129604-knabh",
+          "nombre": "MARTEL",
+          "apellido": "CARLOS",
+          "dni": "22569405",
           "pabellon": "5",
           "fecha_inscripcion": "2026-04-15",
           "fecha_vencimiento_carnet": "2027-04-15",
@@ -292,10 +54,10 @@
           "observaciones": ""
         },
         {
-          "id": "1776271129604-knabh",
-          "nombre": "MARTEL",
-          "apellido": "CARLOS",
-          "dni": "22569405",
+          "id": "1776271129604-1gtrq",
+          "nombre": "ALVARO SANCHEZ",
+          "apellido": "DAMIAN",
+          "dni": "44692444",
           "pabellon": "5",
           "fecha_inscripcion": "2026-04-15",
           "fecha_vencimiento_carnet": "2027-04-15",
@@ -306,11 +68,249 @@
           "observaciones": ""
         },
         {
-          "id": "1776271129604-jxj2v",
-          "nombre": "LAZARTE VICTOR",
-          "apellido": "ALEJANDRO",
-          "dni": "37012139",
+          "id": "1776271129604-e385n",
+          "nombre": "SANCHEZ",
+          "apellido": "DAMIAN",
+          "dni": "44692444",
+          "pabellon": "5",
+          "fecha_inscripcion": "2026-04-15",
+          "fecha_vencimiento_carnet": "2027-04-15",
+          "asist": {
+            "2026-03-25": true,
+            "2026-04-08": true
+          },
+          "observaciones": ""
+        },
+        {
+          "id": "1776271129604-c32fr",
+          "nombre": "FIEGO",
+          "apellido": "DANIEL",
+          "dni": "31721603",
+          "pabellon": "16",
+          "fecha_inscripcion": "2026-04-15",
+          "fecha_vencimiento_carnet": "2027-04-15",
+          "asist": {
+            "2026-03-25": true,
+            "2026-04-08": true
+          },
+          "observaciones": ""
+        },
+        {
+          "id": "1776271129604-u7pxu",
+          "nombre": "CASTELLANO",
+          "apellido": "DIEGO",
+          "dni": "?",
+          "pabellon": "14",
+          "fecha_inscripcion": "2026-04-15",
+          "fecha_vencimiento_carnet": "2027-04-15",
+          "asist": {
+            "2026-03-25": true,
+            "2026-04-08": true
+          },
+          "observaciones": ""
+        },
+        {
+          "id": "1776271129604-sbo6z",
+          "nombre": "ZARATE",
+          "apellido": "DIEGO",
+          "dni": "25635342",
+          "pabellon": "5",
+          "fecha_inscripcion": "2026-04-15",
+          "fecha_vencimiento_carnet": "2027-04-15",
+          "asist": {
+            "2026-03-25": true,
+            "2026-04-08": true
+          },
+          "observaciones": ""
+        },
+        {
+          "id": "1776271129604-41qdc",
+          "nombre": "MIRANDA CRISTIAN",
+          "apellido": "FABIAN",
+          "dni": "30237659",
+          "pabellon": "5",
+          "fecha_inscripcion": "2026-04-15",
+          "fecha_vencimiento_carnet": "2027-04-15",
+          "asist": {
+            "2026-03-25": true,
+            "2026-04-08": true
+          },
+          "observaciones": ""
+        },
+        {
+          "id": "1776271129604-jei56",
+          "nombre": "CARRA",
+          "apellido": "FEDERICO",
+          "dni": "42961253",
+          "pabellon": "5",
+          "fecha_inscripcion": "2026-04-15",
+          "fecha_vencimiento_carnet": "2027-04-15",
+          "asist": {
+            "2026-03-25": true,
+            "2026-04-08": true
+          },
+          "observaciones": ""
+        },
+        {
+          "id": "1776271129604-hfcjo",
+          "nombre": "GIMENEZ ALBARRACIN",
+          "apellido": "IVAN",
+          "dni": "37405407",
+          "pabellon": "5",
+          "fecha_inscripcion": "2026-04-15",
+          "fecha_vencimiento_carnet": "2027-04-15",
+          "asist": {
+            "2026-03-25": true,
+            "2026-04-08": true
+          },
+          "observaciones": ""
+        },
+        {
+          "id": "1776271129604-32hla",
+          "nombre": "VELIZ",
+          "apellido": "JESUS",
+          "dni": "?",
+          "pabellon": "13",
+          "fecha_inscripcion": "2026-04-15",
+          "fecha_vencimiento_carnet": "2027-04-15",
+          "asist": {
+            "2026-03-25": true,
+            "2026-04-08": true
+          },
+          "observaciones": ""
+        },
+        {
+          "id": "1776271129604-tcmsk",
+          "nombre": "EIBAR CARBALLO",
+          "apellido": "JONATHAN",
+          "dni": "58608300",
+          "pabellon": "5",
+          "fecha_inscripcion": "2026-04-15",
+          "fecha_vencimiento_carnet": "2027-04-15",
+          "asist": {
+            "2026-03-25": true,
+            "2026-04-08": true
+          },
+          "observaciones": ""
+        },
+        {
+          "id": "1776271129604-qapzo",
+          "nombre": "VIDAL SANZANA",
+          "apellido": "LUIS",
+          "dni": "33367713",
           "pabellon": "?",
+          "fecha_inscripcion": "2026-04-15",
+          "fecha_vencimiento_carnet": "2027-04-15",
+          "asist": {
+            "2026-03-25": true,
+            "2026-04-08": true
+          },
+          "observaciones": ""
+        },
+        {
+          "id": "1776271129604-opd0f",
+          "nombre": "PEREZ WILLIAMS",
+          "apellido": "MAHUEL",
+          "dni": "37373739",
+          "pabellon": "?",
+          "fecha_inscripcion": "2026-04-15",
+          "fecha_vencimiento_carnet": "2027-04-15",
+          "asist": {
+            "2026-03-25": true,
+            "2026-04-08": true
+          },
+          "observaciones": ""
+        },
+        {
+          "id": "1776271129604-8ths6",
+          "nombre": "JUANTO GARCIA LEANDRO",
+          "apellido": "MANUEL",
+          "dni": "47231414",
+          "pabellon": "5",
+          "fecha_inscripcion": "2026-04-15",
+          "fecha_vencimiento_carnet": "2027-04-15",
+          "asist": {
+            "2026-03-25": true,
+            "2026-04-08": true
+          },
+          "observaciones": ""
+        },
+        {
+          "id": "1776271129604-y01vl",
+          "nombre": "VALDEZ ROMANO",
+          "apellido": "MATIAS",
+          "dni": "38955199",
+          "pabellon": "5",
+          "fecha_inscripcion": "2026-04-15",
+          "fecha_vencimiento_carnet": "2027-04-15",
+          "asist": {
+            "2026-03-25": true,
+            "2026-04-08": true
+          },
+          "observaciones": ""
+        },
+        {
+          "id": "1776271129604-mlonn",
+          "nombre": "COLMAN HUERTA",
+          "apellido": "MAURO",
+          "dni": "43739318",
+          "pabellon": "5",
+          "fecha_inscripcion": "2026-04-15",
+          "fecha_vencimiento_carnet": "2027-04-15",
+          "asist": {
+            "2026-03-25": true,
+            "2026-04-08": true
+          },
+          "observaciones": ""
+        },
+        {
+          "id": "1776271129604-j603u",
+          "nombre": "GONCEBATTE",
+          "apellido": "MAXIMILIANO",
+          "dni": "31186397",
+          "pabellon": "11",
+          "fecha_inscripcion": "2026-04-15",
+          "fecha_vencimiento_carnet": "2027-04-15",
+          "asist": {
+            "2026-03-25": true,
+            "2026-04-08": true
+          },
+          "observaciones": ""
+        },
+        {
+          "id": "1776271129604-fcez8",
+          "nombre": "ROSALES TORRES MAXIMILIANO",
+          "apellido": "NAHUEL",
+          "dni": "41571579",
+          "pabellon": "5",
+          "fecha_inscripcion": "2026-04-15",
+          "fecha_vencimiento_carnet": "2027-04-15",
+          "asist": {
+            "2026-03-25": true,
+            "2026-04-08": true
+          },
+          "observaciones": ""
+        },
+        {
+          "id": "1776271129604-kpbu5",
+          "nombre": "PORCEL",
+          "apellido": "NAZARDIN",
+          "dni": "44461258",
+          "pabellon": "5",
+          "fecha_inscripcion": "2026-04-15",
+          "fecha_vencimiento_carnet": "2027-04-15",
+          "asist": {
+            "2026-03-25": true,
+            "2026-04-08": true
+          },
+          "observaciones": ""
+        },
+        {
+          "id": "1776271129604-31xpo",
+          "nombre": "VERON BORDON MAURO",
+          "apellido": "YOEL",
+          "dni": "37789155",
+          "pabellon": "5",
           "fecha_inscripcion": "2026-04-15",
           "fecha_vencimiento_carnet": "2027-04-15",
           "asist": {
