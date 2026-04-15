@@ -16,33 +16,7 @@
           "alumnos": []
         },
         {
-          "id": 1776255595295,
-          "nombre": "Genero y Masculinidades",
-          "tipo": "extension",
-          "fechas": [],
-          "alumnos": [
-            {
-              "id": "1776255662423",
-              "nombre": "Daniel",
-              "apellido": "Fiego",
-              "dni": "31.721.603",
-              "pabellon": "16",
-              "fecha_inscripcion": "2026-04-15",
-              "fecha_vencimiento_carnet": "2027-04-15",
-              "asist": {},
-              "observaciones": ""
-            }
-          ]
-        },
-        {
-          "id": 1776255729149,
-          "nombre": "Salud Mental",
-          "tipo": "extension",
-          "fechas": [],
-          "alumnos": []
-        },
-        {
-          "id": 1776260747475,
+          "id": 1776261148900,
           "nombre": "GENERO Y MASCULINIDADES",
           "tipo": "extension",
           "fechas": [
@@ -75,33 +49,7 @@
       "id": 1,
       "materias": [
         {
-          "id": 1776255595295,
-          "nombre": "Genero y Masculinidades",
-          "tipo": "extension",
-          "fechas": [],
-          "alumnos": [
-            {
-              "id": "1776255662423",
-              "nombre": "Daniel",
-              "apellido": "Fiego",
-              "dni": "31.721.603",
-              "pabellon": "16",
-              "fecha_inscripcion": "2026-04-15",
-              "fecha_vencimiento_carnet": "2027-04-15",
-              "asist": {},
-              "observaciones": ""
-            }
-          ]
-        },
-        {
-          "id": 1776255729149,
-          "nombre": "Salud Mental",
-          "tipo": "extension",
-          "fechas": [],
-          "alumnos": []
-        },
-        {
-          "id": 1776260747475,
+          "id": 1776261148900,
           "nombre": "GENERO Y MASCULINIDADES",
           "tipo": "extension",
           "fechas": [
@@ -134,33 +82,7 @@
       "id": 2,
       "materias": [
         {
-          "id": 1776255595295,
-          "nombre": "Genero y Masculinidades",
-          "tipo": "extension",
-          "fechas": [],
-          "alumnos": [
-            {
-              "id": "1776255662423",
-              "nombre": "Daniel",
-              "apellido": "Fiego",
-              "dni": "31.721.603",
-              "pabellon": "16",
-              "fecha_inscripcion": "2026-04-15",
-              "fecha_vencimiento_carnet": "2027-04-15",
-              "asist": {},
-              "observaciones": ""
-            }
-          ]
-        },
-        {
-          "id": 1776255729149,
-          "nombre": "Salud Mental",
-          "tipo": "extension",
-          "fechas": [],
-          "alumnos": []
-        },
-        {
-          "id": 1776260747475,
+          "id": 1776261148900,
           "nombre": "GENERO Y MASCULINIDADES",
           "tipo": "extension",
           "fechas": [
@@ -193,33 +115,7 @@
       "id": 3,
       "materias": [
         {
-          "id": 1776255595295,
-          "nombre": "Genero y Masculinidades",
-          "tipo": "extension",
-          "fechas": [],
-          "alumnos": [
-            {
-              "id": "1776255662423",
-              "nombre": "Daniel",
-              "apellido": "Fiego",
-              "dni": "31.721.603",
-              "pabellon": "16",
-              "fecha_inscripcion": "2026-04-15",
-              "fecha_vencimiento_carnet": "2027-04-15",
-              "asist": {},
-              "observaciones": ""
-            }
-          ]
-        },
-        {
-          "id": 1776255729149,
-          "nombre": "Salud Mental",
-          "tipo": "extension",
-          "fechas": [],
-          "alumnos": []
-        },
-        {
-          "id": 1776260747475,
+          "id": 1776261148900,
           "nombre": "GENERO Y MASCULINIDADES",
           "tipo": "extension",
           "fechas": [
@@ -484,33 +380,7 @@
       "id": 4,
       "materias": [
         {
-          "id": 1776255595295,
-          "nombre": "Genero y Masculinidades",
-          "tipo": "extension",
-          "fechas": [],
-          "alumnos": [
-            {
-              "id": "1776255662423",
-              "nombre": "Daniel",
-              "apellido": "Fiego",
-              "dni": "31.721.603",
-              "pabellon": "16",
-              "fecha_inscripcion": "2026-04-15",
-              "fecha_vencimiento_carnet": "2027-04-15",
-              "asist": {},
-              "observaciones": ""
-            }
-          ]
-        },
-        {
-          "id": 1776255729149,
-          "nombre": "Salud Mental",
-          "tipo": "extension",
-          "fechas": [],
-          "alumnos": []
-        },
-        {
-          "id": 1776260747475,
+          "id": 1776261148900,
           "nombre": "GENERO Y MASCULINIDADES",
           "tipo": "extension",
           "fechas": [
@@ -543,33 +413,7 @@
       "id": 5,
       "materias": [
         {
-          "id": 1776255595295,
-          "nombre": "Genero y Masculinidades",
-          "tipo": "extension",
-          "fechas": [],
-          "alumnos": [
-            {
-              "id": "1776255662423",
-              "nombre": "Daniel",
-              "apellido": "Fiego",
-              "dni": "31.721.603",
-              "pabellon": "16",
-              "fecha_inscripcion": "2026-04-15",
-              "fecha_vencimiento_carnet": "2027-04-15",
-              "asist": {},
-              "observaciones": ""
-            }
-          ]
-        },
-        {
-          "id": 1776255729149,
-          "nombre": "Salud Mental",
-          "tipo": "extension",
-          "fechas": [],
-          "alumnos": []
-        },
-        {
-          "id": 1776260747475,
+          "id": 1776261148900,
           "nombre": "GENERO Y MASCULINIDADES",
           "tipo": "extension",
           "fechas": [
@@ -602,33 +446,7 @@
       "id": 6,
       "materias": [
         {
-          "id": 1776255595295,
-          "nombre": "Genero y Masculinidades",
-          "tipo": "extension",
-          "fechas": [],
-          "alumnos": [
-            {
-              "id": "1776255662423",
-              "nombre": "Daniel",
-              "apellido": "Fiego",
-              "dni": "31.721.603",
-              "pabellon": "16",
-              "fecha_inscripcion": "2026-04-15",
-              "fecha_vencimiento_carnet": "2027-04-15",
-              "asist": {},
-              "observaciones": ""
-            }
-          ]
-        },
-        {
-          "id": 1776255729149,
-          "nombre": "Salud Mental",
-          "tipo": "extension",
-          "fechas": [],
-          "alumnos": []
-        },
-        {
-          "id": 1776260747475,
+          "id": 1776261148900,
           "nombre": "GENERO Y MASCULINIDADES",
           "tipo": "extension",
           "fechas": [
@@ -661,33 +479,7 @@
       "id": 7,
       "materias": [
         {
-          "id": 1776255595295,
-          "nombre": "Genero y Masculinidades",
-          "tipo": "extension",
-          "fechas": [],
-          "alumnos": [
-            {
-              "id": "1776255662423",
-              "nombre": "Daniel",
-              "apellido": "Fiego",
-              "dni": "31.721.603",
-              "pabellon": "16",
-              "fecha_inscripcion": "2026-04-15",
-              "fecha_vencimiento_carnet": "2027-04-15",
-              "asist": {},
-              "observaciones": ""
-            }
-          ]
-        },
-        {
-          "id": 1776255729149,
-          "nombre": "Salud Mental",
-          "tipo": "extension",
-          "fechas": [],
-          "alumnos": []
-        },
-        {
-          "id": 1776260747475,
+          "id": 1776261148900,
           "nombre": "GENERO Y MASCULINIDADES",
           "tipo": "extension",
           "fechas": [
@@ -720,33 +512,7 @@
       "id": 8,
       "materias": [
         {
-          "id": 1776255595295,
-          "nombre": "Genero y Masculinidades",
-          "tipo": "extension",
-          "fechas": [],
-          "alumnos": [
-            {
-              "id": "1776255662423",
-              "nombre": "Daniel",
-              "apellido": "Fiego",
-              "dni": "31.721.603",
-              "pabellon": "16",
-              "fecha_inscripcion": "2026-04-15",
-              "fecha_vencimiento_carnet": "2027-04-15",
-              "asist": {},
-              "observaciones": ""
-            }
-          ]
-        },
-        {
-          "id": 1776255729149,
-          "nombre": "Salud Mental",
-          "tipo": "extension",
-          "fechas": [],
-          "alumnos": []
-        },
-        {
-          "id": 1776260747475,
+          "id": 1776261148900,
           "nombre": "GENERO Y MASCULINIDADES",
           "tipo": "extension",
           "fechas": [
@@ -779,33 +545,7 @@
       "id": 9,
       "materias": [
         {
-          "id": 1776255595295,
-          "nombre": "Genero y Masculinidades",
-          "tipo": "extension",
-          "fechas": [],
-          "alumnos": [
-            {
-              "id": "1776255662423",
-              "nombre": "Daniel",
-              "apellido": "Fiego",
-              "dni": "31.721.603",
-              "pabellon": "16",
-              "fecha_inscripcion": "2026-04-15",
-              "fecha_vencimiento_carnet": "2027-04-15",
-              "asist": {},
-              "observaciones": ""
-            }
-          ]
-        },
-        {
-          "id": 1776255729149,
-          "nombre": "Salud Mental",
-          "tipo": "extension",
-          "fechas": [],
-          "alumnos": []
-        },
-        {
-          "id": 1776260747475,
+          "id": 1776261148900,
           "nombre": "GENERO Y MASCULINIDADES",
           "tipo": "extension",
           "fechas": [
@@ -838,33 +578,7 @@
       "id": 10,
       "materias": [
         {
-          "id": 1776255595295,
-          "nombre": "Genero y Masculinidades",
-          "tipo": "extension",
-          "fechas": [],
-          "alumnos": [
-            {
-              "id": "1776255662423",
-              "nombre": "Daniel",
-              "apellido": "Fiego",
-              "dni": "31.721.603",
-              "pabellon": "16",
-              "fecha_inscripcion": "2026-04-15",
-              "fecha_vencimiento_carnet": "2027-04-15",
-              "asist": {},
-              "observaciones": ""
-            }
-          ]
-        },
-        {
-          "id": 1776255729149,
-          "nombre": "Salud Mental",
-          "tipo": "extension",
-          "fechas": [],
-          "alumnos": []
-        },
-        {
-          "id": 1776260747475,
+          "id": 1776261148900,
           "nombre": "GENERO Y MASCULINIDADES",
           "tipo": "extension",
           "fechas": [
@@ -897,33 +611,7 @@
       "id": 11,
       "materias": [
         {
-          "id": 1776255595295,
-          "nombre": "Genero y Masculinidades",
-          "tipo": "extension",
-          "fechas": [],
-          "alumnos": [
-            {
-              "id": "1776255662423",
-              "nombre": "Daniel",
-              "apellido": "Fiego",
-              "dni": "31.721.603",
-              "pabellon": "16",
-              "fecha_inscripcion": "2026-04-15",
-              "fecha_vencimiento_carnet": "2027-04-15",
-              "asist": {},
-              "observaciones": ""
-            }
-          ]
-        },
-        {
-          "id": 1776255729149,
-          "nombre": "Salud Mental",
-          "tipo": "extension",
-          "fechas": [],
-          "alumnos": []
-        },
-        {
-          "id": 1776260747475,
+          "id": 1776261148900,
           "nombre": "GENERO Y MASCULINIDADES",
           "tipo": "extension",
           "fechas": [
