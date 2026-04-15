@@ -14,63 +14,158 @@
           "nombre": "Genero y Masculinidades",
           "fechas": [],
           "alumnos": []
+        },
+        {
+          "id": 1776255595295,
+          "nombre": "Genero y Masculinidades",
+          "tipo": "extension",
+          "fechas": [],
+          "alumnos": []
         }
       ],
       "alumnos": []
     },
     {
       "id": 1,
-      "materias": [],
+      "materias": [
+        {
+          "id": 1776255595295,
+          "nombre": "Genero y Masculinidades",
+          "tipo": "extension",
+          "fechas": [],
+          "alumnos": []
+        }
+      ],
       "alumnos": []
     },
     {
       "id": 2,
-      "materias": [],
+      "materias": [
+        {
+          "id": 1776255595295,
+          "nombre": "Genero y Masculinidades",
+          "tipo": "extension",
+          "fechas": [],
+          "alumnos": []
+        }
+      ],
       "alumnos": []
     },
     {
       "id": 3,
-      "materias": [],
+      "materias": [
+        {
+          "id": 1776255595295,
+          "nombre": "Genero y Masculinidades",
+          "tipo": "extension",
+          "fechas": [],
+          "alumnos": []
+        }
+      ],
       "alumnos": []
     },
     {
       "id": 4,
-      "materias": [],
+      "materias": [
+        {
+          "id": 1776255595295,
+          "nombre": "Genero y Masculinidades",
+          "tipo": "extension",
+          "fechas": [],
+          "alumnos": []
+        }
+      ],
       "alumnos": []
     },
     {
       "id": 5,
-      "materias": [],
+      "materias": [
+        {
+          "id": 1776255595295,
+          "nombre": "Genero y Masculinidades",
+          "tipo": "extension",
+          "fechas": [],
+          "alumnos": []
+        }
+      ],
       "alumnos": []
     },
     {
       "id": 6,
-      "materias": [],
+      "materias": [
+        {
+          "id": 1776255595295,
+          "nombre": "Genero y Masculinidades",
+          "tipo": "extension",
+          "fechas": [],
+          "alumnos": []
+        }
+      ],
       "alumnos": []
     },
     {
       "id": 7,
-      "materias": [],
+      "materias": [
+        {
+          "id": 1776255595295,
+          "nombre": "Genero y Masculinidades",
+          "tipo": "extension",
+          "fechas": [],
+          "alumnos": []
+        }
+      ],
       "alumnos": []
     },
     {
       "id": 8,
-      "materias": [],
+      "materias": [
+        {
+          "id": 1776255595295,
+          "nombre": "Genero y Masculinidades",
+          "tipo": "extension",
+          "fechas": [],
+          "alumnos": []
+        }
+      ],
       "alumnos": []
     },
     {
       "id": 9,
-      "materias": [],
+      "materias": [
+        {
+          "id": 1776255595295,
+          "nombre": "Genero y Masculinidades",
+          "tipo": "extension",
+          "fechas": [],
+          "alumnos": []
+        }
+      ],
       "alumnos": []
     },
     {
       "id": 10,
-      "materias": [],
+      "materias": [
+        {
+          "id": 1776255595295,
+          "nombre": "Genero y Masculinidades",
+          "tipo": "extension",
+          "fechas": [],
+          "alumnos": []
+        }
+      ],
       "alumnos": []
     },
     {
       "id": 11,
-      "materias": [],
+      "materias": [
+        {
+          "id": 1776255595295,
+          "nombre": "Genero y Masculinidades",
+          "tipo": "extension",
+          "fechas": [],
+          "alumnos": []
+        }
+      ],
       "alumnos": []
     }
   ]
