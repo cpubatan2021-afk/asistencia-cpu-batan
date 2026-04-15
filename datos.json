@@ -490,6 +490,17 @@
                 "2026-04-08": true
               },
               "observaciones": ""
+            },
+            {
+              "id": "1776263471916-rw2xh",
+              "nombre": "Diego Ariel",
+              "apellido": "Vallejos Martinez",
+              "dni": "",
+              "pabellon": "9",
+              "fecha_inscripcion": "2026-04-15",
+              "fecha_vencimiento_carnet": "2027-04-15",
+              "asist": {},
+              "observaciones": ""
             }
           ]
         }
@@ -952,6 +963,17 @@
           "apellido": "DANIEL",
           "dni": "31721603",
           "pabellon": "16",
+          "fecha_inscripcion": "2026-04-15",
+          "fecha_vencimiento_carnet": "2027-04-15",
+          "asist": {},
+          "observaciones": ""
+        },
+        {
+          "id": "1776263471916-rw2xh",
+          "nombre": "Diego Ariel",
+          "apellido": "Vallejos Martinez",
+          "dni": "",
+          "pabellon": "9",
           "fecha_inscripcion": "2026-04-15",
           "fecha_vencimiento_carnet": "2027-04-15",
           "asist": {},
