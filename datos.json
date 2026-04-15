@@ -452,6 +452,17 @@
       "observaciones": ""
     },
     {
+      "id": "1776271319276-g97d0",
+      "nombre": "Daniel",
+      "apellido": "Fiego",
+      "dni": "31.721.603",
+      "pabellon": "16",
+      "fecha_inscripcion": "2026-04-15",
+      "fecha_vencimiento_carnet": "2026-05-30",
+      "asist": {},
+      "observaciones": ""
+    },
+    {
       "id": "1776271129604-hfcjo",
       "nombre": "GIMENEZ ALBARRACIN",
       "apellido": "IVAN",
@@ -580,17 +591,6 @@
       "pabellon": "5",
       "fecha_inscripcion": "2026-04-15",
       "fecha_vencimiento_carnet": "2027-04-15",
-      "asist": {},
-      "observaciones": ""
-    },
-    {
-      "id": "1776271319276-g97d0",
-      "nombre": "Daniel",
-      "apellido": "Fiego",
-      "dni": "31.721.603",
-      "pabellon": "16",
-      "fecha_inscripcion": "2026-04-15",
-      "fecha_vencimiento_carnet": "2026-05-30",
       "asist": {},
       "observaciones": ""
     }
