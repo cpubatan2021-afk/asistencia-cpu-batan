@@ -501,6 +501,17 @@
               "fecha_vencimiento_carnet": "2027-04-15",
               "asist": {},
               "observaciones": ""
+            },
+            {
+              "id": "1776266571780-aj18v",
+              "nombre": "dylan",
+              "apellido": "Chavarrias Diaz",
+              "dni": "",
+              "pabellon": "12",
+              "fecha_inscripcion": "2026-04-15",
+              "fecha_vencimiento_carnet": "2027-04-15",
+              "asist": {},
+              "observaciones": ""
             }
           ]
         }
@@ -974,6 +985,17 @@
           "apellido": "Vallejos Martinez",
           "dni": "",
           "pabellon": "9",
+          "fecha_inscripcion": "2026-04-15",
+          "fecha_vencimiento_carnet": "2027-04-15",
+          "asist": {},
+          "observaciones": ""
+        },
+        {
+          "id": "1776266571780-aj18v",
+          "nombre": "dylan",
+          "apellido": "Chavarrias Diaz",
+          "dni": "",
+          "pabellon": "12",
           "fecha_inscripcion": "2026-04-15",
           "fecha_vencimiento_carnet": "2027-04-15",
           "asist": {},
