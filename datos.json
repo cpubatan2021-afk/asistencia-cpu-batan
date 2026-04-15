@@ -338,6 +338,16 @@
           "observaciones": ""
         }
       ]
+    },
+    {
+      "id": 1776272568716,
+      "nombre": "Cine y debate",
+      "dias": [
+        "Viernes"
+      ],
+      "horario": "15:00 - 17:00",
+      "fechas": [],
+      "alumnos": []
     }
   ],
   "alumnos": [
