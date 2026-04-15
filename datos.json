@@ -14,114 +14,23 @@
           "nombre": "Genero y Masculinidades",
           "fechas": [],
           "alumnos": []
-        },
-        {
-          "id": 1776261148900,
-          "nombre": "GENERO Y MASCULINIDADES",
-          "tipo": "extension",
-          "fechas": [],
-          "alumnos": [
-            {
-              "id": "1776260747476",
-              "nombre": "COLMAN HUERTA",
-              "apellido": "MAURO",
-              "dni": "43739318",
-              "pabellon": "5",
-              "fecha_inscripcion": "2026-04-15",
-              "fecha_vencimiento_carnet": "2027-04-15",
-              "asist": {
-                "46106": true,
-                "46120": true
-              },
-              "observaciones": ""
-            }
-          ]
         }
       ],
       "alumnos": []
     },
     {
       "id": 1,
-      "materias": [
-        {
-          "id": 1776261148900,
-          "nombre": "GENERO Y MASCULINIDADES",
-          "tipo": "extension",
-          "fechas": [],
-          "alumnos": [
-            {
-              "id": "1776260747476",
-              "nombre": "COLMAN HUERTA",
-              "apellido": "MAURO",
-              "dni": "43739318",
-              "pabellon": "5",
-              "fecha_inscripcion": "2026-04-15",
-              "fecha_vencimiento_carnet": "2027-04-15",
-              "asist": {
-                "46106": true,
-                "46120": true
-              },
-              "observaciones": ""
-            }
-          ]
-        }
-      ],
+      "materias": [],
       "alumnos": []
     },
     {
       "id": 2,
-      "materias": [
-        {
-          "id": 1776261148900,
-          "nombre": "GENERO Y MASCULINIDADES",
-          "tipo": "extension",
-          "fechas": [],
-          "alumnos": [
-            {
-              "id": "1776260747476",
-              "nombre": "COLMAN HUERTA",
-              "apellido": "MAURO",
-              "dni": "43739318",
-              "pabellon": "5",
-              "fecha_inscripcion": "2026-04-15",
-              "fecha_vencimiento_carnet": "2027-04-15",
-              "asist": {
-                "46106": true,
-                "46120": true
-              },
-              "observaciones": ""
-            }
-          ]
-        }
-      ],
+      "materias": [],
       "alumnos": []
     },
     {
       "id": 3,
-      "materias": [
-        {
-          "id": 1776261148900,
-          "nombre": "GENERO Y MASCULINIDADES",
-          "tipo": "extension",
-          "fechas": [],
-          "alumnos": [
-            {
-              "id": "1776260747476",
-              "nombre": "COLMAN HUERTA",
-              "apellido": "MAURO",
-              "dni": "43739318",
-              "pabellon": "5",
-              "fecha_inscripcion": "2026-04-15",
-              "fecha_vencimiento_carnet": "2027-04-15",
-              "asist": {
-                "46106": true,
-                "46120": true
-              },
-              "observaciones": ""
-            }
-          ]
-        }
-      ],
+      "materias": [],
       "alumnos": [
         {
           "id": "1776255662423",
@@ -358,226 +267,42 @@
     },
     {
       "id": 4,
-      "materias": [
-        {
-          "id": 1776261148900,
-          "nombre": "GENERO Y MASCULINIDADES",
-          "tipo": "extension",
-          "fechas": [],
-          "alumnos": [
-            {
-              "id": "1776260747476",
-              "nombre": "COLMAN HUERTA",
-              "apellido": "MAURO",
-              "dni": "43739318",
-              "pabellon": "5",
-              "fecha_inscripcion": "2026-04-15",
-              "fecha_vencimiento_carnet": "2027-04-15",
-              "asist": {
-                "46106": true,
-                "46120": true
-              },
-              "observaciones": ""
-            }
-          ]
-        }
-      ],
+      "materias": [],
       "alumnos": []
     },
     {
       "id": 5,
-      "materias": [
-        {
-          "id": 1776261148900,
-          "nombre": "GENERO Y MASCULINIDADES",
-          "tipo": "extension",
-          "fechas": [],
-          "alumnos": [
-            {
-              "id": "1776260747476",
-              "nombre": "COLMAN HUERTA",
-              "apellido": "MAURO",
-              "dni": "43739318",
-              "pabellon": "5",
-              "fecha_inscripcion": "2026-04-15",
-              "fecha_vencimiento_carnet": "2027-04-15",
-              "asist": {
-                "46106": true,
-                "46120": true
-              },
-              "observaciones": ""
-            }
-          ]
-        }
-      ],
+      "materias": [],
       "alumnos": []
     },
     {
       "id": 6,
-      "materias": [
-        {
-          "id": 1776261148900,
-          "nombre": "GENERO Y MASCULINIDADES",
-          "tipo": "extension",
-          "fechas": [],
-          "alumnos": [
-            {
-              "id": "1776260747476",
-              "nombre": "COLMAN HUERTA",
-              "apellido": "MAURO",
-              "dni": "43739318",
-              "pabellon": "5",
-              "fecha_inscripcion": "2026-04-15",
-              "fecha_vencimiento_carnet": "2027-04-15",
-              "asist": {
-                "46106": true,
-                "46120": true
-              },
-              "observaciones": ""
-            }
-          ]
-        }
-      ],
+      "materias": [],
       "alumnos": []
     },
     {
       "id": 7,
-      "materias": [
-        {
-          "id": 1776261148900,
-          "nombre": "GENERO Y MASCULINIDADES",
-          "tipo": "extension",
-          "fechas": [],
-          "alumnos": [
-            {
-              "id": "1776260747476",
-              "nombre": "COLMAN HUERTA",
-              "apellido": "MAURO",
-              "dni": "43739318",
-              "pabellon": "5",
-              "fecha_inscripcion": "2026-04-15",
-              "fecha_vencimiento_carnet": "2027-04-15",
-              "asist": {
-                "46106": true,
-                "46120": true
-              },
-              "observaciones": ""
-            }
-          ]
-        }
-      ],
+      "materias": [],
       "alumnos": []
     },
     {
       "id": 8,
-      "materias": [
-        {
-          "id": 1776261148900,
-          "nombre": "GENERO Y MASCULINIDADES",
-          "tipo": "extension",
-          "fechas": [],
-          "alumnos": [
-            {
-              "id": "1776260747476",
-              "nombre": "COLMAN HUERTA",
-              "apellido": "MAURO",
-              "dni": "43739318",
-              "pabellon": "5",
-              "fecha_inscripcion": "2026-04-15",
-              "fecha_vencimiento_carnet": "2027-04-15",
-              "asist": {
-                "46106": true,
-                "46120": true
-              },
-              "observaciones": ""
-            }
-          ]
-        }
-      ],
+      "materias": [],
       "alumnos": []
     },
     {
       "id": 9,
-      "materias": [
-        {
-          "id": 1776261148900,
-          "nombre": "GENERO Y MASCULINIDADES",
-          "tipo": "extension",
-          "fechas": [],
-          "alumnos": [
-            {
-              "id": "1776260747476",
-              "nombre": "COLMAN HUERTA",
-              "apellido": "MAURO",
-              "dni": "43739318",
-              "pabellon": "5",
-              "fecha_inscripcion": "2026-04-15",
-              "fecha_vencimiento_carnet": "2027-04-15",
-              "asist": {
-                "46106": true,
-                "46120": true
-              },
-              "observaciones": ""
-            }
-          ]
-        }
-      ],
+      "materias": [],
       "alumnos": []
     },
     {
       "id": 10,
-      "materias": [
-        {
-          "id": 1776261148900,
-          "nombre": "GENERO Y MASCULINIDADES",
-          "tipo": "extension",
-          "fechas": [],
-          "alumnos": [
-            {
-              "id": "1776260747476",
-              "nombre": "COLMAN HUERTA",
-              "apellido": "MAURO",
-              "dni": "43739318",
-              "pabellon": "5",
-              "fecha_inscripcion": "2026-04-15",
-              "fecha_vencimiento_carnet": "2027-04-15",
-              "asist": {
-                "46106": true,
-                "46120": true
-              },
-              "observaciones": ""
-            }
-          ]
-        }
-      ],
+      "materias": [],
       "alumnos": []
     },
     {
       "id": 11,
-      "materias": [
-        {
-          "id": 1776261148900,
-          "nombre": "GENERO Y MASCULINIDADES",
-          "tipo": "extension",
-          "fechas": [],
-          "alumnos": [
-            {
-              "id": "1776260747476",
-              "nombre": "COLMAN HUERTA",
-              "apellido": "MAURO",
-              "dni": "43739318",
-              "pabellon": "5",
-              "fecha_inscripcion": "2026-04-15",
-              "fecha_vencimiento_carnet": "2027-04-15",
-              "asist": {
-                "46106": true,
-                "46120": true
-              },
-              "observaciones": ""
-            }
-          ]
-        }
-      ],
+      "materias": [],
       "alumnos": []
     }
   ]
