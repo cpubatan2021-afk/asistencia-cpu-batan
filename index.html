@@ -193,7 +193,7 @@
             width: 100%;
             border-collapse: collapse;
             font-size: 0.8rem;
-            min-width: 1000px;
+            min-width: 800px;
         }
         th, td {
             padding: 0.6rem 0.8rem;
@@ -202,6 +202,7 @@
             border-right: 1px solid #334155;
             white-space: normal;
             word-break: break-word;
+            vertical-align: top;
         }
         th {
             background: #0f172a;
@@ -286,7 +287,6 @@
 </head>
 <body>
 <div class="app">
-    <!-- Sidebar -->
     <div class="sidebar" id="sidebar">
         <div class="sidebar-header">
             <div class="logo-area">
@@ -311,7 +311,6 @@
         </div>
     </div>
 
-    <!-- Main -->
     <div class="main" id="main">
         <div class="top-bar">
             <div class="top-bar-left">
@@ -325,7 +324,6 @@
             <div class="clock" id="clock"></div>
         </div>
 
-        <!-- Formulario de matrícula -->
         <div id="formMatricula" class="card" style="display:none;">
             <div class="card-title"><i class="fas fa-user-plus"></i> Matricular nuevo alumno en <span id="materiaActualMatricula"></span></div>
             <div class="flex-row">
@@ -341,7 +339,6 @@
             </div>
         </div>
 
-        <!-- Fechas de clase -->
         <div id="fechasSection" class="card" style="display:none;">
             <div class="card-title"><i class="fas fa-calendar-alt"></i> Fechas de clase <span id="materiaSeleccionada"></span></div>
             <div class="flex-row">
@@ -352,7 +349,6 @@
             <div id="listaFechas" style="display: flex; flex-wrap: wrap; gap: 0.4rem;"></div>
         </div>
 
-        <!-- Asistencia de la materia actual -->
         <div id="asistenciaSection" class="card" style="display:none;">
             <div class="card-title">
                 <i class="fas fa-check-double"></i> Asistencia
@@ -372,7 +368,6 @@
             <div id="tablaAsistencia" class="table-wrapper"></div>
         </div>
 
-        <!-- Lista general de alumnos (matrícula completa) -->
         <div id="listaGeneralSection" class="card">
             <div class="card-title">
                 <i class="fas fa-users"></i> Matrícula completa
@@ -392,7 +387,6 @@
             <div id="tablaGeneral" class="table-wrapper"></div>
         </div>
 
-        <!-- Estadísticas -->
         <div class="card">
             <div class="card-title"><i class="fas fa-chart-line"></i> Estadísticas</div>
             <div class="flex-row">
@@ -405,7 +399,6 @@
     </div>
 </div>
 
-<!-- Modal Nueva Materia -->
 <div id="modalNuevaMateria" class="modal">
     <div class="modal-content">
         <div class="modal-header">
@@ -437,13 +430,10 @@
 </div>
 
 <script>
-    // ==================== CONFIGURACIÓN GITHUB ====================
-    const GITHUB_TOKEN = "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";
-    const GITHUB_USER = "cpubatan2021-afk";
-    const GITHUB_REPO = "asistencia-cpu-batan";
-    const GITHUB_FILE = "datos.json";
-    const GITHUB_API_URL = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${GITHUB_FILE}`;
-    const GITHUB_RAW_URL = `https://raw.githubusercontent.com/${GITHUB_USER}/${GITHUB_REPO}/main/${GITHUB_FILE}`;
+    // ==================== CONFIGURACIÓN JSONBin.io ====================
+    const JSONBIN_BIN_ID = "69e13cfc856a682189404f5f";
+    const JSONBIN_API_KEY = "$2a$10$VVYl3yV7Pml2SuvNjKX2iuRSBOeqM35VmlN2KapBFGcZSgjPlTmw6";
+    const JSONBIN_URL = `https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}`;
 
     let globalData = { materias: [], alumnos: [] };
     let currentMateriaId = null;
@@ -453,7 +443,6 @@
     let currentOrdenGeneral = "apellido_asc";
     let searchAsistencia = "";
     let searchGeneral = "";
-    
     let adminMode = false;
     let clickCount = 0;
     let clickTimer = null;
@@ -507,30 +496,29 @@
         });
     }
     
-    async function guardarEnGitHub() {
+    // ==================== JSONBIN ====================
+    async function guardarEnJSONBin() {
         if (!hayCambios) return;
-        const contenido = btoa(unescape(encodeURIComponent(JSON.stringify(globalData, null, 2))));
         try {
-            let sha = null;
-            const getResp = await fetch(GITHUB_API_URL, { headers: { Authorization: `token ${GITHUB_TOKEN}` } });
-            if (getResp.ok) { const fileInfo = await getResp.json(); sha = fileInfo.sha; }
-            const payload = { message: "Actualización automática", content: contenido, branch: "main" };
-            if (sha) payload.sha = sha;
-            const putResp = await fetch(GITHUB_API_URL, { method: "PUT", headers: { Authorization: `token ${GITHUB_TOKEN}`, "Content-Type": "application/json" }, body: JSON.stringify(payload) });
-            if (putResp.ok) { mostrarToast("✅ Sincronizado con GitHub"); hayCambios = false; }
+            const response = await fetch(JSONBIN_URL, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json", "X-Master-Key": JSONBIN_API_KEY },
+                body: JSON.stringify(globalData)
+            });
+            if (response.ok) { mostrarToast("✅ Sincronizado con JSONBin"); hayCambios = false; }
             else throw new Error();
-        } catch(e) { mostrarToast("❌ Error de sincronización (ver consola)", true); console.error(e); }
+        } catch(e) { mostrarToast("❌ Error de sincronización", true); console.error(e); }
     }
 
-    async function cargarDesdeGitHub() {
+    async function cargarDesdeJSONBin() {
         try {
-            const res = await fetch(GITHUB_RAW_URL + "?t=" + Date.now());
-            if (!res.ok) throw new Error();
-            const data = await res.json();
-            if (data && (data.materias || data.alumnos)) {
-                globalData = { materias: data.materias || [], alumnos: data.alumnos || [] };
+            const response = await fetch(`${JSONBIN_URL}/latest`, { headers: { "X-Master-Key": JSONBIN_API_KEY } });
+            if (!response.ok) throw new Error();
+            const data = await response.json();
+            if (data.record && (data.record.materias || data.record.alumnos)) {
+                globalData = { materias: data.record.materias || [], alumnos: data.record.alumnos || [] };
                 localStorage.setItem('cpu_data', JSON.stringify(globalData));
-                mostrarToast("✅ Datos cargados desde GitHub");
+                mostrarToast("✅ Datos cargados desde JSONBin");
                 return true;
             }
         } catch(e) { console.warn(e); }
@@ -553,15 +541,12 @@
         setTimeout(() => t.remove(), 3000);
     }
 
-    setInterval(async () => { if (hayCambios) await guardarEnGitHub(); }, 30000);
+    setInterval(async () => { if (hayCambios) await guardarEnJSONBin(); }, 30000);
 
     function getMaterias() { return globalData.materias; }
     function getCurrentMateria() { return globalData.materias.find(m => m.id === currentMateriaId) || null; }
     function getAlumnosGlobal() { return globalData.alumnos; }
-
-    function getMateriasPorAlumno(alumnoId) {
-        return getMaterias().filter(m => m.alumnos.some(a => a.id === alumnoId)).map(m => m.nombre);
-    }
+    function getMateriasPorAlumno(alumnoId) { return getMaterias().filter(m => m.alumnos.some(a => a.id === alumnoId)).map(m => m.nombre); }
 
     function renderSidebar() {
         const materias = getMaterias();
@@ -584,11 +569,8 @@
         document.getElementById('fechasSection').style.display = mostrar ? 'block' : 'none';
         document.getElementById('asistenciaSection').style.display = mostrar ? 'block' : 'none';
         const formMatricula = document.getElementById('formMatricula');
-        if (formMatricula && mostrar && adminMode) {
-            formMatricula.style.display = 'block';
-        } else if (formMatricula) {
-            formMatricula.style.display = 'none';
-        }
+        if (formMatricula && mostrar && adminMode) formMatricula.style.display = 'block';
+        else if (formMatricula) formMatricula.style.display = 'none';
         if (materia) {
             document.getElementById('materiaSeleccionada').innerText = `(${materia.nombre})`;
             document.getElementById('materiaActualMatricula').innerText = materia.nombre;
@@ -673,39 +655,34 @@
             container.innerHTML = '<div class="help-text">No hay alumnos. Use el formulario de matrícula.</div>';
             return;
         }
-        let html = `<table>\n<thead>\n`;
-        html += `  <tr>\n`;
-        html += `    <th>Alumno</th>\n    <th>DNI</th>\n    <th>Pabellón</th>\n`;
-        fechas.forEach(f => html += `    <th>${escapeHtml(f)}</th>\n`);
-        html += `    <th>Observaciones</th>\n`;
-        if (adminMode) html += `    <th>Acciones</th>\n`;
-        html += `  </tr>\n</thead>\n<tbody>\n`;
+        let html = `<table><thead>`;
+        html += `<tr><th>Alumno</th><th>DNI</th><th>Pabellón</th>`;
+        fechas.forEach(f => html += `<th>${escapeHtml(f)}</th>`);
+        html += `<th>Observaciones</th>`;
+        if (adminMode) html += `<th>Acciones</th>`;
+        html += `</tr></thead><tbody>`;
         alumnos.forEach(al => {
-            html += `  <tr>\n`;
-            html += `     <td><strong>${escapeHtml(al.apellido)} ${escapeHtml(al.nombre)}</strong></td>\n`;
-            html += `     <td>${escapeHtml(al.dni || '—')}</td>\n`;
-            html += `     <td>${escapeHtml(al.pabellon)}</td>\n`;
+            html += `<tr>`;
+            html += `<td><strong>${escapeHtml(al.apellido)}</strong><br><span style="font-size:0.7rem;">${escapeHtml(al.nombre)}</span></td>`;
+            html += `<td>${escapeHtml(al.dni || '—')}</td>`;
+            html += `<td>${escapeHtml(al.pabellon)}</td>`;
             fechas.forEach(f => {
                 const presente = al.asist && al.asist[f];
                 if (adminMode) {
-                    const checked = presente ? 'checked' : '';
-                    html += `    <td style="text-align:center;"><input type="checkbox" ${checked} onclick="toggleAsistencia('${al.id}','${escapeHtml(f)}')"></td>\n`;
+                    html += `<td style="text-align:center;"><input type="checkbox" ${presente ? 'checked' : ''} onclick="toggleAsistencia('${al.id}','${escapeHtml(f)}')"></td>`;
                 } else {
-                    const icono = presente ? '<i class="fas fa-check-circle" style="color: #10b981; font-size: 1.1rem;"></i>' : '<i class="far fa-circle" style="color: #4a5568; font-size: 1.1rem;"></i>';
-                    html += `    <td style="text-align:center;">${icono}</td>\n`;
+                    html += `<td style="text-align:center;">${presente ? '<i class="fas fa-check-circle" style="color:#10b981;"></i>' : '<i class="far fa-circle"></i>'}</td>`;
                 }
             });
-            html += `     <td><textarea style="width:100px" ${adminMode ? `onchange="updateObservaciones('${al.id}',this.value)"` : 'readonly disabled'} >${escapeHtml(al.observaciones || '')}</textarea></td>\n`;
+            html += `<td><textarea style="width:100px" ${adminMode ? `onchange="updateObservaciones('${al.id}',this.value)"` : 'readonly disabled'}>${escapeHtml(al.observaciones || '')}</textarea></td>`;
             if (adminMode) {
-                html += `     <td>
-                            <button class="btn-sm" onclick="editarAlumnoCompleto('${al.id}')"><i class="fas fa-edit"></i></button>
-                            <button class="btn-sm" onclick="eliminarAlumnoDeMateria('${al.id}')"><i class="fas fa-trash"></i></button>
-                            <button class="btn-sm" onclick="renovarCarnet('${al.id}')"><i class="fas fa-id-card"></i></button>
-                           </td>\n`;
+                html += `<td><button class="btn-sm" onclick="editarAlumnoCompleto('${al.id}')"><i class="fas fa-edit"></i></button>
+                         <button class="btn-sm" onclick="eliminarAlumnoDeMateria('${al.id}')"><i class="fas fa-trash"></i></button>
+                         <button class="btn-sm" onclick="renovarCarnet('${al.id}')"><i class="fas fa-id-card"></i></button></td>`;
             }
-            html += `   </tr>\n`;
+            html += `</tr>`;
         });
-        html += `</tbody>\n</table>`;
+        html += `</tbody></table>`;
         container.innerHTML = html;
     }
 
@@ -713,203 +690,34 @@
         if (!adminMode) return;
         const materia = getCurrentMateria();
         const alumno = materia?.alumnos.find(a => a.id === alumnoId);
-        if (alumno) {
-            if (!alumno.asist) alumno.asist = {};
-            alumno.asist[fecha] = !alumno.asist[fecha];
-            guardarLocal();
-            renderTablaAsistencia();
-        }
+        if (alumno) { if (!alumno.asist) alumno.asist = {}; alumno.asist[fecha] = !alumno.asist[fecha]; guardarLocal(); renderTablaAsistencia(); }
     };
+    window.updateObservaciones = function(alumnoId, texto) { if (!adminMode) return; const materia = getCurrentMateria(); const alumno = materia?.alumnos.find(a => a.id === alumnoId); if (alumno) { alumno.observaciones = texto; guardarLocal(); } };
+    window.editarAlumnoCompleto = function(alumnoId) { if (!adminMode) return; const alumno = getAlumnosGlobal().find(a => a.id === alumnoId); if (!alumno) return; const nuevoApellido = prompt('Nuevo apellido', alumno.apellido); if (nuevoApellido) alumno.apellido = nuevoApellido; const nuevoNombre = prompt('Nuevo nombre', alumno.nombre); if (nuevoNombre) alumno.nombre = nuevoNombre; const nuevoDni = prompt('Nuevo DNI', alumno.dni); if (nuevoDni) alumno.dni = nuevoDni; const nuevoPabellon = prompt('Nuevo pabellón', alumno.pabellon); if (nuevoPabellon) alumno.pabellon = nuevoPabellon; const nuevaFechaIngreso = prompt('Fecha inscripción (YYYY-MM-DD)', alumno.fecha_inscripcion || ''); if (nuevaFechaIngreso) alumno.fecha_inscripcion = nuevaFechaIngreso; const nuevaFechaVenc = prompt('Fecha vencimiento carnet (YYYY-MM-DD)', alumno.fecha_vencimiento_carnet || ''); if (nuevaFechaVenc) alumno.fecha_vencimiento_carnet = nuevaFechaVenc; getMaterias().forEach(m => { const a = m.alumnos.find(a => a.id === alumnoId); if (a) { a.apellido = alumno.apellido; a.nombre = alumno.nombre; a.dni = alumno.dni; a.pabellon = alumno.pabellon; a.fecha_inscripcion = alumno.fecha_inscripcion; a.fecha_vencimiento_carnet = alumno.fecha_vencimiento_carnet; } }); guardarLocal(); renderTablaAsistencia(); renderListaGeneral(); mostrarToast('Alumno actualizado'); };
+    window.eliminarAlumnoDeMateria = function(alumnoId) { if (!adminMode) return; const materia = getCurrentMateria(); if (materia) { materia.alumnos = materia.alumnos.filter(a => a.id !== alumnoId); guardarLocal(); renderTablaAsistencia(); renderListaGeneral(); mostrarToast('Alumno eliminado de esta materia'); } };
+    window.renovarCarnet = function(alumnoId) { if (!adminMode) return; const materia = getCurrentMateria(); const alumno = materia?.alumnos.find(a => a.id === alumnoId); if (alumno) { const venc = new Date(alumno.fecha_vencimiento_carnet); venc.setFullYear(venc.getFullYear() + 1); alumno.fecha_vencimiento_carnet = venc.toISOString().slice(0,10); const globalAlumno = getAlumnosGlobal().find(a => a.id === alumnoId); if (globalAlumno) globalAlumno.fecha_vencimiento_carnet = alumno.fecha_vencimiento_carnet; guardarLocal(); renderTablaAsistencia(); renderListaGeneral(); mostrarToast('Carnet renovado'); } };
 
-    window.updateObservaciones = function(alumnoId, texto) {
-        if (!adminMode) return;
-        const materia = getCurrentMateria();
-        const alumno = materia?.alumnos.find(a => a.id === alumnoId);
-        if (alumno) { alumno.observaciones = texto; guardarLocal(); }
-    };
-
-    window.editarAlumnoCompleto = function(alumnoId) {
-        if (!adminMode) return;
-        const alumno = getAlumnosGlobal().find(a => a.id === alumnoId);
-        if (!alumno) return;
-        const nuevoApellido = prompt('Nuevo apellido', alumno.apellido);
-        if (nuevoApellido) alumno.apellido = nuevoApellido;
-        const nuevoNombre = prompt('Nuevo nombre', alumno.nombre);
-        if (nuevoNombre) alumno.nombre = nuevoNombre;
-        const nuevoDni = prompt('Nuevo DNI', alumno.dni);
-        if (nuevoDni) alumno.dni = nuevoDni;
-        const nuevoPabellon = prompt('Nuevo pabellón', alumno.pabellon);
-        if (nuevoPabellon) alumno.pabellon = nuevoPabellon;
-        const nuevaFechaIngreso = prompt('Fecha inscripción (YYYY-MM-DD)', alumno.fecha_inscripcion || '');
-        if (nuevaFechaIngreso) alumno.fecha_inscripcion = nuevaFechaIngreso;
-        const nuevaFechaVenc = prompt('Fecha vencimiento carnet (YYYY-MM-DD)', alumno.fecha_vencimiento_carnet || '');
-        if (nuevaFechaVenc) alumno.fecha_vencimiento_carnet = nuevaFechaVenc;
-        getMaterias().forEach(m => {
-            const a = m.alumnos.find(a => a.id === alumnoId);
-            if (a) {
-                a.apellido = alumno.apellido;
-                a.nombre = alumno.nombre;
-                a.dni = alumno.dni;
-                a.pabellon = alumno.pabellon;
-                a.fecha_inscripcion = alumno.fecha_inscripcion;
-                a.fecha_vencimiento_carnet = alumno.fecha_vencimiento_carnet;
-            }
-        });
-        guardarLocal();
-        renderTablaAsistencia();
-        renderListaGeneral();
-        mostrarToast('Alumno actualizado');
-    };
-    
-    window.eliminarAlumnoDeMateria = function(alumnoId) {
-        if (!adminMode) return;
-        const materia = getCurrentMateria();
-        if (materia) {
-            materia.alumnos = materia.alumnos.filter(a => a.id !== alumnoId);
-            guardarLocal();
-            renderTablaAsistencia();
-            renderListaGeneral();
-            mostrarToast('Alumno eliminado de esta materia');
-        }
-    };
-    
-    window.renovarCarnet = function(alumnoId) {
-        if (!adminMode) return;
-        const materia = getCurrentMateria();
-        const alumno = materia?.alumnos.find(a => a.id === alumnoId);
-        if (alumno) {
-            const venc = new Date(alumno.fecha_vencimiento_carnet);
-            venc.setFullYear(venc.getFullYear() + 1);
-            alumno.fecha_vencimiento_carnet = venc.toISOString().slice(0,10);
-            const globalAlumno = getAlumnosGlobal().find(a => a.id === alumnoId);
-            if (globalAlumno) globalAlumno.fecha_vencimiento_carnet = alumno.fecha_vencimiento_carnet;
-            guardarLocal();
-            renderTablaAsistencia();
-            renderListaGeneral();
-            mostrarToast('Carnet renovado');
-        }
-    };
-
-    // ==================== FUNCIÓN CORREGIDA: RENDER LISTA GENERAL (MATRÍCULA COMPLETA) ====================
     function renderListaGeneral() {
         let alumnos = getAlumnosOrdenadosFiltrados(false);
         const container = document.getElementById('tablaGeneral');
         const contadorTotalSpan = document.getElementById('contadorAlumnosTotal');
         if (contadorTotalSpan) contadorTotalSpan.innerText = `${alumnos.length} alumnos`;
-        if (alumnos.length === 0) {
-            container.innerHTML = '<div class="help-text">No hay alumnos registrados.</div>';
-            return;
-        }
-        // Generamos la tabla con saltos de línea explícitos y espacios entre celdas
-        let html = '<table>\n<thead>\n<tr>\n';
-        html += '  <th>Apellido</th>\n  <th>Nombre</th>\n  <th>DNI</th>\n  <th>Pabellón</th>\n';
-        html += '  <th>Fecha inscripción</th>\n  <th>Vencimiento carnet</th>\n  <th>Materias</th>\n';
-        if (adminMode) html += '  <th>Editar</th>\n';
-        html += '</tr>\n</thead>\n<tbody>\n';
+        if (alumnos.length === 0) { container.innerHTML = '<div class="help-text">No hay alumnos registrados.</div>'; return; }
+        let html = `<table><thead><tr><th>Apellido</th><th>Nombre</th><th>DNI</th><th>Pabellón</th><th>Fecha inscripción</th><th>Vencimiento carnet</th><th>Materias</th>${adminMode ? '<th>Editar</th>' : ''}</tr></thead><tbody>`;
         alumnos.forEach(al => {
             const materiasStr = getMateriasPorAlumno(al.id).join(', ');
-            html += '<tr>\n';
-            html += `  <td>${escapeHtml(al.apellido)}</td>\n`;
-            html += `  <td>${escapeHtml(al.nombre)}</td>\n`;
-            html += `  <td>${escapeHtml(al.dni || '—')}</td>\n`;
-            html += `  <td>${escapeHtml(al.pabellon)}</td>\n`;
-            html += `  <td>${escapeHtml(al.fecha_inscripcion || '—')}</td>\n`;
-            html += `  <td>${escapeHtml(al.fecha_vencimiento_carnet || '—')}</td>\n`;
-            html += `  <td>${escapeHtml(materiasStr || 'Ninguna')}</td>\n`;
-            if (adminMode) {
-                html += `  <td><button class="btn-sm" onclick="editarAlumnoCompleto('${al.id}')"><i class="fas fa-edit"></i></button></td>\n`;
-            }
-            html += '</tr>\n';
+            html += `<tr><td>${escapeHtml(al.apellido)}</td><td>${escapeHtml(al.nombre)}</td><td>${escapeHtml(al.dni || '—')}</td><td>${escapeHtml(al.pabellon)}</td><td>${escapeHtml(al.fecha_inscripcion || '—')}</td><td>${escapeHtml(al.fecha_vencimiento_carnet || '—')}</td><td>${escapeHtml(materiasStr || 'Ninguna')}</td>${adminMode ? `<td><button class="btn-sm" onclick="editarAlumnoCompleto('${al.id}')"><i class="fas fa-edit"></i></button></td>` : ''}</tr>`;
         });
-        html += '</tbody>\n</table>';
+        html += `</tbody></table>`;
         container.innerHTML = html;
     }
 
-    function crearMateria(nombre, dias, horaInicio, horaFin) {
-        if (!adminMode) return;
-        if (!nombre.trim()) return alert('Ingrese nombre');
-        const newId = Date.now();
-        const horarioStr = (horaInicio && horaFin) ? `${horaInicio} - ${horaFin}` : '';
-        const nueva = {
-            id: newId,
-            nombre: nombre,
-            dias: dias || [],
-            horario: horarioStr,
-            fechas: [],
-            alumnos: []
-        };
-        globalData.materias.push(nueva);
-        guardarLocal();
-        renderSidebar();
-        currentMateriaId = newId;
-        seleccionarMateria(newId);
-        mostrarToast(`Materia "${nombre}" creada`);
-    }
+    function crearMateria(nombre, dias, horaInicio, horaFin) { if (!adminMode) return; if (!nombre.trim()) return alert('Ingrese nombre'); const newId = Date.now(); const horarioStr = (horaInicio && horaFin) ? `${horaInicio} - ${horaFin}` : ''; const nueva = { id: newId, nombre: nombre, dias: dias || [], horario: horarioStr, fechas: [], alumnos: [] }; globalData.materias.push(nueva); guardarLocal(); renderSidebar(); currentMateriaId = newId; seleccionarMateria(newId); mostrarToast(`Materia "${nombre}" creada`); }
+    function eliminarMateria(id) { if (!adminMode) return; if (!confirm('¿Eliminar materia? Se perderán las asistencias.')) return; globalData.materias = globalData.materias.filter(m => m.id !== id); if (currentMateriaId === id) currentMateriaId = null; guardarLocal(); renderSidebar(); seleccionarMateria(null); renderListaGeneral(); mostrarToast('Materia eliminada'); }
+    function agregarFecha(fecha) { if (!adminMode) return; const materia = getCurrentMateria(); if (!materia) return alert('Seleccione una materia'); if (!fecha.trim()) return alert('Ingrese nombre de fecha'); if (!materia.fechas) materia.fechas = []; materia.fechas.push(fecha.trim()); guardarLocal(); renderFechas(); renderTablaAsistencia(); mostrarToast(`Fecha "${fecha}" agregada`); }
+    function matricularAlumnoManual(apellido, nombre, dni, pabellon, fechaIngreso, fechaVenc) { if (!adminMode) return; if (!apellido || !nombre || !pabellon) return alert('Complete apellido, nombre y pabellón'); const materia = getCurrentMateria(); if (!materia) return alert('Seleccione una materia'); const idUnico = Date.now() + '-' + Math.random().toString(36).substr(2, 5); const hoy = new Date().toISOString().slice(0,10); const vencDef = new Date(); vencDef.setFullYear(vencDef.getFullYear()+1); const nuevoAlumno = { id: idUnico, apellido, nombre, dni: dni || '', pabellon, fecha_inscripcion: fechaIngreso || hoy, fecha_vencimiento_carnet: fechaVenc || vencDef.toISOString().slice(0,10), asist: {}, observaciones: '' }; globalData.alumnos.push(nuevoAlumno); materia.alumnos.push({ ...nuevoAlumno, asist: {}, observaciones: '' }); guardarLocal(); renderTablaAsistencia(); renderListaGeneral(); mostrarToast(`Alumno ${apellido} ${nombre} matriculado`); }
 
-    function eliminarMateria(id) {
-        if (!adminMode) return;
-        if (!confirm('¿Eliminar materia? Se perderán las asistencias.')) return;
-        globalData.materias = globalData.materias.filter(m => m.id !== id);
-        if (currentMateriaId === id) currentMateriaId = null;
-        guardarLocal();
-        renderSidebar();
-        seleccionarMateria(null);
-        renderListaGeneral();
-        mostrarToast('Materia eliminada');
-    }
-
-    function agregarFecha(fecha) {
-        if (!adminMode) return;
-        const materia = getCurrentMateria();
-        if (!materia) return alert('Seleccione una materia');
-        if (!fecha.trim()) return alert('Ingrese nombre de fecha');
-        if (!materia.fechas) materia.fechas = [];
-        materia.fechas.push(fecha.trim());
-        guardarLocal();
-        renderFechas();
-        renderTablaAsistencia();
-        mostrarToast(`Fecha "${fecha}" agregada`);
-    }
-
-    function separarNombreApellido(nombreCompleto) {
-        const partes = nombreCompleto.trim().split(/\s+/);
-        if (partes.length === 1) return { nombre: partes[0], apellido: '' };
-        const nombre = partes[0];
-        const apellido = partes.slice(1).join(' ');
-        return { nombre, apellido };
-    }
-
-    function matricularAlumnoManual(apellido, nombre, dni, pabellon, fechaIngreso, fechaVenc) {
-        if (!adminMode) return;
-        if (!apellido || !nombre || !pabellon) return alert('Complete apellido, nombre y pabellón');
-        const materia = getCurrentMateria();
-        if (!materia) return alert('Seleccione una materia');
-        const idUnico = Date.now() + '-' + Math.random().toString(36).substr(2, 5);
-        const hoy = new Date().toISOString().slice(0,10);
-        const vencDef = new Date(); vencDef.setFullYear(vencDef.getFullYear()+1);
-        const nuevoAlumno = {
-            id: idUnico,
-            apellido, nombre,
-            dni: dni || '',
-            pabellon,
-            fecha_inscripcion: fechaIngreso || hoy,
-            fecha_vencimiento_carnet: fechaVenc || vencDef.toISOString().slice(0,10),
-            asist: {},
-            observaciones: ''
-        };
-        globalData.alumnos.push(nuevoAlumno);
-        materia.alumnos.push({ ...nuevoAlumno, asist: {}, observaciones: '' });
-        guardarLocal();
-        renderTablaAsistencia();
-        renderListaGeneral();
-        mostrarToast(`Alumno ${apellido} ${nombre} matriculado`);
-    }
-
-    function excelDateToJSDate(serial) {
-        const utc_days = Math.floor(serial - 25569);
-        const date = new Date(utc_days * 86400 * 1000);
-        return date.toISOString().slice(0,10);
-    }
+    function excelDateToJSDate(serial) { const utc_days = Math.floor(serial - 25569); const date = new Date(utc_days * 86400 * 1000); return date.toISOString().slice(0,10); }
 
     function importarExcel(file) {
         if (!adminMode) return;
@@ -924,9 +732,7 @@
             if (!rows.length) return alert("Archivo vacío");
 
             let materiaNombre = "";
-            if (rows[1] && rows[1][1]) {
-                materiaNombre = rows[1][1].toString().trim();
-            }
+            if (rows[1] && rows[1][1]) materiaNombre = rows[1][1].toString().trim();
             if (!materiaNombre) materiaNombre = "Materia importada";
 
             let headerRowIndex = -1;
@@ -951,16 +757,32 @@
                     break;
                 }
             }
-            if (headerRowIndex === -1) return alert("No se encontró la fila de encabezados");
+            if (headerRowIndex === -1) return alert("No se encontró la fila de encabezados (debe contener 'APELLIDO' en la primera celda)");
 
             const alumnosData = [];
             for (let i = headerRowIndex + 1; i < rows.length; i++) {
                 const row = rows[i];
                 if (!row || row.length < 4) continue;
-                const apellido = row[0]?.toString().trim() || "";
-                const nombre = row[1]?.toString().trim() || "";
-                const dni = row[2]?.toString().trim() || "";
-                const pabellon = row[3]?.toString().trim() || "";
+                let apellido = row[0]?.toString().trim() || "";
+                let nombre = row[1]?.toString().trim() || "";
+                let dni = row[2]?.toString().trim() || "";
+                let pabellon = row[3]?.toString().trim() || "";
+                
+                // Si el nombre está vacío y el apellido tiene espacios, separar
+                if (!nombre && apellido.includes(" ")) {
+                    const partes = apellido.split(/\s+/);
+                    if (partes.length >= 2) {
+                        nombre = partes.slice(0, -1).join(" ");
+                        apellido = partes[partes.length - 1];
+                    }
+                }
+                // Si aún no hay nombre, podría ser que las columnas estén invertidas
+                if (!nombre && row[1] && !row[0]) {
+                    apellido = row[1]?.toString().trim() || "";
+                    nombre = row[0]?.toString().trim() || "";
+                }
+                dni = dni.replace(/[^0-9]/g, '');
+                pabellon = pabellon.replace(/[?¿!]/g, '').trim();
                 if (apellido === "" && nombre === "" && dni === "") continue;
                 const asistencias = [];
                 for (let j = 4; j < row.length; j++) {
@@ -996,264 +818,52 @@
                     asist: {},
                     observaciones: ''
                 };
-                if (!globalData.alumnos.some(a => a.id === idUnico)) {
-                    globalData.alumnos.push(nuevoAlumno);
-                }
+                if (!globalData.alumnos.some(a => a.id === idUnico)) globalData.alumnos.push(nuevoAlumno);
                 const alumnoMateria = { ...nuevoAlumno, asist: {}, observaciones: '' };
-                if (!materia.alumnos.some(a => a.id === idUnico)) {
-                    materia.alumnos.push(alumnoMateria);
-                }
+                if (!materia.alumnos.some(a => a.id === idUnico)) materia.alumnos.push(alumnoMateria);
                 for (let idx = 0; idx < fechas.length; idx++) {
-                    if (al.asistencias[idx] === true) {
-                        alumnoMateria.asist[fechas[idx]] = true;
-                    }
+                    if (al.asistencias[idx] === true) alumnoMateria.asist[fechas[idx]] = true;
                 }
             }
             guardarLocal();
             currentMateriaId = materia.id;
             seleccionarMateria(materia.id);
-            alert(`✅ Importado: ${alumnosData.length} alumnos, ${fechas.length} fechas.`);
+            alert(`✅ Importado: ${alumnosData.length} alumnos, ${fechas.length} fechas. Revise la tabla.`);
         };
         reader.readAsArrayBuffer(file);
     }
 
-    function exportarExcel() {
-        const materia = getCurrentMateria();
-        if (!materia || !materia.alumnos.length) return alert('No hay alumnos');
-        const data = materia.alumnos.map(a => ({
-            Apellido: a.apellido, Nombre: a.nombre, DNI: a.dni, Pabellón: a.pabellon,
-            'Fecha Inscripción': a.fecha_inscripcion, 'Fecha Vencimiento': a.fecha_vencimiento_carnet,
-            Observaciones: a.observaciones || ''
-        }));
-        const ws = XLSX.utils.json_to_sheet(data);
-        const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, 'Alumnos');
-        XLSX.writeFile(wb, `Alumnos_${materia.nombre}.xlsx`);
-        mostrarToast('Exportado');
-    }
+    function exportarExcel() { const materia = getCurrentMateria(); if (!materia || !materia.alumnos.length) return alert('No hay alumnos'); const data = materia.alumnos.map(a => ({ Apellido: a.apellido, Nombre: a.nombre, DNI: a.dni, Pabellón: a.pabellon, 'Fecha Inscripción': a.fecha_inscripcion, 'Fecha Vencimiento': a.fecha_vencimiento_carnet, Observaciones: a.observaciones || '' })); const ws = XLSX.utils.json_to_sheet(data); const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, 'Alumnos'); XLSX.writeFile(wb, `Alumnos_${materia.nombre}.xlsx`); mostrarToast('Exportado'); }
 
-    async function generarEstadisticas() {
-        const materiaId = parseInt(document.getElementById('estMateria').value);
-        if (!materiaId) {
-            document.getElementById('estadisticasResumen').innerHTML = '<div class="help-text">Seleccione una materia para ver estadísticas.</div>';
-            if (chartInstance) { chartInstance.destroy(); chartInstance = null; }
-            return;
-        }
-        const materia = globalData.materias.find(m => m.id === materiaId);
-        if (!materia) {
-            document.getElementById('estadisticasResumen').innerHTML = '<div class="help-text">Materia no encontrada.</div>';
-            if (chartInstance) { chartInstance.destroy(); chartInstance = null; }
-            return;
-        }
-        const fechas = materia.fechas || [];
-        const totalClases = fechas.length;
-        if (totalClases === 0) {
-            document.getElementById('estadisticasResumen').innerHTML = '<div class="help-text">No hay fechas cargadas para esta materia.</div>';
-            if (chartInstance) { chartInstance.destroy(); chartInstance = null; }
-            return;
-        }
-        let totalAsistencias = 0;
-        const alumnosMap = new Map();
-        (materia.alumnos || []).forEach(al => {
-            if (!alumnosMap.has(al.id)) {
-                alumnosMap.set(al.id, {
-                    nombre: `${al.apellido} ${al.nombre}`,
-                    dni: al.dni,
-                    asistencias: 0,
-                    faltas: 0
-                });
-            }
-            const stats = alumnosMap.get(al.id);
-            fechas.forEach(f => {
-                if (al.asist && al.asist[f]) {
-                    stats.asistencias++;
-                    totalAsistencias++;
-                } else {
-                    stats.faltas++;
-                }
-            });
-        });
-        const totalAlumnos = alumnosMap.size;
-        const totalFaltas = (totalClases * totalAlumnos) - totalAsistencias;
-        const pctGeneral = totalClases * totalAlumnos ? Math.round(totalAsistencias / (totalClases * totalAlumnos) * 100) : 0;
-        let html = `<div style="display:grid; grid-template-columns:repeat(3,1fr); gap:0.8rem; margin-bottom:0.8rem;">
-            <div style="background:#0f172a; padding:0.5rem; border-radius:0.5rem; text-align:center;">
-                <h3 style="font-size:0.9rem;">Asistencias</h3>
-                <p style="font-size:1.2rem;">${totalAsistencias}</p>
-            </div>
-            <div style="background:#0f172a; padding:0.5rem; border-radius:0.5rem; text-align:center;">
-                <h3 style="font-size:0.9rem;">Faltas</h3>
-                <p style="font-size:1.2rem;">${totalFaltas}</p>
-            </div>
-            <div style="background:#0f172a; padding:0.5rem; border-radius:0.5rem; text-align:center;">
-                <h3 style="font-size:0.9rem;">% General</h3>
-                <p style="font-size:1.2rem;">${pctGeneral}%</p>
-            </div>
-        </div>`;
-        document.getElementById('estadisticasResumen').innerHTML = html;
-        if (chartInstance) { chartInstance.destroy(); }
-        const ctx = document.getElementById('graficoAsistencia').getContext('2d');
-        const labels = Array.from(alumnosMap.values()).map(a => a.nombre.split(' ')[0]);
-        const data = Array.from(alumnosMap.values()).map(a => totalClases ? Math.round(a.asistencias / totalClases * 100) : 0);
-        if (labels.length > 0) {
-            chartInstance = new Chart(ctx, {
-                type: 'bar',
-                data: { labels, datasets: [{ label: '% Asistencia', data, backgroundColor: '#4f46e5' }] },
-                options: { responsive: true, scales: { y: { max: 100, beginAtZero: true } } }
-            });
-        } else {
-            chartInstance = null;
-        }
-    }
+    async function generarEstadisticas() { const materiaId = parseInt(document.getElementById('estMateria').value); if (!materiaId) { document.getElementById('estadisticasResumen').innerHTML = '<div class="help-text">Seleccione una materia para ver estadísticas.</div>'; if (chartInstance) { chartInstance.destroy(); chartInstance = null; } return; } const materia = globalData.materias.find(m => m.id === materiaId); if (!materia) { document.getElementById('estadisticasResumen').innerHTML = '<div class="help-text">Materia no encontrada.</div>'; if (chartInstance) { chartInstance.destroy(); chartInstance = null; } return; } const fechas = materia.fechas || []; const totalClases = fechas.length; if (totalClases === 0) { document.getElementById('estadisticasResumen').innerHTML = '<div class="help-text">No hay fechas cargadas para esta materia.</div>'; if (chartInstance) { chartInstance.destroy(); chartInstance = null; } return; } let totalAsistencias = 0; const alumnosMap = new Map(); (materia.alumnos || []).forEach(al => { if (!alumnosMap.has(al.id)) { alumnosMap.set(al.id, { nombre: `${al.apellido} ${al.nombre}`, dni: al.dni, asistencias: 0, faltas: 0 }); } const stats = alumnosMap.get(al.id); fechas.forEach(f => { if (al.asist && al.asist[f]) { stats.asistencias++; totalAsistencias++; } else { stats.faltas++; } }); }); const totalAlumnos = alumnosMap.size; const totalFaltas = (totalClases * totalAlumnos) - totalAsistencias; const pctGeneral = totalClases * totalAlumnos ? Math.round(totalAsistencias / (totalClases * totalAlumnos) * 100) : 0; let html = `<div style="display:grid; grid-template-columns:repeat(3,1fr); gap:0.8rem; margin-bottom:0.8rem;"><div style="background:#0f172a; padding:0.5rem; border-radius:0.5rem; text-align:center;"><h3 style="font-size:0.9rem;">Asistencias</h3><p style="font-size:1.2rem;">${totalAsistencias}</p></div><div style="background:#0f172a; padding:0.5rem; border-radius:0.5rem; text-align:center;"><h3 style="font-size:0.9rem;">Faltas</h3><p style="font-size:1.2rem;">${totalFaltas}</p></div><div style="background:#0f172a; padding:0.5rem; border-radius:0.5rem; text-align:center;"><h3 style="font-size:0.9rem;">% General</h3><p style="font-size:1.2rem;">${pctGeneral}%</p></div></div>`; document.getElementById('estadisticasResumen').innerHTML = html; if (chartInstance) chartInstance.destroy(); const ctx = document.getElementById('graficoAsistencia').getContext('2d'); const labels = Array.from(alumnosMap.values()).map(a => a.nombre.split(' ')[0]); const data = Array.from(alumnosMap.values()).map(a => totalClases ? Math.round(a.asistencias / totalClases * 100) : 0); if (labels.length > 0) chartInstance = new Chart(ctx, { type: 'bar', data: { labels, datasets: [{ label: '% Asistencia', data, backgroundColor: '#4f46e5' }] }, options: { responsive: true, scales: { y: { max: 100, beginAtZero: true } } } }); else chartInstance = null; }
 
-    function resetearTodo() {
-        if (!adminMode) return;
-        if (confirm('⚠️ Eliminar TODOS los datos?')) {
-            globalData = { materias: [], alumnos: [] };
-            currentMateriaId = null;
-            guardarLocal();
-            renderSidebar();
-            seleccionarMateria(null);
-            renderListaGeneral();
-            document.getElementById('estadisticasResumen').innerHTML = '<div class="help-text">No hay datos para mostrar.</div>';
-            if (chartInstance) { chartInstance.destroy(); chartInstance = null; }
-            const contadorTotal = document.getElementById('contadorAlumnosTotal');
-            if (contadorTotal) contadorTotal.innerText = '0 alumnos';
-            const contadorMateria = document.getElementById('contadorAlumnosMateria');
-            if (contadorMateria) contadorMateria.innerText = '';
-            document.getElementById('tablaAsistencia').innerHTML = '';
-            document.getElementById('listaFechas').innerHTML = '';
-            document.getElementById('fechasSection').style.display = 'none';
-            document.getElementById('asistenciaSection').style.display = 'none';
-            document.getElementById('formMatricula').style.display = 'none';
-            mostrarToast('Datos eliminados');
-        }
-    }
+    function resetearTodo() { if (!adminMode) return; if (confirm('⚠️ Eliminar TODOS los datos?')) { globalData = { materias: [], alumnos: [] }; currentMateriaId = null; guardarLocal(); renderSidebar(); seleccionarMateria(null); renderListaGeneral(); document.getElementById('estadisticasResumen').innerHTML = '<div class="help-text">No hay datos para mostrar.</div>'; if (chartInstance) { chartInstance.destroy(); chartInstance = null; } const contadorTotal = document.getElementById('contadorAlumnosTotal'); if (contadorTotal) contadorTotal.innerText = '0 alumnos'; const contadorMateria = document.getElementById('contadorAlumnosMateria'); if (contadorMateria) contadorMateria.innerText = ''; document.getElementById('tablaAsistencia').innerHTML = ''; document.getElementById('listaFechas').innerHTML = ''; document.getElementById('fechasSection').style.display = 'none'; document.getElementById('asistenciaSection').style.display = 'none'; document.getElementById('formMatricula').style.display = 'none'; mostrarToast('Datos eliminados'); } }
 
     document.getElementById('searchAlumno').addEventListener('input', (e) => { searchAsistencia = e.target.value; renderTablaAsistencia(); });
     document.getElementById('orderAsistencia').addEventListener('change', (e) => { currentOrdenAsistencia = e.target.value; renderTablaAsistencia(); });
     document.getElementById('searchGeneral').addEventListener('input', (e) => { searchGeneral = e.target.value; renderListaGeneral(); });
     document.getElementById('orderGeneral').addEventListener('change', (e) => { currentOrdenGeneral = e.target.value; renderListaGeneral(); });
-
-    document.getElementById('btnNuevaMateria').onclick = () => {
-        if (!adminMode) return;
-        document.getElementById('modalNuevaMateria').classList.add('active');
-    };
+    document.getElementById('btnNuevaMateria').onclick = () => { if (!adminMode) return; document.getElementById('modalNuevaMateria').classList.add('active'); };
     document.getElementById('closeModalBtn').onclick = () => document.getElementById('modalNuevaMateria').classList.remove('active');
     document.getElementById('cancelarNuevaMateria').onclick = () => document.getElementById('modalNuevaMateria').classList.remove('active');
-    document.getElementById('confirmarNuevaMateria').onclick = () => {
-        if (!adminMode) return;
-        const nombre = document.getElementById('nuevaMateriaNombre').value.trim();
-        const dias = Array.from(document.querySelectorAll('#modalNuevaMateria .checkbox-group input:checked')).map(cb => cb.value);
-        const horaInicio = document.getElementById('nuevaMateriaHoraInicio').value;
-        const horaFin = document.getElementById('nuevaMateriaHoraFin').value;
-        if (!nombre) return alert('El nombre es obligatorio');
-        crearMateria(nombre, dias, horaInicio, horaFin);
-        document.getElementById('modalNuevaMateria').classList.remove('active');
-        document.getElementById('nuevaMateriaNombre').value = '';
-        document.querySelectorAll('#modalNuevaMateria .checkbox-group input:checked').forEach(cb => cb.checked = false);
-        document.getElementById('nuevaMateriaHoraInicio').value = '';
-        document.getElementById('nuevaMateriaHoraFin').value = '';
-    };
-
-    document.getElementById('guardarAlumno').onclick = () => {
-        if (!adminMode) return;
-        const a = document.getElementById('alumnoApellido').value.trim();
-        const n = document.getElementById('alumnoNombre').value.trim();
-        const d = document.getElementById('alumnoDNI').value.trim();
-        const p = document.getElementById('alumnoPabellon').value.trim();
-        const fi = document.getElementById('alumnoFechaIngreso').value;
-        const fv = document.getElementById('alumnoFechaVencimiento').value;
-        matricularAlumnoManual(a, n, d, p, fi, fv);
-        document.getElementById('alumnoApellido').value = '';
-        document.getElementById('alumnoNombre').value = '';
-        document.getElementById('alumnoDNI').value = '';
-        document.getElementById('alumnoPabellon').value = '';
-        document.getElementById('alumnoFechaIngreso').value = new Date().toISOString().slice(0,10);
-        let venc = new Date(); venc.setFullYear(venc.getFullYear()+1);
-        document.getElementById('alumnoFechaVencimiento').value = venc.toISOString().slice(0,10);
-    };
-    document.getElementById('agregarFechaBtn').onclick = () => {
-        if (!adminMode) return;
-        const fecha = document.getElementById('nuevaFecha').value.trim();
-        if (fecha) agregarFecha(fecha);
-        document.getElementById('nuevaFecha').value = '';
-    };
-    document.getElementById('eliminarFechaBtn').onclick = () => {
-        if (!adminMode) return;
-        const materia = getCurrentMateria();
-        if (!materia || !materia.fechas.length) return alert('No hay fechas');
-        const idx = prompt(`Fechas disponibles:\n${materia.fechas.map((f,i)=>`${i+1}. ${f}`).join('\n')}\nNúmero a eliminar:`);
-        if (idx && !isNaN(idx) && idx>=1 && idx<=materia.fechas.length) {
-            materia.fechas.splice(idx-1,1);
-            guardarLocal();
-            renderFechas();
-            renderTablaAsistencia();
-            mostrarToast('Fecha eliminada');
-        }
-    };
+    document.getElementById('confirmarNuevaMateria').onclick = () => { if (!adminMode) return; const nombre = document.getElementById('nuevaMateriaNombre').value.trim(); const dias = Array.from(document.querySelectorAll('#modalNuevaMateria .checkbox-group input:checked')).map(cb => cb.value); const horaInicio = document.getElementById('nuevaMateriaHoraInicio').value; const horaFin = document.getElementById('nuevaMateriaHoraFin').value; if (!nombre) return alert('El nombre es obligatorio'); crearMateria(nombre, dias, horaInicio, horaFin); document.getElementById('modalNuevaMateria').classList.remove('active'); document.getElementById('nuevaMateriaNombre').value = ''; document.querySelectorAll('#modalNuevaMateria .checkbox-group input:checked').forEach(cb => cb.checked = false); document.getElementById('nuevaMateriaHoraInicio').value = ''; document.getElementById('nuevaMateriaHoraFin').value = ''; };
+    document.getElementById('guardarAlumno').onclick = () => { if (!adminMode) return; const a = document.getElementById('alumnoApellido').value.trim(); const n = document.getElementById('alumnoNombre').value.trim(); const d = document.getElementById('alumnoDNI').value.trim(); const p = document.getElementById('alumnoPabellon').value.trim(); const fi = document.getElementById('alumnoFechaIngreso').value; const fv = document.getElementById('alumnoFechaVencimiento').value; matricularAlumnoManual(a, n, d, p, fi, fv); document.getElementById('alumnoApellido').value = ''; document.getElementById('alumnoNombre').value = ''; document.getElementById('alumnoDNI').value = ''; document.getElementById('alumnoPabellon').value = ''; document.getElementById('alumnoFechaIngreso').value = new Date().toISOString().slice(0,10); let venc = new Date(); venc.setFullYear(venc.getFullYear()+1); document.getElementById('alumnoFechaVencimiento').value = venc.toISOString().slice(0,10); };
+    document.getElementById('agregarFechaBtn').onclick = () => { if (!adminMode) return; const fecha = document.getElementById('nuevaFecha').value.trim(); if (fecha) agregarFecha(fecha); document.getElementById('nuevaFecha').value = ''; };
+    document.getElementById('eliminarFechaBtn').onclick = () => { if (!adminMode) return; const materia = getCurrentMateria(); if (!materia || !materia.fechas.length) return alert('No hay fechas'); const idx = prompt(`Fechas disponibles:\n${materia.fechas.map((f,i)=>`${i+1}. ${f}`).join('\n')}\nNúmero a eliminar:`); if (idx && !isNaN(idx) && idx>=1 && idx<=materia.fechas.length) { materia.fechas.splice(idx-1,1); guardarLocal(); renderFechas(); renderTablaAsistencia(); mostrarToast('Fecha eliminada'); } };
     document.getElementById('btnExportarExcel').onclick = exportarExcel;
-    document.getElementById('btnImportarExcel').onclick = () => {
-        if (!adminMode) return;
-        document.getElementById('fileExcel').click();
-    };
+    document.getElementById('btnImportarExcel').onclick = () => { if (!adminMode) return; document.getElementById('fileExcel').click(); };
     document.getElementById('fileExcel').onchange = (e) => { if(e.target.files[0]) importarExcel(e.target.files[0]); };
     document.getElementById('btnResetear').onclick = resetearTodo;
     document.getElementById('generarEstadisticasBtn').onclick = generarEstadisticas;
     document.getElementById('btnLogoutAdmin').onclick = () => disableAdminMode();
-    document.getElementById('btnMatricular').onclick = () => {
-        if (!adminMode) return;
-        if (!getCurrentMateria()) return alert('Seleccione una materia');
-        document.getElementById('formMatricula').style.display = 'block';
-    };
-
-    setInterval(() => {
-        document.getElementById('clock').innerText = new Date().toLocaleString('es-ES');
-    }, 1000);
-
+    document.getElementById('btnMatricular').onclick = () => { if (!adminMode) return; if (!getCurrentMateria()) return alert('Seleccione una materia'); document.getElementById('formMatricula').style.display = 'block'; };
+    setInterval(() => { document.getElementById('clock').innerText = new Date().toLocaleString('es-ES'); }, 1000);
     function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
     document.getElementById('hamburgerBtn').onclick = toggleSidebar;
     document.getElementById('closeSidebarBtn').onclick = () => document.getElementById('sidebar').classList.remove('open');
-    document.addEventListener('click', function(e) {
-        const sidebar = document.getElementById('sidebar');
-        const hamburger = document.getElementById('hamburgerBtn');
-        if (window.innerWidth <= 768 && sidebar.classList.contains('open') && !sidebar.contains(e.target) && e.target !== hamburger && !hamburger.contains(e.target)) {
-            sidebar.classList.remove('open');
-        }
-    });
-
-    async function iniciar() {
-        adminMode = false;
-        localStorage.removeItem('adminMode');
-        
-        const local = localStorage.getItem('cpu_data');
-        if (local) { try { globalData = JSON.parse(local); } catch(e) {} }
-        if ((!globalData.materias || globalData.materias.length === 0) && (!globalData.alumnos || globalData.alumnos.length === 0)) {
-            const ok = await cargarDesdeGitHub();
-            if (!ok) {
-                globalData = { materias: [], alumnos: [] };
-                guardarLocal();
-            }
-        } else {
-            if (!globalData.materias) globalData.materias = [];
-            if (!globalData.alumnos) globalData.alumnos = [];
-            guardarLocal();
-        }
-        setupAdminToggle();
-        renderizarSegunRol();
-        renderSidebar();
-        if (currentMateriaId) seleccionarMateria(currentMateriaId);
-        renderListaGeneral();
-        document.getElementById('alumnoFechaIngreso').value = new Date().toISOString().slice(0,10);
-        let venc = new Date(); venc.setFullYear(venc.getFullYear()+1);
-        document.getElementById('alumnoFechaVencimiento').value = venc.toISOString().slice(0,10);
-        if (globalData.materias.length === 0) {
-            document.getElementById('estadisticasResumen').innerHTML = '<div class="help-text">No hay datos para mostrar.</div>';
-            if (chartInstance) chartInstance.destroy();
-        }
-    }
+    document.addEventListener('click', function(e) { const sidebar = document.getElementById('sidebar'); const hamburger = document.getElementById('hamburgerBtn'); if (window.innerWidth <= 768 && sidebar.classList.contains('open') && !sidebar.contains(e.target) && e.target !== hamburger && !hamburger.contains(e.target)) { sidebar.classList.remove('open'); } });
+    async function iniciar() { adminMode = false; localStorage.removeItem('adminMode'); const local = localStorage.getItem('cpu_data'); if (local) { try { globalData = JSON.parse(local); } catch(e) {} } if ((!globalData.materias || globalData.materias.length === 0) && (!globalData.alumnos || globalData.alumnos.length === 0)) { const ok = await cargarDesdeJSONBin(); if (!ok) { globalData = { materias: [], alumnos: [] }; guardarLocal(); } } else { if (!globalData.materias) globalData.materias = []; if (!globalData.alumnos) globalData.alumnos = []; guardarLocal(); } setupAdminToggle(); renderizarSegunRol(); renderSidebar(); if (currentMateriaId) seleccionarMateria(currentMateriaId); renderListaGeneral(); document.getElementById('alumnoFechaIngreso').value = new Date().toISOString().slice(0,10); let venc = new Date(); venc.setFullYear(venc.getFullYear()+1); document.getElementById('alumnoFechaVencimiento').value = venc.toISOString().slice(0,10); if (globalData.materias.length === 0) { document.getElementById('estadisticasResumen').innerHTML = '<div class="help-text">No hay datos para mostrar.</div>'; if (chartInstance) chartInstance.destroy(); } }
     iniciar();
-
     function escapeHtml(str) { return String(str).replace(/[&<>]/g, function(m) { if(m==='&') return '&amp;'; if(m==='<') return '&lt;'; if(m==='>') return '&gt;'; return m; }); }
 </script>
 </body>
