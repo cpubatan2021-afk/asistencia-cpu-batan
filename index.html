@@ -193,7 +193,7 @@
             width: 100%;
             border-collapse: collapse;
             font-size: 0.8rem;
-            min-width: 900px;
+            min-width: 1000px;
         }
         th, td {
             padding: 0.6rem 0.8rem;
@@ -212,7 +212,6 @@
             white-space: nowrap;
         }
         td:last-child, th:last-child { border-right: none; }
-        /* Checkboxes verdes solo para modo admin (habilitados) */
         input[type="checkbox"] {
             accent-color: #10b981;
             width: 1rem;
@@ -439,7 +438,7 @@
 
 <script>
     // ==================== CONFIGURACIÓN GITHUB ====================
-    const GITHUB_TOKEN = "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";
+    const GITHUB_TOKEN = "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";
     const GITHUB_USER = "cpubatan2021-afk";
     const GITHUB_REPO = "asistencia-cpu-batan";
     const GITHUB_FILE = "datos.json";
@@ -518,9 +517,9 @@
             const payload = { message: "Actualización automática", content: contenido, branch: "main" };
             if (sha) payload.sha = sha;
             const putResp = await fetch(GITHUB_API_URL, { method: "PUT", headers: { Authorization: `token ${GITHUB_TOKEN}`, "Content-Type": "application/json" }, body: JSON.stringify(payload) });
-            if (putResp.ok) { mostrarToast("✅ Sincronizado"); hayCambios = false; }
+            if (putResp.ok) { mostrarToast("✅ Sincronizado con GitHub"); hayCambios = false; }
             else throw new Error();
-        } catch(e) { mostrarToast("❌ Error sync", true); }
+        } catch(e) { mostrarToast("❌ Error de sincronización (ver consola)", true); console.error(e); }
     }
 
     async function cargarDesdeGitHub() {
@@ -531,10 +530,10 @@
             if (data && (data.materias || data.alumnos)) {
                 globalData = { materias: data.materias || [], alumnos: data.alumnos || [] };
                 localStorage.setItem('cpu_data', JSON.stringify(globalData));
-                mostrarToast("✅ Datos cargados");
+                mostrarToast("✅ Datos cargados desde GitHub");
                 return true;
             }
-        } catch(e) { }
+        } catch(e) { console.warn(e); }
         return false;
     }
 
@@ -657,7 +656,6 @@
         return alumnos;
     }
 
-    // Render tabla de asistencia (con iconos en espectador, checkboxes en admin)
     function renderTablaAsistencia() {
         const materia = getCurrentMateria();
         const container = document.getElementById('tablaAsistencia');
@@ -792,7 +790,7 @@
         }
     };
 
-    // Función corregida: tabla de matrícula completa con formato adecuado
+    // ==================== FUNCIÓN CORREGIDA: RENDER LISTA GENERAL (MATRÍCULA COMPLETA) ====================
     function renderListaGeneral() {
         let alumnos = getAlumnosOrdenadosFiltrados(false);
         const container = document.getElementById('tablaGeneral');
@@ -802,28 +800,28 @@
             container.innerHTML = '<div class="help-text">No hay alumnos registrados.</div>';
             return;
         }
-        let html = `<table>\n<thead>\n`;
-        html += `  <tr>\n`;
-        html += `    <th>Apellido</th>\n    <th>Nombre</th>\n    <th>DNI</th>\n    <th>Pabellón</th>\n`;
-        html += `    <th>Fecha inscripción</th>\n    <th>Vencimiento carnet</th>\n    <th>Materias</th>\n`;
-        if (adminMode) html += `    <th>Editar</th>\n`;
-        html += `  </tr>\n</thead>\n<tbody>\n`;
+        // Generamos la tabla con saltos de línea explícitos y espacios entre celdas
+        let html = '<table>\n<thead>\n<tr>\n';
+        html += '  <th>Apellido</th>\n  <th>Nombre</th>\n  <th>DNI</th>\n  <th>Pabellón</th>\n';
+        html += '  <th>Fecha inscripción</th>\n  <th>Vencimiento carnet</th>\n  <th>Materias</th>\n';
+        if (adminMode) html += '  <th>Editar</th>\n';
+        html += '</tr>\n</thead>\n<tbody>\n';
         alumnos.forEach(al => {
             const materiasStr = getMateriasPorAlumno(al.id).join(', ');
-            html += `  <tr>\n`;
-            html += `      <td>${escapeHtml(al.apellido)}</td>\n`;
-            html += `      <td>${escapeHtml(al.nombre)}</td>\n`;
-            html += `      <td>${escapeHtml(al.dni || '—')}</td>\n`;
-            html += `      <td>${escapeHtml(al.pabellon)}</td>\n`;
-            html += `      <td>${escapeHtml(al.fecha_inscripcion || '—')}</td>\n`;
-            html += `      <td>${escapeHtml(al.fecha_vencimiento_carnet || '—')}</td>\n`;
-            html += `      <td>${escapeHtml(materiasStr || 'Ninguna')}</td>\n`;
+            html += '<tr>\n';
+            html += `  <td>${escapeHtml(al.apellido)}</td>\n`;
+            html += `  <td>${escapeHtml(al.nombre)}</td>\n`;
+            html += `  <td>${escapeHtml(al.dni || '—')}</td>\n`;
+            html += `  <td>${escapeHtml(al.pabellon)}</td>\n`;
+            html += `  <td>${escapeHtml(al.fecha_inscripcion || '—')}</td>\n`;
+            html += `  <td>${escapeHtml(al.fecha_vencimiento_carnet || '—')}</td>\n`;
+            html += `  <td>${escapeHtml(materiasStr || 'Ninguna')}</td>\n`;
             if (adminMode) {
-                html += `      <td><button class="btn-sm" onclick="editarAlumnoCompleto('${al.id}')"><i class="fas fa-edit"></i></button></td>\n`;
+                html += `  <td><button class="btn-sm" onclick="editarAlumnoCompleto('${al.id}')"><i class="fas fa-edit"></i></button></td>\n`;
             }
-            html += `    </tr>\n`;
+            html += '</tr>\n';
         });
-        html += `</tbody>\n</table>`;
+        html += '</tbody>\n</table>';
         container.innerHTML = html;
     }
 
