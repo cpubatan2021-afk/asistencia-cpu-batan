@@ -301,6 +301,7 @@
             <button id="btnMatricular" class="btn btn-outline"><i class="fas fa-user-plus"></i> Matricular Alumno</button>
             <button id="btnExportarExcel" class="btn btn-success"><i class="fas fa-file-excel"></i> Exportar Excel</button>
             <button id="btnImportarExcel" class="btn btn-warning"><i class="fas fa-upload"></i> Importar Excel</button>
+            <button id="btnSyncNow" class="btn" style="background:#3b82f6;"><i class="fas fa-sync-alt"></i> Sincronizar ahora</button>
             <button id="btnResetear" class="btn btn-danger"><i class="fas fa-trash-alt"></i> Limpiar todo</button>
             <button id="btnLogoutAdmin" class="btn" style="background:#f59e0b; color:black; display:none;"><i class="fas fa-sign-out-alt"></i> Salir modo admin</button>
             <input type="file" id="fileExcel" style="display:none" accept=".xlsx, .xls">
@@ -430,13 +431,13 @@
 </div>
 
 <script>
-    // ==================== CONFIGURACIÓN GITHUB ====================
-    const GITHUB_TOKEN = "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";
-    const GITHUB_USER = "cpubatan2021-afk";
-    const GITHUB_REPO = "asistencia-cpu-batan";
-    const GITHUB_FILE = "datos.json";
-    const GITHUB_API_URL = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${GITHUB_FILE}`;
-    const GITHUB_RAW_URL = `https://raw.githubusercontent.com/${GITHUB_USER}/${GITHUB_REPO}/main/${GITHUB_FILE}`;
+    // ==================== CONFIGURACIÓN JSONBIN.IO ====================
+    const JSONBIN_BIN_ID = "69e13cfc856a682189404f5f";
+    // PRUEBA CON LA PRIMERA CLAVE (MAESTRA). SI FALLA, REEMPLAZA POR LA SEGUNDA.
+    const JSONBIN_API_KEY = "$2a$10$VVYl3yV7Pml2SuvNjKX2iuRSBOeqM35VmlN2KapBFGcZSgjPlTmw6";
+    // CLAVE ALTERNATIVA (si la primera no funciona):
+    // const JSONBIN_API_KEY = "$2a$10$QFHG8d6uzHlmasMDdfuNWOibuxj7b7bMybD4rSwCRn1HjW5Jnkb4e";
+    const JSONBIN_URL = `https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}`;
 
     let globalData = { materias: [], alumnos: [] };
     let currentMateriaId = null;
@@ -449,6 +450,7 @@
     let adminMode = false;
     let clickCount = 0;
     let clickTimer = null;
+    let syncInProgress = false;
 
     function enableAdminMode() {
         adminMode = true;
@@ -463,7 +465,7 @@
     }
     
     function renderizarSegunRol() {
-        const adminButtons = ['btnNuevaMateria', 'btnMatricular', 'btnImportarExcel', 'btnResetear', 'agregarFechaBtn', 'eliminarFechaBtn'];
+        const adminButtons = ['btnNuevaMateria', 'btnMatricular', 'btnImportarExcel', 'btnResetear', 'agregarFechaBtn', 'eliminarFechaBtn', 'btnSyncNow'];
         adminButtons.forEach(id => {
             const btn = document.getElementById(id);
             if (btn) btn.style.display = adminMode ? 'flex' : 'none';
@@ -499,35 +501,85 @@
         });
     }
     
-    // ==================== FUNCIONES GITHUB ====================
-    async function guardarEnGitHub() {
-        if (!hayCambios) return;
-        const contenido = btoa(unescape(encodeURIComponent(JSON.stringify(globalData, null, 2))));
+    // ==================== FUNCIONES JSONBIN ====================
+    async function guardarEnJSONBin() {
+        if (!hayCambios || syncInProgress) return;
+        syncInProgress = true;
         try {
-            let sha = null;
-            const getResp = await fetch(GITHUB_API_URL, { headers: { Authorization: `token ${GITHUB_TOKEN}` } });
-            if (getResp.ok) { const fileInfo = await getResp.json(); sha = fileInfo.sha; }
-            const payload = { message: "Actualización automática", content: contenido, branch: "main" };
-            if (sha) payload.sha = sha;
-            const putResp = await fetch(GITHUB_API_URL, { method: "PUT", headers: { Authorization: `token ${GITHUB_TOKEN}`, "Content-Type": "application/json" }, body: JSON.stringify(payload) });
-            if (putResp.ok) { mostrarToast("✅ Sincronizado con GitHub"); hayCambios = false; }
-            else throw new Error();
-        } catch(e) { mostrarToast("❌ Error de sincronización (ver consola)", true); console.error(e); }
+            const response = await fetch(JSONBIN_URL, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-Master-Key": JSONBIN_API_KEY
+                },
+                body: JSON.stringify(globalData)
+            });
+            if (response.ok) {
+                mostrarToast("✅ Sincronizado con JSONBin");
+                hayCambios = false;
+            } else {
+                const errorText = await response.text();
+                throw new Error(`HTTP ${response.status}: ${errorText}`);
+            }
+        } catch(e) {
+            mostrarToast("❌ Error al guardar en JSONBin: " + e.message, true);
+            console.error("Error guardando en JSONBin:", e);
+        } finally {
+            syncInProgress = false;
+        }
     }
 
-    async function cargarDesdeGitHub() {
+    async function cargarDesdeJSONBin() {
+        if (syncInProgress) return false;
+        syncInProgress = true;
         try {
-            const res = await fetch(GITHUB_RAW_URL + "?t=" + Date.now());
-            if (!res.ok) throw new Error();
-            const data = await res.json();
-            if (data && (data.materias || data.alumnos)) {
-                globalData = { materias: data.materias || [], alumnos: data.alumnos || [] };
+            const response = await fetch(`${JSONBIN_URL}/latest`, {
+                headers: { "X-Master-Key": JSONBIN_API_KEY }
+            });
+            if (!response.ok) {
+                if (response.status === 404) {
+                    console.log("Bin no encontrado o vacío, se iniciará desde cero");
+                    return false;
+                }
+                throw new Error(`HTTP ${response.status}`);
+            }
+            const data = await response.json();
+            if (data.record && (data.record.materias || data.record.alumnos)) {
+                globalData = { materias: data.record.materias || [], alumnos: data.record.alumnos || [] };
                 localStorage.setItem('cpu_data', JSON.stringify(globalData));
-                mostrarToast("✅ Datos cargados desde GitHub");
+                mostrarToast("✅ Datos cargados desde JSONBin");
                 return true;
             }
-        } catch(e) { console.warn(e); }
+        } catch(e) {
+            console.warn("Error cargando desde JSONBin:", e);
+            mostrarToast("⚠️ No se pudo cargar desde JSONBin, usando datos locales", true);
+        } finally {
+            syncInProgress = false;
+        }
         return false;
+    }
+
+    // Sincronización manual: primero sube los datos locales, luego baja los remotos (para combinar)
+    async function syncNow() {
+        if (!adminMode) {
+            mostrarToast("Debe estar en modo administrador para sincronizar", true);
+            return;
+        }
+        if (syncInProgress) {
+            mostrarToast("Ya hay una sincronización en curso", true);
+            return;
+        }
+        mostrarToast("Sincronizando con JSONBin...");
+        // Primero subir los datos actuales (para no perder cambios locales)
+        hayCambios = true; // forzar guardado
+        await guardarEnJSONBin();
+        // Luego bajar los datos remotos (por si hay cambios en otro dispositivo)
+        await cargarDesdeJSONBin();
+        // Refrescar toda la interfaz
+        renderSidebar();
+        if (currentMateriaId) seleccionarMateria(currentMateriaId);
+        renderListaGeneral();
+        mostrarToast("Sincronización completada");
     }
 
     function guardarLocal() {
@@ -546,8 +598,10 @@
         setTimeout(() => t.remove(), 3000);
     }
 
-    setInterval(async () => { if (hayCambios) await guardarEnGitHub(); }, 30000);
+    // Auto-sync cada 30 segundos si hay cambios y estamos en modo admin
+    setInterval(async () => { if (hayCambios && !syncInProgress && adminMode) await guardarEnJSONBin(); }, 30000);
 
+    // ==================== RESTO DE FUNCIONES (sin cambios, igual que antes) ====================
     function getMaterias() { return globalData.materias; }
     function getCurrentMateria() { return globalData.materias.find(m => m.id === currentMateriaId) || null; }
     function getAlumnosGlobal() { return globalData.alumnos; }
@@ -708,7 +762,7 @@
         const contadorTotalSpan = document.getElementById('contadorAlumnosTotal');
         if (contadorTotalSpan) contadorTotalSpan.innerText = `${alumnos.length} alumnos`;
         if (alumnos.length === 0) { container.innerHTML = '<div class="help-text">No hay alumnos registrados.</div>'; return; }
-        let html = `<table><thead><tr><th>Apellido</th><th>Nombre</th><th>DNI</th><th>Pabellón</th><th>Fecha inscripción</th><th>Vencimiento carnet</th><th>Materias</th>${adminMode ? '<th>Editar</th>' : ''}</tr></thead><tbody>`;
+        let html = `<table><thead><tr><th>Apellido</th><th>Nombre</th><th>DNI</th><th>Pabellón</th><th>Fecha inscripción</th><th>Vencimiento carnet</th><th>Materias</th>${adminMode ? '<th>Editar</th>' : ''}<tr></thead><tbody>`;
         alumnos.forEach(al => {
             const materiasStr = getMateriasPorAlumno(al.id).join(', ');
             html += `<tr><td>${escapeHtml(al.apellido)}</td><td>${escapeHtml(al.nombre)}</td><td>${escapeHtml(al.dni || '—')}</td><td>${escapeHtml(al.pabellon)}</td><td>${escapeHtml(al.fecha_inscripcion || '—')}</td><td>${escapeHtml(al.fecha_vencimiento_carnet || '—')}</td><td>${escapeHtml(materiasStr || 'Ninguna')}</td>${adminMode ? `<td><button class="btn-sm" onclick="editarAlumnoCompleto('${al.id}')"><i class="fas fa-edit"></i></button></td>` : ''}</tr>`;
@@ -842,6 +896,7 @@
 
     function resetearTodo() { if (!adminMode) return; if (confirm('⚠️ Eliminar TODOS los datos?')) { globalData = { materias: [], alumnos: [] }; currentMateriaId = null; guardarLocal(); renderSidebar(); seleccionarMateria(null); renderListaGeneral(); document.getElementById('estadisticasResumen').innerHTML = '<div class="help-text">No hay datos para mostrar.</div>'; if (chartInstance) { chartInstance.destroy(); chartInstance = null; } const contadorTotal = document.getElementById('contadorAlumnosTotal'); if (contadorTotal) contadorTotal.innerText = '0 alumnos'; const contadorMateria = document.getElementById('contadorAlumnosMateria'); if (contadorMateria) contadorMateria.innerText = ''; document.getElementById('tablaAsistencia').innerHTML = ''; document.getElementById('listaFechas').innerHTML = ''; document.getElementById('fechasSection').style.display = 'none'; document.getElementById('asistenciaSection').style.display = 'none'; document.getElementById('formMatricula').style.display = 'none'; mostrarToast('Datos eliminados'); } }
 
+    // Event listeners
     document.getElementById('searchAlumno').addEventListener('input', (e) => { searchAsistencia = e.target.value; renderTablaAsistencia(); });
     document.getElementById('orderAsistencia').addEventListener('change', (e) => { currentOrdenAsistencia = e.target.value; renderTablaAsistencia(); });
     document.getElementById('searchGeneral').addEventListener('input', (e) => { searchGeneral = e.target.value; renderListaGeneral(); });
@@ -860,12 +915,44 @@
     document.getElementById('generarEstadisticasBtn').onclick = generarEstadisticas;
     document.getElementById('btnLogoutAdmin').onclick = () => disableAdminMode();
     document.getElementById('btnMatricular').onclick = () => { if (!adminMode) return; if (!getCurrentMateria()) return alert('Seleccione una materia'); document.getElementById('formMatricula').style.display = 'block'; };
+    document.getElementById('btnSyncNow').onclick = syncNow;
     setInterval(() => { document.getElementById('clock').innerText = new Date().toLocaleString('es-ES'); }, 1000);
     function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
     document.getElementById('hamburgerBtn').onclick = toggleSidebar;
     document.getElementById('closeSidebarBtn').onclick = () => document.getElementById('sidebar').classList.remove('open');
     document.addEventListener('click', function(e) { const sidebar = document.getElementById('sidebar'); const hamburger = document.getElementById('hamburgerBtn'); if (window.innerWidth <= 768 && sidebar.classList.contains('open') && !sidebar.contains(e.target) && e.target !== hamburger && !hamburger.contains(e.target)) { sidebar.classList.remove('open'); } });
-    async function iniciar() { adminMode = false; localStorage.removeItem('adminMode'); const local = localStorage.getItem('cpu_data'); if (local) { try { globalData = JSON.parse(local); } catch(e) {} } if ((!globalData.materias || globalData.materias.length === 0) && (!globalData.alumnos || globalData.alumnos.length === 0)) { const ok = await cargarDesdeGitHub(); if (!ok) { globalData = { materias: [], alumnos: [] }; guardarLocal(); } } else { if (!globalData.materias) globalData.materias = []; if (!globalData.alumnos) globalData.alumnos = []; guardarLocal(); } setupAdminToggle(); renderizarSegunRol(); renderSidebar(); if (currentMateriaId) seleccionarMateria(currentMateriaId); renderListaGeneral(); document.getElementById('alumnoFechaIngreso').value = new Date().toISOString().slice(0,10); let venc = new Date(); venc.setFullYear(venc.getFullYear()+1); document.getElementById('alumnoFechaVencimiento').value = venc.toISOString().slice(0,10); if (globalData.materias.length === 0) { document.getElementById('estadisticasResumen').innerHTML = '<div class="help-text">No hay datos para mostrar.</div>'; if (chartInstance) chartInstance.destroy(); } }
+    
+    async function iniciar() { 
+        adminMode = false; 
+        localStorage.removeItem('adminMode'); 
+        const local = localStorage.getItem('cpu_data'); 
+        if (local) { 
+            try { globalData = JSON.parse(local); } catch(e) {} 
+        } 
+        if ((!globalData.materias || globalData.materias.length === 0) && (!globalData.alumnos || globalData.alumnos.length === 0)) { 
+            const ok = await cargarDesdeJSONBin(); 
+            if (!ok) { 
+                globalData = { materias: [], alumnos: [] }; 
+                guardarLocal(); 
+            } 
+        } else { 
+            if (!globalData.materias) globalData.materias = []; 
+            if (!globalData.alumnos) globalData.alumnos = []; 
+            guardarLocal(); 
+        } 
+        setupAdminToggle(); 
+        renderizarSegunRol(); 
+        renderSidebar(); 
+        if (currentMateriaId) seleccionarMateria(currentMateriaId); 
+        renderListaGeneral(); 
+        document.getElementById('alumnoFechaIngreso').value = new Date().toISOString().slice(0,10); 
+        let venc = new Date(); venc.setFullYear(venc.getFullYear()+1); 
+        document.getElementById('alumnoFechaVencimiento').value = venc.toISOString().slice(0,10); 
+        if (globalData.materias.length === 0) { 
+            document.getElementById('estadisticasResumen').innerHTML = '<div class="help-text">No hay datos para mostrar.</div>'; 
+            if (chartInstance) chartInstance.destroy(); 
+        } 
+    }
     iniciar();
     function escapeHtml(str) { return String(str).replace(/[&<>]/g, function(m) { if(m==='&') return '&amp;'; if(m==='<') return '&lt;'; if(m==='>') return '&gt;'; return m; }); }
 </script>
