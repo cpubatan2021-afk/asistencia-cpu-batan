@@ -353,7 +353,7 @@
             <button id="btnExportarExcel" class="btn btn-success"><i class="fas fa-file-excel"></i> Exportar Excel</button>
             <button id="btnImportarExcel" class="btn btn-warning"><i class="fas fa-upload"></i> Importar Excel</button>
             <button id="btnSyncNow" class="btn" style="background:#3b82f6;"><i class="fas fa-sync-alt"></i> Sincronizar ahora</button>
-            <button id="btnResetear" class="btn btn-danger"><i class="fas fa-trash-alt"></i> Limpiar todo</button>
+            <button id="btnResetear" class="btn btn-danger"><i class="fas fa-trash-alt"></i> Limpiar todo (solo local)</button>
             <button id="btnLogoutAdmin" class="btn" style="background:#f59e0b; color:black; display:none;"><i class="fas fa-sign-out-alt"></i> Salir modo admin</button>
             <input type="file" id="fileExcel" style="display:none" accept=".xlsx, .xls">
             <div class="help-text" style="text-align:center;">Auto-sync cada 30s</div>
@@ -583,7 +583,9 @@
 <script>
     // ==================== CONFIGURACIÓN JSONBIN.IO ====================
     const JSONBIN_BIN_ID = "69e13cfc856a682189404f5f";
+    // PRIMERA CLAVE (MAESTRA). SI FALLA, DESCOMENTA LA SEGUNDA
     const JSONBIN_API_KEY = "$2a$10$VVYl3yV7Pml2SuvNjKX2iuRSBOeqM35VmlN2KapBFGcZSgjPlTmw6";
+    // const JSONBIN_API_KEY = "$2a$10$QFHG8d6uzHlmasMDdfuNWOibuxj7b7bMybD4rSwCRn1HjW5Jnkb4e";
     const JSONBIN_URL = `https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}`;
 
     let globalData = { materias: [], alumnos: [], trabajadores: [] };
@@ -679,15 +681,19 @@
         });
     }
     
-    // ==================== JSONBIN ====================
+    // ==================== FUNCIONES JSONBIN (ROBUSTAS) ====================
     async function guardarEnJSONBin() {
         if (!hayCambios || syncInProgress) return;
         syncInProgress = true;
         updateSyncStatus(true, true);
         try {
+            console.log("📤 Intentando guardar en JSONBin. Datos:", globalData);
             const response = await fetch(JSONBIN_URL, {
                 method: "PUT",
-                headers: { "Content-Type": "application/json", "X-Master-Key": JSONBIN_API_KEY },
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-Master-Key": JSONBIN_API_KEY
+                },
                 body: JSON.stringify(globalData)
             });
             if (response.ok) {
@@ -695,13 +701,14 @@
                 hayCambios = false;
                 lastSyncTime = new Date();
                 updateSyncStatus(true, false);
+                console.log("✅ Guardado exitoso en JSONBin");
             } else {
                 const errorText = await response.text();
                 throw new Error(`HTTP ${response.status}: ${errorText}`);
             }
         } catch(e) {
-            mostrarToast("❌ Error al guardar en JSONBin: " + e.message, true);
-            console.error(e);
+            console.error("❌ ERROR guardando en JSONBin:", e);
+            mostrarToast("❌ Error al guardar: " + e.message, true);
             updateSyncStatus(false, false);
         } finally {
             syncInProgress = false;
@@ -713,7 +720,10 @@
         syncInProgress = true;
         updateSyncStatus(true, true);
         try {
-            const response = await fetch(`${JSONBIN_URL}/latest`, { headers: { "X-Master-Key": JSONBIN_API_KEY } });
+            console.log("📥 Cargando desde JSONBin...");
+            const response = await fetch(`${JSONBIN_URL}/latest`, {
+                headers: { "X-Master-Key": JSONBIN_API_KEY }
+            });
             if (!response.ok) {
                 if (response.status === 404) {
                     console.log("Bin no encontrado o vacío");
@@ -733,10 +743,11 @@
                 mostrarToast("✅ Datos cargados desde JSONBin");
                 lastSyncTime = new Date();
                 updateSyncStatus(true, false);
+                console.log("✅ Carga exitosa. Trabajadores:", globalData.trabajadores.length);
                 return true;
             }
         } catch(e) {
-            console.warn(e);
+            console.warn("⚠️ Error cargando desde JSONBin:", e);
             mostrarToast("⚠️ No se pudo cargar desde JSONBin, usando datos locales", true);
             updateSyncStatus(false, false);
         } finally {
@@ -1218,7 +1229,7 @@
             container.innerHTML = '<div class="help-text">No hay alumnos. Use el formulario de matrícula.</div>';
             return;
         }
-        let html = '<table><thead><tr>';
+        let html = '<tr><thead><tr>';
         html += '<th>Alumno</th><th>DNI</th><th>Pabellón</th>';
         fechas.forEach(f => html += `<th>${escapeHtml(f)}</th>`);
         html += '<th>Observaciones</th>';
@@ -1523,7 +1534,36 @@
 
     async function generarEstadisticas() { const materiaId = parseInt(document.getElementById('estMateria').value); if (!materiaId) { document.getElementById('estadisticasResumen').innerHTML = '<div class="help-text">Seleccione una materia para ver estadísticas.</div>'; if (chartInstance) { chartInstance.destroy(); chartInstance = null; } return; } const materia = globalData.materias.find(m => m.id === materiaId); if (!materia) { document.getElementById('estadisticasResumen').innerHTML = '<div class="help-text">Materia no encontrada.</div>'; if (chartInstance) { chartInstance.destroy(); chartInstance = null; } return; } const fechas = materia.fechas || []; const totalClases = fechas.length; if (totalClases === 0) { document.getElementById('estadisticasResumen').innerHTML = '<div class="help-text">No hay fechas cargadas para esta materia.</div>'; if (chartInstance) { chartInstance.destroy(); chartInstance = null; } return; } let totalAsistencias = 0; const alumnosMap = new Map(); (materia.alumnos || []).forEach(al => { if (!alumnosMap.has(al.id)) { alumnosMap.set(al.id, { nombre: `${al.apellido} ${al.nombre}`, dni: al.dni, asistencias: 0, faltas: 0 }); } const stats = alumnosMap.get(al.id); fechas.forEach(f => { if (al.asist && al.asist[f]) { stats.asistencias++; totalAsistencias++; } else { stats.faltas++; } }); }); const totalAlumnos = alumnosMap.size; const totalFaltas = (totalClases * totalAlumnos) - totalAsistencias; const pctGeneral = totalClases * totalAlumnos ? Math.round(totalAsistencias / (totalClases * totalAlumnos) * 100) : 0; let html = `<div style="display:grid; grid-template-columns:repeat(3,1fr); gap:0.8rem; margin-bottom:0.8rem;"><div style="background:#0f172a; padding:0.5rem; border-radius:0.5rem; text-align:center;"><h3 style="font-size:0.9rem;">Asistencias</h3><p style="font-size:1.2rem;">${totalAsistencias}</p></div><div style="background:#0f172a; padding:0.5rem; border-radius:0.5rem; text-align:center;"><h3 style="font-size:0.9rem;">Faltas</h3><p style="font-size:1.2rem;">${totalFaltas}</p></div><div style="background:#0f172a; padding:0.5rem; border-radius:0.5rem; text-align:center;"><h3 style="font-size:0.9rem;">% General</h3><p style="font-size:1.2rem;">${pctGeneral}%</p></div></div>`; document.getElementById('estadisticasResumen').innerHTML = html; if (chartInstance) chartInstance.destroy(); const ctx = document.getElementById('graficoAsistencia').getContext('2d'); const labels = Array.from(alumnosMap.values()).map(a => a.nombre.split(' ')[0]); const data = Array.from(alumnosMap.values()).map(a => totalClases ? Math.round(a.asistencias / totalClases * 100) : 0); if (labels.length > 0) chartInstance = new Chart(ctx, { type: 'bar', data: { labels, datasets: [{ label: '% Asistencia', data, backgroundColor: '#4f46e5' }] }, options: { responsive: true, scales: { y: { max: 100, beginAtZero: true } } } }); else chartInstance = null; }
 
-    function resetearTodo() { if (!adminMode) return; if (confirm('⚠️ Eliminar TODOS los datos?')) { globalData = { materias: [], alumnos: [], trabajadores: [] }; currentMateriaId = null; guardarLocal(); renderSidebar(); seleccionarMateria(null); renderListaGeneral(); renderTrabajadores(); document.getElementById('estadisticasResumen').innerHTML = '<div class="help-text">No hay datos para mostrar.</div>'; if (chartInstance) { chartInstance.destroy(); chartInstance = null; } const contadorTotal = document.getElementById('contadorAlumnosTotal'); if (contadorTotal) contadorTotal.innerText = '0 alumnos'; const contadorMateria = document.getElementById('contadorAlumnosMateria'); if (contadorMateria) contadorMateria.innerText = ''; document.getElementById('tablaAsistencia').innerHTML = ''; document.getElementById('listaFechas').innerHTML = ''; document.getElementById('fechasSection').style.display = 'none'; document.getElementById('asistenciaSection').style.display = 'none'; document.getElementById('formMatricula').style.display = 'none'; mostrarToast('Datos eliminados'); } }
+    // ==================== NUEVA VERSIÓN DE "LIMPIAR TODO" (SOLO LOCAL) ====================
+    function resetearTodo() { 
+        if (!adminMode) return; 
+        if (confirm('⚠️ Esto BORRARÁ SOLO LOS DATOS LOCALES de este navegador. La nube NO se verá afectada. ¿Continuar?')) { 
+            // Vaciar los datos en memoria
+            globalData = { materias: [], alumnos: [], trabajadores: [] }; 
+            // Guardar en localStorage (local)
+            localStorage.setItem('cpu_data', JSON.stringify(globalData)); 
+            // IMPORTANTE: NO marcar hayCambios = true, así no se subirá a la nube
+            hayCambios = false; 
+            // Actualizar la interfaz
+            currentMateriaId = null; 
+            renderSidebar(); 
+            seleccionarMateria(null); 
+            renderListaGeneral(); 
+            renderTrabajadores(); 
+            document.getElementById('estadisticasResumen').innerHTML = '<div class="help-text">No hay datos para mostrar.</div>'; 
+            if (chartInstance) { chartInstance.destroy(); chartInstance = null; } 
+            const contadorTotal = document.getElementById('contadorAlumnosTotal'); 
+            if (contadorTotal) contadorTotal.innerText = '0 alumnos'; 
+            const contadorMateria = document.getElementById('contadorAlumnosMateria'); 
+            if (contadorMateria) contadorMateria.innerText = ''; 
+            document.getElementById('tablaAsistencia').innerHTML = ''; 
+            document.getElementById('listaFechas').innerHTML = ''; 
+            document.getElementById('fechasSection').style.display = 'none'; 
+            document.getElementById('asistenciaSection').style.display = 'none'; 
+            document.getElementById('formMatricula').style.display = 'none'; 
+            mostrarToast('Datos locales eliminados. La nube permanece intacta.'); 
+        } 
+    }
 
     // Event listeners
     document.getElementById('searchAlumno').addEventListener('input', (e) => { searchAsistencia = e.target.value; renderTablaAsistencia(); });
