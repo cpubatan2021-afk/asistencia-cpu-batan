@@ -9,6 +9,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
     <style>
+        /* (estilos igual que antes, no cambio nada) */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Inter', sans-serif;
@@ -188,16 +189,9 @@
             border: 1px solid rgba(79, 70, 229, 0.4);
             backdrop-filter: blur(4px);
         }
-        .status-icon {
-            font-size: 0.9rem;
-        }
-        .status-text {
-            font-weight: 500;
-        }
-        .status-time {
-            font-size: 0.65rem;
-            color: #94a3b8;
-        }
+        .status-icon { font-size: 0.9rem; }
+        .status-text { font-weight: 500; }
+        .status-time { font-size: 0.65rem; color: #94a3b8; }
         .hamburger {
             display: none;
             background: none;
@@ -273,12 +267,7 @@
             white-space: nowrap;
         }
         td:last-child, th:last-child { border-right: none; }
-        input[type="checkbox"] {
-            accent-color: #10b981;
-            width: 1rem;
-            height: 1rem;
-            cursor: pointer;
-        }
+        input[type="checkbox"] { accent-color: #10b981; width: 1rem; height: 1rem; cursor: pointer; }
         .help-text { font-size: 0.7rem; color: #94a3b8; margin-top: 0.2rem; }
         .toast {
             position: fixed;
@@ -348,6 +337,7 @@
 </head>
 <body>
 <div class="app">
+    <!-- Sidebar -->
     <div class="sidebar" id="sidebar">
         <div class="sidebar-header">
             <div class="logo-area">
@@ -359,7 +349,7 @@
         <div class="sidebar-content">
             <div id="materiasList" class="materia-list"></div>
             <button id="btnNuevaMateria" class="btn"><i class="fas fa-plus"></i> Nueva Materia</button>
-            <button id="btnMatricular" class="btn btn-outline"><i class="fas fa-user-plus"></i> Matricular Alumno</button>
+            <button id="btnMatricular" class="btn"><i class="fas fa-user-plus"></i> Matricular Alumno</button>
             <button id="btnExportarExcel" class="btn btn-success"><i class="fas fa-file-excel"></i> Exportar Excel</button>
             <button id="btnImportarExcel" class="btn btn-warning"><i class="fas fa-upload"></i> Importar Excel</button>
             <button id="btnSyncNow" class="btn" style="background:#3b82f6;"><i class="fas fa-sync-alt"></i> Sincronizar ahora</button>
@@ -391,6 +381,7 @@
             <div class="clock" id="clock"></div>
         </div>
 
+        <!-- Formulario de matrícula (aparece solo con materia seleccionada) -->
         <div id="formMatricula" class="card" style="display:none;">
             <div class="card-title"><i class="fas fa-user-plus"></i> Matricular nuevo alumno en <span id="materiaActualMatricula"></span></div>
             <div class="flex-row">
@@ -406,6 +397,7 @@
             </div>
         </div>
 
+        <!-- Fechas de clase -->
         <div id="fechasSection" class="card" style="display:none;">
             <div class="card-title"><i class="fas fa-calendar-alt"></i> Fechas de clase <span id="materiaSeleccionada"></span></div>
             <div class="flex-row">
@@ -416,6 +408,7 @@
             <div id="listaFechas" style="display: flex; flex-wrap: wrap; gap: 0.4rem;"></div>
         </div>
 
+        <!-- Asistencia -->
         <div id="asistenciaSection" class="card" style="display:none;">
             <div class="card-title">
                 <i class="fas fa-check-double"></i> Asistencia
@@ -435,11 +428,13 @@
             <div id="tablaAsistencia" class="table-wrapper"></div>
         </div>
 
+        <!-- Matrícula completa -->
         <div id="listaGeneralSection" class="card">
             <div class="card-title">
                 <i class="fas fa-users"></i> Matrícula completa
                 <span id="contadorAlumnosTotal" class="stat-badge"></span>
-                <div style="margin-left: auto; display: flex; gap: 0.4rem;">
+                <button id="btnAgregarAlumnoGlobal" class="btn-sm btn-success" style="margin-left:auto;"><i class="fas fa-plus"></i> Agregar Alumno</button>
+                <div style="display: flex; gap: 0.4rem;">
                     <input type="text" id="searchGeneral" class="search-box" placeholder="🔍 Buscar...">
                     <select id="orderGeneral" class="order-select">
                         <option value="apellido_asc">Apellido (A-Z)</option>
@@ -454,6 +449,7 @@
             <div id="tablaGeneral" class="table-wrapper"></div>
         </div>
 
+        <!-- Estadísticas -->
         <div class="card">
             <div class="card-title"><i class="fas fa-chart-line"></i> Estadísticas</div>
             <div class="flex-row">
@@ -464,6 +460,7 @@
             <canvas id="graficoAsistencia" style="max-height: 200px; margin-top: 0.8rem;"></canvas>
         </div>
 
+        <!-- Trabajadores -->
         <div class="card">
             <div class="card-title">
                 <i class="fas fa-briefcase"></i> Trabajadores de CPU Batán
@@ -507,7 +504,51 @@
     </div>
 </div>
 
-<!-- Modal Trabajador (con fecha claramente etiquetada como vencimiento de carnet) -->
+<!-- Modal Agregar Alumno (global, sin materia) -->
+<div id="modalAgregarAlumnoGlobal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Agregar Alumno a la Matrícula</h3>
+            <button id="closeAgregarAlumnoModalBtn" style="background:none; border:none; color:#94a3b8; font-size:1.2rem; cursor:pointer;">&times;</button>
+        </div>
+        <div class="flex-row">
+            <input type="text" id="globalAlumnoApellido" placeholder="Apellido *">
+            <input type="text" id="globalAlumnoNombre" placeholder="Nombre *">
+        </div>
+        <div class="flex-row">
+            <input type="text" id="globalAlumnoDNI" placeholder="DNI (opcional)">
+            <input type="text" id="globalAlumnoPabellon" placeholder="Pabellón">
+        </div>
+        <div class="flex-row">
+            <input type="date" id="globalAlumnoFechaIngreso" placeholder="Fecha inscripción">
+            <input type="date" id="globalAlumnoFechaVencimiento" placeholder="Fecha vencimiento carnet">
+        </div>
+        <div class="flex-row">
+            <button id="guardarAlumnoGlobalBtn" class="btn-success btn-sm">Guardar Alumno</button>
+            <button id="cancelarAlumnoGlobalBtn" class="btn-danger btn-sm">Cancelar</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para asignar alumno a materia -->
+<div id="modalAsignarAMateria" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Asignar alumno a materia</h3>
+            <button id="closeAsignarModalBtn" style="background:none; border:none; color:#94a3b8; font-size:1.2rem; cursor:pointer;">&times;</button>
+        </div>
+        <p>Alumno: <strong id="asignarAlumnoNombre"></strong></p>
+        <div class="flex-row">
+            <select id="selectMateriaAsignar" style="flex:1">
+                <option value="">-- Seleccione una materia --</option>
+            </select>
+            <button id="confirmarAsignarBtn" class="btn-success btn-sm">Asignar</button>
+        </div>
+        <div class="help-text">El alumno se agregará a la materia seleccionada (si no está ya).</div>
+    </div>
+</div>
+
+<!-- Modal Trabajador -->
 <div id="modalTrabajador" class="modal">
     <div class="modal-content">
         <div class="modal-header">
@@ -543,7 +584,6 @@
     // ==================== CONFIGURACIÓN JSONBIN.IO ====================
     const JSONBIN_BIN_ID = "69e13cfc856a682189404f5f";
     const JSONBIN_API_KEY = "$2a$10$VVYl3yV7Pml2SuvNjKX2iuRSBOeqM35VmlN2KapBFGcZSgjPlTmw6";
-    // const JSONBIN_API_KEY = "$2a$10$QFHG8d6uzHlmasMDdfuNWOibuxj7b7bMybD4rSwCRn1HjW5Jnkb4e";
     const JSONBIN_URL = `https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}`;
 
     let globalData = { materias: [], alumnos: [], trabajadores: [] };
@@ -602,7 +642,7 @@
     }
     
     function renderizarSegunRol() {
-        const adminButtons = ['btnNuevaMateria', 'btnMatricular', 'btnImportarExcel', 'btnResetear', 'agregarFechaBtn', 'eliminarFechaBtn', 'btnSyncNow', 'btnAgregarTrabajador'];
+        const adminButtons = ['btnNuevaMateria', 'btnMatricular', 'btnImportarExcel', 'btnResetear', 'agregarFechaBtn', 'eliminarFechaBtn', 'btnSyncNow', 'btnAgregarTrabajador', 'btnAgregarAlumnoGlobal'];
         adminButtons.forEach(id => {
             const btn = document.getElementById(id);
             if (btn) btn.style.display = adminMode ? 'flex' : 'none';
@@ -647,10 +687,7 @@
         try {
             const response = await fetch(JSONBIN_URL, {
                 method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-Master-Key": JSONBIN_API_KEY
-                },
+                headers: { "Content-Type": "application/json", "X-Master-Key": JSONBIN_API_KEY },
                 body: JSON.stringify(globalData)
             });
             if (response.ok) {
@@ -676,9 +713,7 @@
         syncInProgress = true;
         updateSyncStatus(true, true);
         try {
-            const response = await fetch(`${JSONBIN_URL}/latest`, {
-                headers: { "X-Master-Key": JSONBIN_API_KEY }
-            });
+            const response = await fetch(`${JSONBIN_URL}/latest`, { headers: { "X-Master-Key": JSONBIN_API_KEY } });
             if (!response.ok) {
                 if (response.status === 404) {
                     console.log("Bin no encontrado o vacío");
@@ -748,84 +783,61 @@
 
     setInterval(async () => { if (hayCambios && !syncInProgress && adminMode) await guardarEnJSONBin(); }, 30000);
 
-    // ==================== TRABAJADORES Y ALUMNOS ====================
-    function trabajadorToAlumno(t) {
-        return {
-            id: t.id,
-            apellido: t.apellido,
-            nombre: t.nombre,
-            dni: t.dni || '',
-            pabellon: t.pabellon || '',
-            fecha_inscripcion: new Date().toISOString().slice(0,10),
-            fecha_vencimiento_carnet: t.vencimiento_carnet || '',
+    // ==================== VALIDACIÓN Y GESTIÓN DE ALUMNOS ====================
+    function alumnoDuplicado(apellido, nombre, dni, excluirId = null) {
+        return globalData.alumnos.some(al => {
+            if (excluirId && al.id === excluirId) return false;
+            if (dni && al.dni === dni) return true;
+            if (!dni && al.apellido.toLowerCase() === apellido.toLowerCase() && al.nombre.toLowerCase() === nombre.toLowerCase()) return true;
+            return false;
+        });
+    }
+
+    function agregarAlumnoGlobal(apellido, nombre, dni, pabellon, fechaIngreso, fechaVenc) {
+        if (!apellido || !nombre) return alert('Apellido y Nombre son obligatorios');
+        if (alumnoDuplicado(apellido, nombre, dni)) {
+            mostrarToast("⚠️ Este alumno ya existe en la matrícula (mismo DNI o nombre completo). No se ha agregado.", true);
+            return false;
+        }
+        const idUnico = Date.now() + '-' + Math.random().toString(36).substr(2, 5);
+        const hoy = new Date().toISOString().slice(0,10);
+        const vencDef = new Date(); vencDef.setFullYear(vencDef.getFullYear()+1);
+        const nuevoAlumno = {
+            id: idUnico,
+            apellido, nombre,
+            dni: dni || '',
+            pabellon: pabellon || '',
+            fecha_inscripcion: fechaIngreso || hoy,
+            fecha_vencimiento_carnet: fechaVenc || vencDef.toISOString().slice(0,10),
             asist: {},
             observaciones: ''
         };
+        globalData.alumnos.push(nuevoAlumno);
+        guardarLocal();
+        renderListaGeneral();
+        mostrarToast(`Alumno ${apellido} ${nombre} agregado a la matrícula general`);
+        return true;
     }
 
-    function actualizarAlumnoDesdeTrabajador(trabajador) {
-        const index = globalData.alumnos.findIndex(a => a.id === trabajador.id);
-        const alumnoData = trabajadorToAlumno(trabajador);
-        if (index !== -1) {
-            const oldAlumno = globalData.alumnos[index];
-            globalData.alumnos[index] = {
-                ...alumnoData,
-                asist: oldAlumno.asist || {},
-                observaciones: oldAlumno.observaciones || ''
-            };
-        } else {
-            globalData.alumnos.push(alumnoData);
+    function asignarAlumnoAMateria(alumnoId, materiaId) {
+        const materia = globalData.materias.find(m => m.id === materiaId);
+        if (!materia) return false;
+        if (materia.alumnos.some(a => a.id === alumnoId)) {
+            mostrarToast("El alumno ya está en esta materia", true);
+            return false;
         }
-    }
-
-    function eliminarAlumnoPorId(id) {
-        globalData.alumnos = globalData.alumnos.filter(a => a.id !== id);
-    }
-
-    function agregarAlumnoATodasLasMaterias(alumno) {
-        globalData.materias.forEach(materia => {
-            if (!materia.alumnos.some(a => a.id === alumno.id)) {
-                materia.alumnos.push({
-                    ...alumno,
-                    asist: {},
-                    observaciones: ''
-                });
-            }
+        const alumnoOriginal = globalData.alumnos.find(a => a.id === alumnoId);
+        if (!alumnoOriginal) return false;
+        materia.alumnos.push({
+            ...alumnoOriginal,
+            asist: {},
+            observaciones: ''
         });
-    }
-
-    function actualizarAlumnoEnTodasLasMaterias(alumnoActualizado) {
-        globalData.materias.forEach(materia => {
-            const idx = materia.alumnos.findIndex(a => a.id === alumnoActualizado.id);
-            if (idx !== -1) {
-                const old = materia.alumnos[idx];
-                materia.alumnos[idx] = {
-                    ...alumnoActualizado,
-                    asist: old.asist || {},
-                    observaciones: old.observaciones || ''
-                };
-            }
-        });
-    }
-
-    function eliminarAlumnoDeTodasLasMaterias(id) {
-        globalData.materias.forEach(materia => {
-            materia.alumnos = materia.alumnos.filter(a => a.id !== id);
-        });
-    }
-
-    function agregarTrabajadoresANuevaMateria(materia) {
-        if (!materia.alumnos) materia.alumnos = [];
-        globalData.trabajadores.forEach(t => {
-            if (!materia.alumnos.some(a => a.id === t.id)) {
-                const alumno = trabajadorToAlumno(t);
-                materia.alumnos.push({
-                    ...alumno,
-                    asist: {},
-                    observaciones: ''
-                });
-            }
-        });
+        guardarLocal();
+        if (currentMateriaId === materiaId) renderTablaAsistencia();
+        renderListaGeneral();
+        mostrarToast(`Alumno asignado a la materia "${materia.nombre}"`);
+        return true;
     }
 
     // ==================== MATERIAS ====================
@@ -850,6 +862,12 @@
         `).join('');
         const estSelect = document.getElementById('estMateria');
         estSelect.innerHTML = '<option value="">-- Materia --</option>' + materias.map(m => `<option value="${m.id}">${escapeHtml(m.nombre)}</option>`).join('');
+        const selectAsignar = document.getElementById('selectMateriaAsignar');
+        if (selectAsignar) {
+            const currentVal = selectAsignar.value;
+            selectAsignar.innerHTML = '<option value="">-- Seleccione una materia --</option>' + materias.map(m => `<option value="${m.id}">${escapeHtml(m.nombre)}</option>`).join('');
+            selectAsignar.value = currentVal;
+        }
     }
 
     window.seleccionarMateria = function(id) {
@@ -922,7 +940,14 @@
                 alumnos: []
             };
             globalData.materias.push(nueva);
-            agregarTrabajadoresANuevaMateria(nueva);
+            if (globalData.trabajadores) {
+                globalData.trabajadores.forEach(t => {
+                    if (!nueva.alumnos.some(a => a.id === t.id)) {
+                        const alumno = trabajadorToAlumno(t);
+                        nueva.alumnos.push({ ...alumno, asist: {}, observaciones: '' });
+                    }
+                });
+            }
             guardarLocal();
             renderSidebar();
             currentMateriaId = newId;
@@ -943,7 +968,72 @@
         mostrarToast('Materia eliminada');
     }
 
-    // ==================== TRABAJADORES (con fecha de vencimiento de carnet) ====================
+    // ==================== TRABAJADORES ====================
+    function trabajadorToAlumno(t) {
+        return {
+            id: t.id,
+            apellido: t.apellido,
+            nombre: t.nombre,
+            dni: t.dni || '',
+            pabellon: t.pabellon || '',
+            fecha_inscripcion: new Date().toISOString().slice(0,10),
+            fecha_vencimiento_carnet: t.vencimiento_carnet || '',
+            asist: {},
+            observaciones: ''
+        };
+    }
+
+    function actualizarAlumnoDesdeTrabajador(trabajador) {
+        const index = globalData.alumnos.findIndex(a => a.id === trabajador.id);
+        const alumnoData = trabajadorToAlumno(trabajador);
+        if (index !== -1) {
+            const oldAlumno = globalData.alumnos[index];
+            globalData.alumnos[index] = {
+                ...alumnoData,
+                asist: oldAlumno.asist || {},
+                observaciones: oldAlumno.observaciones || ''
+            };
+        } else {
+            globalData.alumnos.push(alumnoData);
+        }
+    }
+
+    function eliminarAlumnoPorId(id) {
+        globalData.alumnos = globalData.alumnos.filter(a => a.id !== id);
+    }
+
+    function agregarAlumnoATodasLasMaterias(alumno) {
+        globalData.materias.forEach(materia => {
+            if (!materia.alumnos.some(a => a.id === alumno.id)) {
+                materia.alumnos.push({
+                    ...alumno,
+                    asist: {},
+                    observaciones: ''
+                });
+            }
+        });
+    }
+
+    function actualizarAlumnoEnTodasLasMaterias(alumnoActualizado) {
+        globalData.materias.forEach(materia => {
+            const idx = materia.alumnos.findIndex(a => a.id === alumnoActualizado.id);
+            if (idx !== -1) {
+                const old = materia.alumnos[idx];
+                materia.alumnos[idx] = {
+                    ...alumnoActualizado,
+                    asist: old.asist || {},
+                    observaciones: old.observaciones || ''
+                };
+            }
+        });
+    }
+
+    function eliminarAlumnoDeTodasLasMaterias(id) {
+        globalData.materias.forEach(materia => {
+            materia.alumnos = materia.alumnos.filter(a => a.id !== id);
+        });
+    }
+
     function renderTrabajadores() {
         const container = document.getElementById('tablaTrabajadores');
         const trabajadores = globalData.trabajadores || [];
@@ -953,7 +1043,7 @@
             container.innerHTML = '<div class="help-text">No hay trabajadores registrados.</div>';
             return;
         }
-        let html = '<tr><thead><tr>';
+        let html = '<table><thead><tr>';
         html += '<th>Apellido</th><th>Nombre</th><th>DNI</th><th>Pabellón</th><th>Puesto</th><th title="Fecha de vencimiento del carnet">Venc. carnet</th>';
         if (adminMode) html += '<th>Acciones</th>';
         html += '</tr></thead><tbody>';
@@ -966,10 +1056,8 @@
             html += `<td>${escapeHtml(t.puesto || '—')}</td>`;
             html += `<td>${escapeHtml(t.vencimiento_carnet || '—')}</td>`;
             if (adminMode) {
-                html += `<td>
-                            <button class="btn-sm" onclick="editarTrabajador('${t.id}')"><i class="fas fa-edit"></i></button>
-                            <button class="btn-sm" onclick="eliminarTrabajador('${t.id}')"><i class="fas fa-trash"></i></button>
-                          </td>`;
+                html += `<td><button class="btn-sm" onclick="editarTrabajador('${t.id}')"><i class="fas fa-edit"></i></button>
+                         <button class="btn-sm" onclick="eliminarTrabajador('${t.id}')"><i class="fas fa-trash"></i></button></td>`;
             }
             html += '</tr>';
         });
@@ -1015,10 +1103,7 @@
         if (id) {
             const index = globalData.trabajadores.findIndex(t => t.id === id);
             if (index !== -1) {
-                const updatedTrabajador = {
-                    ...globalData.trabajadores[index],
-                    apellido, nombre, dni, pabellon, puesto, vencimiento_carnet
-                };
+                const updatedTrabajador = { ...globalData.trabajadores[index], apellido, nombre, dni, pabellon, puesto, vencimiento_carnet };
                 globalData.trabajadores[index] = updatedTrabajador;
                 actualizarAlumnoDesdeTrabajador(updatedTrabajador);
                 const alumnoActualizado = trabajadorToAlumno(updatedTrabajador);
@@ -1031,10 +1116,7 @@
             }
         } else {
             const newId = Date.now() + '-' + Math.random().toString(36).substr(2, 5);
-            const nuevoTrabajador = {
-                id: newId,
-                apellido, nombre, dni, pabellon, puesto, vencimiento_carnet
-            };
+            const nuevoTrabajador = { id: newId, apellido, nombre, dni, pabellon, puesto, vencimiento_carnet };
             globalData.trabajadores.push(nuevoTrabajador);
             const nuevoAlumno = trabajadorToAlumno(nuevoTrabajador);
             globalData.alumnos.push(nuevoAlumno);
@@ -1157,15 +1239,13 @@
             });
             html += `<td><textarea style="width:100px" ${adminMode ? `onchange="updateObservaciones('${al.id}',this.value)"` : 'readonly disabled'}>${escapeHtml(al.observaciones || '')}</textarea></td>`;
             if (adminMode) {
-                html += `<td>
-                            <button class="btn-sm" onclick="editarAlumnoCompleto('${al.id}')"><i class="fas fa-edit"></i></button>
-                            <button class="btn-sm" onclick="eliminarAlumnoDeMateria('${al.id}')"><i class="fas fa-trash"></i></button>
-                            <button class="btn-sm" onclick="renovarCarnet('${al.id}')"><i class="fas fa-id-card"></i></button>
-                          </td>`;
+                html += `<td><button class="btn-sm" onclick="editarAlumnoCompleto('${al.id}')"><i class="fas fa-edit"></i></button>
+                         <button class="btn-sm" onclick="eliminarAlumnoDeMateria('${al.id}')"><i class="fas fa-trash"></i></button>
+                         <button class="btn-sm" onclick="renovarCarnet('${al.id}')"><i class="fas fa-id-card"></i></button></td>`;
             }
             html += '</tr>';
         });
-        html += '</tbody></tr>';
+        html += '</tbody></table>';
         container.innerHTML = html;
     }
 
@@ -1185,10 +1265,13 @@
         const container = document.getElementById('tablaGeneral');
         const contadorTotalSpan = document.getElementById('contadorAlumnosTotal');
         if (contadorTotalSpan) contadorTotalSpan.innerText = `${alumnos.length} alumnos`;
-        if (alumnos.length === 0) { container.innerHTML = '<div class="help-text">No hay alumnos registrados.</div>'; return; }
+        if (alumnos.length === 0) {
+            container.innerHTML = '<div class="help-text">No hay alumnos registrados. Use el botón "Agregar Alumno" o importe desde Excel.</div>';
+            return;
+        }
         let html = '<table><thead><tr>';
         html += '<th>Apellido</th><th>Nombre</th><th>DNI</th><th>Pabellón</th><th>Fecha inscripción</th><th>Vencimiento carnet</th><th>Materias</th>';
-        if (adminMode) html += '<th>Editar</th>';
+        if (adminMode) html += '<th>Asignar a materia</th><th>Editar</th>';
         html += '</tr></thead><tbody>';
         alumnos.forEach(al => {
             const materiasStr = getMateriasPorAlumno(al.id).join(', ');
@@ -1201,6 +1284,7 @@
             html += `<td>${escapeHtml(al.fecha_vencimiento_carnet || '—')}</td>`;
             html += `<td>${escapeHtml(materiasStr || 'Ninguna')}</td>`;
             if (adminMode) {
+                html += `<td style="white-space:nowrap;"><button class="btn-sm" onclick="abrirModalAsignar('${al.id}', '${escapeHtml(al.apellido)} ${escapeHtml(al.nombre)}')"><i class="fas fa-plus-circle"></i> Asignar</button></td>`;
                 html += `<td><button class="btn-sm" onclick="editarAlumnoCompleto('${al.id}')"><i class="fas fa-edit"></i></button></td>`;
             }
             html += '</tr>';
@@ -1209,9 +1293,97 @@
         container.innerHTML = html;
     }
 
-    function agregarFecha(fecha) { if (!adminMode) return; const materia = getCurrentMateria(); if (!materia) return alert('Seleccione una materia'); if (!fecha.trim()) return alert('Ingrese nombre de fecha'); if (!materia.fechas) materia.fechas = []; materia.fechas.push(fecha.trim()); guardarLocal(); renderFechas(); renderTablaAsistencia(); mostrarToast(`Fecha "${fecha}" agregada`); }
-    function matricularAlumnoManual(apellido, nombre, dni, pabellon, fechaIngreso, fechaVenc) { if (!adminMode) return; if (!apellido || !nombre || !pabellon) return alert('Complete apellido, nombre y pabellón'); const materia = getCurrentMateria(); if (!materia) return alert('Seleccione una materia'); const idUnico = Date.now() + '-' + Math.random().toString(36).substr(2, 5); const hoy = new Date().toISOString().slice(0,10); const vencDef = new Date(); vencDef.setFullYear(vencDef.getFullYear()+1); const nuevoAlumno = { id: idUnico, apellido, nombre, dni: dni || '', pabellon, fecha_inscripcion: fechaIngreso || hoy, fecha_vencimiento_carnet: fechaVenc || vencDef.toISOString().slice(0,10), asist: {}, observaciones: '' }; globalData.alumnos.push(nuevoAlumno); materia.alumnos.push({ ...nuevoAlumno, asist: {}, observaciones: '' }); guardarLocal(); renderTablaAsistencia(); renderListaGeneral(); mostrarToast(`Alumno ${apellido} ${nombre} matriculado`); }
+    window.abrirModalAsignar = function(alumnoId, alumnoNombre) {
+        if (!adminMode) return;
+        document.getElementById('asignarAlumnoNombre').innerHTML = alumnoNombre;
+        document.getElementById('selectMateriaAsignar').value = '';
+        document.getElementById('modalAsignarAMateria').setAttribute('data-alumno-id', alumnoId);
+        document.getElementById('modalAsignarAMateria').classList.add('active');
+    };
 
+    document.getElementById('confirmarAsignarBtn').onclick = () => {
+        const modal = document.getElementById('modalAsignarAMateria');
+        const alumnoId = modal.getAttribute('data-alumno-id');
+        const materiaId = document.getElementById('selectMateriaAsignar').value;
+        if (!materiaId) {
+            mostrarToast("Seleccione una materia", true);
+            return;
+        }
+        asignarAlumnoAMateria(alumnoId, parseInt(materiaId));
+        modal.classList.remove('active');
+    };
+
+    function abrirModalAgregarAlumnoGlobal() {
+        if (!adminMode) return;
+        document.getElementById('globalAlumnoApellido').value = '';
+        document.getElementById('globalAlumnoNombre').value = '';
+        document.getElementById('globalAlumnoDNI').value = '';
+        document.getElementById('globalAlumnoPabellon').value = '';
+        const hoy = new Date().toISOString().slice(0,10);
+        let venc = new Date(); venc.setFullYear(venc.getFullYear()+1);
+        document.getElementById('globalAlumnoFechaIngreso').value = hoy;
+        document.getElementById('globalAlumnoFechaVencimiento').value = venc.toISOString().slice(0,10);
+        document.getElementById('modalAgregarAlumnoGlobal').classList.add('active');
+    }
+
+    function guardarAlumnoGlobalDesdeModal() {
+        const apellido = document.getElementById('globalAlumnoApellido').value.trim();
+        const nombre = document.getElementById('globalAlumnoNombre').value.trim();
+        const dni = document.getElementById('globalAlumnoDNI').value.trim();
+        const pabellon = document.getElementById('globalAlumnoPabellon').value.trim();
+        const fechaIngreso = document.getElementById('globalAlumnoFechaIngreso').value;
+        const fechaVenc = document.getElementById('globalAlumnoFechaVencimiento').value;
+        agregarAlumnoGlobal(apellido, nombre, dni, pabellon, fechaIngreso, fechaVenc);
+        document.getElementById('modalAgregarAlumnoGlobal').classList.remove('active');
+    }
+
+    function matricularAlumnoManual(apellido, nombre, dni, pabellon, fechaIngreso, fechaVenc) {
+        if (!adminMode) return;
+        if (!apellido || !nombre || !pabellon) return alert('Complete apellido, nombre y pabellón');
+        const materia = getCurrentMateria();
+        if (!materia) return alert('Seleccione una materia');
+        
+        let alumnoExistente = null;
+        if (dni) alumnoExistente = globalData.alumnos.find(a => a.dni === dni);
+        if (!alumnoExistente) alumnoExistente = globalData.alumnos.find(a => a.apellido.toLowerCase() === apellido.toLowerCase() && a.nombre.toLowerCase() === nombre.toLowerCase());
+        
+        let idUnico;
+        if (alumnoExistente) {
+            idUnico = alumnoExistente.id;
+            mostrarToast("Alumno ya existente en la matrícula. Se agregará a esta materia.", false);
+        } else {
+            idUnico = Date.now() + '-' + Math.random().toString(36).substr(2, 5);
+            const hoy = new Date().toISOString().slice(0,10);
+            const vencDef = new Date(); vencDef.setFullYear(vencDef.getFullYear()+1);
+            const nuevoAlumno = {
+                id: idUnico,
+                apellido, nombre,
+                dni: dni || '',
+                pabellon,
+                fecha_inscripcion: fechaIngreso || hoy,
+                fecha_vencimiento_carnet: fechaVenc || vencDef.toISOString().slice(0,10),
+                asist: {},
+                observaciones: ''
+            };
+            globalData.alumnos.push(nuevoAlumno);
+        }
+        if (!materia.alumnos.some(a => a.id === idUnico)) {
+            const alumnoRef = globalData.alumnos.find(a => a.id === idUnico);
+            materia.alumnos.push({
+                ...alumnoRef,
+                asist: {},
+                observaciones: ''
+            });
+            guardarLocal();
+            renderTablaAsistencia();
+            renderListaGeneral();
+            mostrarToast(`Alumno ${apellido} ${nombre} matriculado en ${materia.nombre}`);
+        } else {
+            mostrarToast("El alumno ya está en esta materia", true);
+        }
+    }
+
+    // ==================== IMPORTACIÓN, EXPORTACIÓN, ESTADÍSTICAS ====================
     function excelDateToJSDate(serial) { const utc_days = Math.floor(serial - 25569); const date = new Date(utc_days * 86400 * 1000); return date.toISOString().slice(0,10); }
 
     function importarExcel(file) {
@@ -1262,7 +1434,6 @@
                 let nombre = row[1]?.toString().trim() || "";
                 let dni = row[2]?.toString().trim() || "";
                 let pabellon = row[3]?.toString().trim() || "";
-                
                 if (!nombre && apellido.includes(" ")) {
                     const partes = apellido.split(/\s+/);
                     if (partes.length >= 2) {
@@ -1291,7 +1462,14 @@
                 const newId = Date.now();
                 materia = { id: newId, nombre: materiaNombre, dias: [], horario: '', fechas: fechas, alumnos: [] };
                 globalData.materias.push(materia);
-                agregarTrabajadoresANuevaMateria(materia);
+                if (globalData.trabajadores) {
+                    globalData.trabajadores.forEach(t => {
+                        if (!materia.alumnos.some(a => a.id === t.id)) {
+                            const alumno = trabajadorToAlumno(t);
+                            materia.alumnos.push({ ...alumno, asist: {}, observaciones: '' });
+                        }
+                    });
+                }
             } else {
                 if (!materia.fechas) materia.fechas = [];
                 fechas.forEach(f => { if (!materia.fechas.includes(f)) materia.fechas.push(f); });
@@ -1300,23 +1478,37 @@
             const hoy = new Date().toISOString().slice(0,10);
             const vencDef = new Date(); vencDef.setFullYear(vencDef.getFullYear()+1);
             for (let al of alumnosData) {
-                const idUnico = Date.now() + '-' + Math.random().toString(36).substr(2, 5);
-                const nuevoAlumno = {
-                    id: idUnico,
-                    apellido: al.apellido,
-                    nombre: al.nombre,
-                    dni: al.dni,
-                    pabellon: al.pabellon,
-                    fecha_inscripcion: hoy,
-                    fecha_vencimiento_carnet: vencDef.toISOString().slice(0,10),
-                    asist: {},
-                    observaciones: ''
-                };
-                if (!globalData.alumnos.some(a => a.id === idUnico)) globalData.alumnos.push(nuevoAlumno);
-                const alumnoMateria = { ...nuevoAlumno, asist: {}, observaciones: '' };
-                if (!materia.alumnos.some(a => a.id === idUnico)) materia.alumnos.push(alumnoMateria);
+                let idUnico;
+                let alumnoExistente = null;
+                if (al.dni) alumnoExistente = globalData.alumnos.find(a => a.dni === al.dni);
+                if (!alumnoExistente) alumnoExistente = globalData.alumnos.find(a => a.apellido.toLowerCase() === al.apellido.toLowerCase() && a.nombre.toLowerCase() === al.nombre.toLowerCase());
+                if (alumnoExistente) {
+                    idUnico = alumnoExistente.id;
+                } else {
+                    idUnico = Date.now() + '-' + Math.random().toString(36).substr(2, 5);
+                    const nuevoAlumno = {
+                        id: idUnico,
+                        apellido: al.apellido,
+                        nombre: al.nombre,
+                        dni: al.dni,
+                        pabellon: al.pabellon,
+                        fecha_inscripcion: hoy,
+                        fecha_vencimiento_carnet: vencDef.toISOString().slice(0,10),
+                        asist: {},
+                        observaciones: ''
+                    };
+                    globalData.alumnos.push(nuevoAlumno);
+                }
+                const alumnoMateria = { ...globalData.alumnos.find(a => a.id === idUnico), asist: {}, observaciones: '' };
+                if (!materia.alumnos.some(a => a.id === idUnico)) {
+                    materia.alumnos.push(alumnoMateria);
+                }
+                const alumnoMateriaRef = materia.alumnos.find(a => a.id === idUnico);
                 for (let idx = 0; idx < fechas.length; idx++) {
-                    if (al.asistencias[idx] === true) alumnoMateria.asist[fechas[idx]] = true;
+                    if (al.asistencias[idx] === true) {
+                        if (!alumnoMateriaRef.asist) alumnoMateriaRef.asist = {};
+                        alumnoMateriaRef.asist[fechas[idx]] = true;
+                    }
                 }
             }
             guardarLocal();
@@ -1357,6 +1549,12 @@
     document.getElementById('guardarTrabajadorBtn').onclick = guardarTrabajador;
     document.getElementById('closeTrabajadorModalBtn').onclick = () => document.getElementById('modalTrabajador').classList.remove('active');
     document.getElementById('cancelarTrabajadorBtn').onclick = () => document.getElementById('modalTrabajador').classList.remove('active');
+    document.getElementById('btnAgregarAlumnoGlobal').onclick = abrirModalAgregarAlumnoGlobal;
+    document.getElementById('guardarAlumnoGlobalBtn').onclick = guardarAlumnoGlobalDesdeModal;
+    document.getElementById('closeAgregarAlumnoModalBtn').onclick = () => document.getElementById('modalAgregarAlumnoGlobal').classList.remove('active');
+    document.getElementById('cancelarAlumnoGlobalBtn').onclick = () => document.getElementById('modalAgregarAlumnoGlobal').classList.remove('active');
+    document.getElementById('closeAsignarModalBtn').onclick = () => document.getElementById('modalAsignarAMateria').classList.remove('active');
+    window.onclick = function(e) { if (e.target.classList.contains('modal')) e.target.classList.remove('active'); };
     setInterval(() => { document.getElementById('clock').innerText = new Date().toLocaleString('es-ES'); }, 1000);
     function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
     document.getElementById('hamburgerBtn').onclick = toggleSidebar;
