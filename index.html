@@ -16,11 +16,37 @@
             color: #e2e8f0;
             height: 100vh;
             overflow: hidden;
+            position: relative;
         }
-        .app { display: flex; height: 100vh; }
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: radial-gradient(circle at 10% 20%, rgba(79, 70, 229, 0.03) 0%, rgba(15, 23, 42, 0.95) 90%);
+            pointer-events: none;
+            z-index: -1;
+        }
+        body::after {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" opacity="0.05"><circle cx="10" cy="10" r="1.5" fill="white"/><circle cx="30" cy="20" r="1" fill="white"/><circle cx="60" cy="40" r="2" fill="white"/><circle cx="80" cy="15" r="1.5" fill="white"/><circle cx="45" cy="70" r="1" fill="white"/><circle cx="90" cy="85" r="1.5" fill="white"/></svg>');
+            background-repeat: repeat;
+            background-size: 60px;
+            pointer-events: none;
+            z-index: -1;
+        }
+        .app { display: flex; height: 100vh; position: relative; z-index: 1; }
         .sidebar {
             width: 280px;
-            background: #1e293b;
+            background: rgba(30, 41, 59, 0.92);
+            backdrop-filter: blur(4px);
             border-right: 1px solid #334155;
             transition: transform 0.3s ease;
             position: fixed;
@@ -67,7 +93,7 @@
             overflow-y: auto;
         }
         .materia-item {
-            background: #334155;
+            background: rgba(51, 65, 85, 0.8);
             border-radius: 0.5rem;
             padding: 0.4rem;
             display: flex;
@@ -75,15 +101,23 @@
             align-items: center;
             cursor: pointer;
             font-size: 0.85rem;
+            transition: all 0.2s;
         }
         .materia-item.active { background: #4f46e5; }
-        .delete-materia {
-            color: #f87171;
+        .materia-actions {
+            display: flex;
+            gap: 0.3rem;
+        }
+        .materia-actions button {
             background: none;
             border: none;
             cursor: pointer;
-            font-size: 0.8rem;
+            font-size: 0.7rem;
+            color: #cbd5e1;
         }
+        .materia-actions button:hover { color: white; }
+        .delete-materia { color: #f87171 !important; }
+        .edit-materia { color: #fbbf24 !important; }
         .btn {
             background: #4f46e5;
             border: none;
@@ -111,13 +145,16 @@
             height: 100vh;
         }
         .top-bar {
-            background: #1e293b;
-            border-radius: 0.5rem;
-            padding: 0.5rem 0.8rem;
+            background: rgba(30, 41, 59, 0.85);
+            backdrop-filter: blur(8px);
+            border-radius: 1rem;
+            padding: 0.5rem 1rem;
             margin-bottom: 0.8rem;
             display: flex;
             align-items: center;
             justify-content: space-between;
+            border: 1px solid rgba(79, 70, 229, 0.3);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
         }
         .top-bar-left {
             display: flex;
@@ -140,6 +177,27 @@
             border-left: 1px solid #334155;
             padding-left: 0.8rem;
         }
+        .sync-status {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            background: rgba(15, 23, 42, 0.7);
+            padding: 0.3rem 0.8rem;
+            border-radius: 2rem;
+            font-size: 0.75rem;
+            border: 1px solid rgba(79, 70, 229, 0.4);
+            backdrop-filter: blur(4px);
+        }
+        .status-icon {
+            font-size: 0.9rem;
+        }
+        .status-text {
+            font-weight: 500;
+        }
+        .status-time {
+            font-size: 0.65rem;
+            color: #94a3b8;
+        }
         .hamburger {
             display: none;
             background: none;
@@ -149,10 +207,12 @@
             cursor: pointer;
         }
         .card {
-            background: #1e293b;
+            background: rgba(30, 41, 59, 0.85);
+            backdrop-filter: blur(4px);
             border-radius: 0.75rem;
             padding: 0.8rem;
             margin-bottom: 0.8rem;
+            border: 1px solid rgba(51, 65, 85, 0.5);
         }
         .card-title {
             font-size: 1rem;
@@ -281,7 +341,8 @@
             .hamburger { display: block; }
             .close-sidebar { display: block; }
             .top-bar-title { display: none; }
-            th, td { padding: 0.4rem 0.5rem; }
+            .sync-status { font-size: 0.7rem; padding: 0.2rem 0.5rem; }
+            .status-text { display: none; }
         }
     </style>
 </head>
@@ -321,6 +382,11 @@
                     <span>CPU Batán</span>
                 </div>
                 <div class="top-bar-title">Control de Asistencia</div>
+            </div>
+            <div class="sync-status" id="syncStatus">
+                <i class="fas fa-cloud-upload-alt status-icon" id="statusIcon"></i>
+                <span class="status-text" id="statusText">Sincronizado</span>
+                <span class="status-time" id="statusTime">última sincronización: --:--</span>
             </div>
             <div class="clock" id="clock"></div>
         </div>
@@ -397,21 +463,32 @@
             <div id="estadisticasResumen"></div>
             <canvas id="graficoAsistencia" style="max-height: 200px; margin-top: 0.8rem;"></canvas>
         </div>
+
+        <div class="card">
+            <div class="card-title">
+                <i class="fas fa-briefcase"></i> Trabajadores de CPU Batán
+                <span id="contadorTrabajadores" class="stat-badge"></span>
+                <button id="btnAgregarTrabajador" class="btn-sm btn-success" style="margin-left:auto;"><i class="fas fa-plus"></i> Agregar</button>
+            </div>
+            <div id="tablaTrabajadores" class="table-wrapper"></div>
+        </div>
     </div>
 </div>
 
+<!-- Modal Nueva/Editar Materia -->
 <div id="modalNuevaMateria" class="modal">
     <div class="modal-content">
         <div class="modal-header">
-            <h3>Nueva Materia</h3>
+            <h3 id="modalMateriaTitle">Nueva Materia</h3>
             <button id="closeModalBtn" style="background:none; border:none; color:#94a3b8; font-size:1.2rem; cursor:pointer;">&times;</button>
         </div>
+        <input type="hidden" id="editMateriaId" value="">
         <div class="flex-row">
             <input type="text" id="nuevaMateriaNombre" placeholder="Nombre de la materia *">
         </div>
         <div>
             <label>Días de clase:</label>
-            <div class="checkbox-group">
+            <div class="checkbox-group" id="diasCheckboxGroup">
                 <label><input type="checkbox" value="Lunes"> Lunes</label>
                 <label><input type="checkbox" value="Martes"> Martes</label>
                 <label><input type="checkbox" value="Miércoles"> Miércoles</label>
@@ -424,8 +501,40 @@
             <input type="time" id="nuevaMateriaHoraFin" placeholder="Hora fin">
         </div>
         <div class="flex-row">
-            <button id="confirmarNuevaMateria" class="btn-success btn-sm">Crear Materia</button>
+            <button id="confirmarNuevaMateria" class="btn-success btn-sm">Guardar Materia</button>
             <button id="cancelarNuevaMateria" class="btn-danger btn-sm">Cancelar</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Trabajador (con fecha claramente etiquetada como vencimiento de carnet) -->
+<div id="modalTrabajador" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 id="modalTrabajadorTitle">Agregar Trabajador</h3>
+            <button id="closeTrabajadorModalBtn" style="background:none; border:none; color:#94a3b8; font-size:1.2rem; cursor:pointer;">&times;</button>
+        </div>
+        <input type="hidden" id="editTrabajadorId" value="">
+        <div class="flex-row">
+            <input type="text" id="trabajadorApellido" placeholder="Apellido *">
+            <input type="text" id="trabajadorNombre" placeholder="Nombre *">
+        </div>
+        <div class="flex-row">
+            <input type="text" id="trabajadorDNI" placeholder="DNI">
+        </div>
+        <div class="flex-row">
+            <input type="text" id="trabajadorPabellon" placeholder="Pabellón">
+        </div>
+        <div class="flex-row">
+            <input type="text" id="trabajadorPuesto" placeholder="Puesto">
+        </div>
+        <div class="flex-row">
+            <input type="date" id="trabajadorVencimientoCarnet" placeholder="Fecha de vencimiento del carnet" title="Fecha de vencimiento del carnet">
+            <label for="trabajadorVencimientoCarnet" style="flex:0 0 auto; font-size:0.75rem; color:#94a3b8;">Vencimiento del carnet</label>
+        </div>
+        <div class="flex-row">
+            <button id="guardarTrabajadorBtn" class="btn-success btn-sm">Guardar</button>
+            <button id="cancelarTrabajadorBtn" class="btn-danger btn-sm">Cancelar</button>
         </div>
     </div>
 </div>
@@ -433,13 +542,11 @@
 <script>
     // ==================== CONFIGURACIÓN JSONBIN.IO ====================
     const JSONBIN_BIN_ID = "69e13cfc856a682189404f5f";
-    // PRUEBA CON LA PRIMERA CLAVE (MAESTRA). SI FALLA, REEMPLAZA POR LA SEGUNDA.
     const JSONBIN_API_KEY = "$2a$10$VVYl3yV7Pml2SuvNjKX2iuRSBOeqM35VmlN2KapBFGcZSgjPlTmw6";
-    // CLAVE ALTERNATIVA (si la primera no funciona):
     // const JSONBIN_API_KEY = "$2a$10$QFHG8d6uzHlmasMDdfuNWOibuxj7b7bMybD4rSwCRn1HjW5Jnkb4e";
     const JSONBIN_URL = `https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}`;
 
-    let globalData = { materias: [], alumnos: [] };
+    let globalData = { materias: [], alumnos: [], trabajadores: [] };
     let currentMateriaId = null;
     let chartInstance = null;
     let hayCambios = false;
@@ -451,6 +558,36 @@
     let clickCount = 0;
     let clickTimer = null;
     let syncInProgress = false;
+    let lastSyncTime = null;
+
+    const statusIcon = document.getElementById('statusIcon');
+    const statusText = document.getElementById('statusText');
+    const statusTime = document.getElementById('statusTime');
+
+    function updateSyncStatus(success = true, syncing = false) {
+        if (syncing) {
+            statusIcon.className = "fas fa-sync-alt fa-spin status-icon";
+            statusText.innerText = "Sincronizando...";
+            statusTime.innerText = "enviando datos...";
+            return;
+        }
+        if (success) {
+            statusIcon.className = "fas fa-check-circle status-icon";
+            statusIcon.style.color = "#10b981";
+            statusText.innerText = "Conectado";
+            if (lastSyncTime) {
+                const formatted = lastSyncTime.toLocaleTimeString([], { hour: '2-digit', minute:'2-digit', second:'2-digit' });
+                statusTime.innerText = `última sincronización: ${formatted}`;
+            } else {
+                statusTime.innerText = "última sincronización: --:--";
+            }
+        } else {
+            statusIcon.className = "fas fa-exclamation-triangle status-icon";
+            statusIcon.style.color = "#f87171";
+            statusText.innerText = "Error de conexión";
+            statusTime.innerText = "reintentando...";
+        }
+    }
 
     function enableAdminMode() {
         adminMode = true;
@@ -465,7 +602,7 @@
     }
     
     function renderizarSegunRol() {
-        const adminButtons = ['btnNuevaMateria', 'btnMatricular', 'btnImportarExcel', 'btnResetear', 'agregarFechaBtn', 'eliminarFechaBtn', 'btnSyncNow'];
+        const adminButtons = ['btnNuevaMateria', 'btnMatricular', 'btnImportarExcel', 'btnResetear', 'agregarFechaBtn', 'eliminarFechaBtn', 'btnSyncNow', 'btnAgregarTrabajador'];
         adminButtons.forEach(id => {
             const btn = document.getElementById(id);
             if (btn) btn.style.display = adminMode ? 'flex' : 'none';
@@ -484,6 +621,7 @@
             if (contadorMateria) contadorMateria.innerText = '';
         }
         renderListaGeneral();
+        renderTrabajadores();
     }
 
     function setupAdminToggle() {
@@ -501,10 +639,11 @@
         });
     }
     
-    // ==================== FUNCIONES JSONBIN ====================
+    // ==================== JSONBIN ====================
     async function guardarEnJSONBin() {
         if (!hayCambios || syncInProgress) return;
         syncInProgress = true;
+        updateSyncStatus(true, true);
         try {
             const response = await fetch(JSONBIN_URL, {
                 method: "PUT",
@@ -517,13 +656,16 @@
             if (response.ok) {
                 mostrarToast("✅ Sincronizado con JSONBin");
                 hayCambios = false;
+                lastSyncTime = new Date();
+                updateSyncStatus(true, false);
             } else {
                 const errorText = await response.text();
                 throw new Error(`HTTP ${response.status}: ${errorText}`);
             }
         } catch(e) {
             mostrarToast("❌ Error al guardar en JSONBin: " + e.message, true);
-            console.error("Error guardando en JSONBin:", e);
+            console.error(e);
+            updateSyncStatus(false, false);
         } finally {
             syncInProgress = false;
         }
@@ -532,34 +674,42 @@
     async function cargarDesdeJSONBin() {
         if (syncInProgress) return false;
         syncInProgress = true;
+        updateSyncStatus(true, true);
         try {
             const response = await fetch(`${JSONBIN_URL}/latest`, {
                 headers: { "X-Master-Key": JSONBIN_API_KEY }
             });
             if (!response.ok) {
                 if (response.status === 404) {
-                    console.log("Bin no encontrado o vacío, se iniciará desde cero");
+                    console.log("Bin no encontrado o vacío");
+                    updateSyncStatus(false, false);
                     return false;
                 }
                 throw new Error(`HTTP ${response.status}`);
             }
             const data = await response.json();
-            if (data.record && (data.record.materias || data.record.alumnos)) {
-                globalData = { materias: data.record.materias || [], alumnos: data.record.alumnos || [] };
+            if (data.record) {
+                globalData = { 
+                    materias: data.record.materias || [], 
+                    alumnos: data.record.alumnos || [],
+                    trabajadores: data.record.trabajadores || []
+                };
                 localStorage.setItem('cpu_data', JSON.stringify(globalData));
                 mostrarToast("✅ Datos cargados desde JSONBin");
+                lastSyncTime = new Date();
+                updateSyncStatus(true, false);
                 return true;
             }
         } catch(e) {
-            console.warn("Error cargando desde JSONBin:", e);
+            console.warn(e);
             mostrarToast("⚠️ No se pudo cargar desde JSONBin, usando datos locales", true);
+            updateSyncStatus(false, false);
         } finally {
             syncInProgress = false;
         }
         return false;
     }
 
-    // Sincronización manual: primero sube los datos locales, luego baja los remotos (para combinar)
     async function syncNow() {
         if (!adminMode) {
             mostrarToast("Debe estar en modo administrador para sincronizar", true);
@@ -570,15 +720,13 @@
             return;
         }
         mostrarToast("Sincronizando con JSONBin...");
-        // Primero subir los datos actuales (para no perder cambios locales)
-        hayCambios = true; // forzar guardado
+        hayCambios = true;
         await guardarEnJSONBin();
-        // Luego bajar los datos remotos (por si hay cambios en otro dispositivo)
         await cargarDesdeJSONBin();
-        // Refrescar toda la interfaz
         renderSidebar();
         if (currentMateriaId) seleccionarMateria(currentMateriaId);
         renderListaGeneral();
+        renderTrabajadores();
         mostrarToast("Sincronización completada");
     }
 
@@ -598,10 +746,89 @@
         setTimeout(() => t.remove(), 3000);
     }
 
-    // Auto-sync cada 30 segundos si hay cambios y estamos en modo admin
     setInterval(async () => { if (hayCambios && !syncInProgress && adminMode) await guardarEnJSONBin(); }, 30000);
 
-    // ==================== RESTO DE FUNCIONES (sin cambios, igual que antes) ====================
+    // ==================== TRABAJADORES Y ALUMNOS ====================
+    function trabajadorToAlumno(t) {
+        return {
+            id: t.id,
+            apellido: t.apellido,
+            nombre: t.nombre,
+            dni: t.dni || '',
+            pabellon: t.pabellon || '',
+            fecha_inscripcion: new Date().toISOString().slice(0,10),
+            fecha_vencimiento_carnet: t.vencimiento_carnet || '',
+            asist: {},
+            observaciones: ''
+        };
+    }
+
+    function actualizarAlumnoDesdeTrabajador(trabajador) {
+        const index = globalData.alumnos.findIndex(a => a.id === trabajador.id);
+        const alumnoData = trabajadorToAlumno(trabajador);
+        if (index !== -1) {
+            const oldAlumno = globalData.alumnos[index];
+            globalData.alumnos[index] = {
+                ...alumnoData,
+                asist: oldAlumno.asist || {},
+                observaciones: oldAlumno.observaciones || ''
+            };
+        } else {
+            globalData.alumnos.push(alumnoData);
+        }
+    }
+
+    function eliminarAlumnoPorId(id) {
+        globalData.alumnos = globalData.alumnos.filter(a => a.id !== id);
+    }
+
+    function agregarAlumnoATodasLasMaterias(alumno) {
+        globalData.materias.forEach(materia => {
+            if (!materia.alumnos.some(a => a.id === alumno.id)) {
+                materia.alumnos.push({
+                    ...alumno,
+                    asist: {},
+                    observaciones: ''
+                });
+            }
+        });
+    }
+
+    function actualizarAlumnoEnTodasLasMaterias(alumnoActualizado) {
+        globalData.materias.forEach(materia => {
+            const idx = materia.alumnos.findIndex(a => a.id === alumnoActualizado.id);
+            if (idx !== -1) {
+                const old = materia.alumnos[idx];
+                materia.alumnos[idx] = {
+                    ...alumnoActualizado,
+                    asist: old.asist || {},
+                    observaciones: old.observaciones || ''
+                };
+            }
+        });
+    }
+
+    function eliminarAlumnoDeTodasLasMaterias(id) {
+        globalData.materias.forEach(materia => {
+            materia.alumnos = materia.alumnos.filter(a => a.id !== id);
+        });
+    }
+
+    function agregarTrabajadoresANuevaMateria(materia) {
+        if (!materia.alumnos) materia.alumnos = [];
+        globalData.trabajadores.forEach(t => {
+            if (!materia.alumnos.some(a => a.id === t.id)) {
+                const alumno = trabajadorToAlumno(t);
+                materia.alumnos.push({
+                    ...alumno,
+                    asist: {},
+                    observaciones: ''
+                });
+            }
+        });
+    }
+
+    // ==================== MATERIAS ====================
     function getMaterias() { return globalData.materias; }
     function getCurrentMateria() { return globalData.materias.find(m => m.id === currentMateriaId) || null; }
     function getAlumnosGlobal() { return globalData.alumnos; }
@@ -613,7 +840,12 @@
         container.innerHTML = materias.map(m => `
             <div class="materia-item ${currentMateriaId === m.id ? 'active' : ''}" onclick="seleccionarMateria(${m.id})">
                 <span>${escapeHtml(m.nombre)}</span>
-                ${adminMode ? `<button class="delete-materia" onclick="event.stopPropagation(); eliminarMateria(${m.id})"><i class="fas fa-trash-alt"></i></button>` : ''}
+                ${adminMode ? `
+                    <div class="materia-actions">
+                        <button class="edit-materia" onclick="event.stopPropagation(); editarMateria(${m.id})"><i class="fas fa-edit"></i></button>
+                        <button class="delete-materia" onclick="event.stopPropagation(); eliminarMateria(${m.id})"><i class="fas fa-trash-alt"></i></button>
+                    </div>
+                ` : ''}
             </div>
         `).join('');
         const estSelect = document.getElementById('estMateria');
@@ -646,6 +878,196 @@
         renderListaGeneral();
     };
 
+    function editarMateria(id) {
+        if (!adminMode) return;
+        const materia = globalData.materias.find(m => m.id === id);
+        if (!materia) return;
+        document.getElementById('editMateriaId').value = id;
+        document.getElementById('modalMateriaTitle').innerText = 'Editar Materia';
+        document.getElementById('nuevaMateriaNombre').value = materia.nombre;
+        const diasCheckboxes = document.querySelectorAll('#diasCheckboxGroup input');
+        diasCheckboxes.forEach(cb => cb.checked = materia.dias?.includes(cb.value) || false);
+        const horarioParts = (materia.horario || '').split(' - ');
+        document.getElementById('nuevaMateriaHoraInicio').value = horarioParts[0] || '';
+        document.getElementById('nuevaMateriaHoraFin').value = horarioParts[1] || '';
+        document.getElementById('modalNuevaMateria').classList.add('active');
+    }
+
+    function crearMateria(nombre, dias, horaInicio, horaFin, editId = null) {
+        if (!adminMode) return;
+        if (!nombre.trim()) return alert('Ingrese nombre');
+        const horarioStr = (horaInicio && horaFin) ? `${horaInicio} - ${horaFin}` : '';
+        if (editId) {
+            const index = globalData.materias.findIndex(m => m.id === editId);
+            if (index !== -1) {
+                globalData.materias[index].nombre = nombre;
+                globalData.materias[index].dias = dias || [];
+                globalData.materias[index].horario = horarioStr;
+                guardarLocal();
+                renderSidebar();
+                if (currentMateriaId === editId) {
+                    currentMateriaId = editId;
+                    seleccionarMateria(editId);
+                }
+                mostrarToast(`Materia "${nombre}" actualizada`);
+            }
+        } else {
+            const newId = Date.now();
+            const nueva = {
+                id: newId,
+                nombre: nombre,
+                dias: dias || [],
+                horario: horarioStr,
+                fechas: [],
+                alumnos: []
+            };
+            globalData.materias.push(nueva);
+            agregarTrabajadoresANuevaMateria(nueva);
+            guardarLocal();
+            renderSidebar();
+            currentMateriaId = newId;
+            seleccionarMateria(newId);
+            mostrarToast(`Materia "${nombre}" creada`);
+        }
+    }
+
+    function eliminarMateria(id) {
+        if (!adminMode) return;
+        if (!confirm('¿Eliminar materia? Se perderán las asistencias.')) return;
+        globalData.materias = globalData.materias.filter(m => m.id !== id);
+        if (currentMateriaId === id) currentMateriaId = null;
+        guardarLocal();
+        renderSidebar();
+        seleccionarMateria(null);
+        renderListaGeneral();
+        mostrarToast('Materia eliminada');
+    }
+
+    // ==================== TRABAJADORES (con fecha de vencimiento de carnet) ====================
+    function renderTrabajadores() {
+        const container = document.getElementById('tablaTrabajadores');
+        const trabajadores = globalData.trabajadores || [];
+        const contadorSpan = document.getElementById('contadorTrabajadores');
+        if (contadorSpan) contadorSpan.innerText = `${trabajadores.length} trabajadores`;
+        if (trabajadores.length === 0) {
+            container.innerHTML = '<div class="help-text">No hay trabajadores registrados.</div>';
+            return;
+        }
+        let html = '<tr><thead><tr>';
+        html += '<th>Apellido</th><th>Nombre</th><th>DNI</th><th>Pabellón</th><th>Puesto</th><th title="Fecha de vencimiento del carnet">Venc. carnet</th>';
+        if (adminMode) html += '<th>Acciones</th>';
+        html += '</tr></thead><tbody>';
+        trabajadores.forEach(t => {
+            html += '<tr>';
+            html += `<td>${escapeHtml(t.apellido)}</td>`;
+            html += `<td>${escapeHtml(t.nombre)}</td>`;
+            html += `<td>${escapeHtml(t.dni || '—')}</td>`;
+            html += `<td>${escapeHtml(t.pabellon || '—')}</td>`;
+            html += `<td>${escapeHtml(t.puesto || '—')}</td>`;
+            html += `<td>${escapeHtml(t.vencimiento_carnet || '—')}</td>`;
+            if (adminMode) {
+                html += `<td>
+                            <button class="btn-sm" onclick="editarTrabajador('${t.id}')"><i class="fas fa-edit"></i></button>
+                            <button class="btn-sm" onclick="eliminarTrabajador('${t.id}')"><i class="fas fa-trash"></i></button>
+                          </td>`;
+            }
+            html += '</tr>';
+        });
+        html += '</tbody></table>';
+        container.innerHTML = html;
+    }
+
+    function abrirModalTrabajador(trabajador = null) {
+        if (!adminMode) return;
+        if (trabajador) {
+            document.getElementById('modalTrabajadorTitle').innerText = 'Editar Trabajador';
+            document.getElementById('editTrabajadorId').value = trabajador.id;
+            document.getElementById('trabajadorApellido').value = trabajador.apellido || '';
+            document.getElementById('trabajadorNombre').value = trabajador.nombre || '';
+            document.getElementById('trabajadorDNI').value = trabajador.dni || '';
+            document.getElementById('trabajadorPabellon').value = trabajador.pabellon || '';
+            document.getElementById('trabajadorPuesto').value = trabajador.puesto || '';
+            document.getElementById('trabajadorVencimientoCarnet').value = trabajador.vencimiento_carnet || '';
+        } else {
+            document.getElementById('modalTrabajadorTitle').innerText = 'Agregar Trabajador';
+            document.getElementById('editTrabajadorId').value = '';
+            document.getElementById('trabajadorApellido').value = '';
+            document.getElementById('trabajadorNombre').value = '';
+            document.getElementById('trabajadorDNI').value = '';
+            document.getElementById('trabajadorPabellon').value = '';
+            document.getElementById('trabajadorPuesto').value = '';
+            document.getElementById('trabajadorVencimientoCarnet').value = '';
+        }
+        document.getElementById('modalTrabajador').classList.add('active');
+    }
+
+    function guardarTrabajador() {
+        if (!adminMode) return;
+        const id = document.getElementById('editTrabajadorId').value;
+        const apellido = document.getElementById('trabajadorApellido').value.trim();
+        const nombre = document.getElementById('trabajadorNombre').value.trim();
+        if (!apellido || !nombre) return alert('Apellido y Nombre son obligatorios');
+        const dni = document.getElementById('trabajadorDNI').value.trim();
+        const pabellon = document.getElementById('trabajadorPabellon').value.trim();
+        const puesto = document.getElementById('trabajadorPuesto').value.trim();
+        const vencimiento_carnet = document.getElementById('trabajadorVencimientoCarnet').value;
+
+        if (id) {
+            const index = globalData.trabajadores.findIndex(t => t.id === id);
+            if (index !== -1) {
+                const updatedTrabajador = {
+                    ...globalData.trabajadores[index],
+                    apellido, nombre, dni, pabellon, puesto, vencimiento_carnet
+                };
+                globalData.trabajadores[index] = updatedTrabajador;
+                actualizarAlumnoDesdeTrabajador(updatedTrabajador);
+                const alumnoActualizado = trabajadorToAlumno(updatedTrabajador);
+                actualizarAlumnoEnTodasLasMaterias(alumnoActualizado);
+                guardarLocal();
+                renderTrabajadores();
+                renderListaGeneral();
+                if (currentMateriaId) renderTablaAsistencia();
+                mostrarToast('Trabajador actualizado');
+            }
+        } else {
+            const newId = Date.now() + '-' + Math.random().toString(36).substr(2, 5);
+            const nuevoTrabajador = {
+                id: newId,
+                apellido, nombre, dni, pabellon, puesto, vencimiento_carnet
+            };
+            globalData.trabajadores.push(nuevoTrabajador);
+            const nuevoAlumno = trabajadorToAlumno(nuevoTrabajador);
+            globalData.alumnos.push(nuevoAlumno);
+            agregarAlumnoATodasLasMaterias(nuevoAlumno);
+            guardarLocal();
+            renderTrabajadores();
+            renderListaGeneral();
+            if (currentMateriaId) renderTablaAsistencia();
+            mostrarToast('Trabajador agregado y matriculado en todas las materias');
+        }
+        document.getElementById('modalTrabajador').classList.remove('active');
+    }
+
+    window.editarTrabajador = function(id) {
+        const trabajador = globalData.trabajadores.find(t => t.id === id);
+        if (trabajador) abrirModalTrabajador(trabajador);
+    };
+
+    window.eliminarTrabajador = function(id) {
+        if (!adminMode) return;
+        if (confirm('¿Eliminar este trabajador? También se eliminará de la matrícula y de todas las materias.')) {
+            globalData.trabajadores = globalData.trabajadores.filter(t => t.id !== id);
+            eliminarAlumnoPorId(id);
+            eliminarAlumnoDeTodasLasMaterias(id);
+            guardarLocal();
+            renderTrabajadores();
+            renderListaGeneral();
+            if (currentMateriaId) renderTablaAsistencia();
+            mostrarToast('Trabajador eliminado');
+        }
+    };
+
+    // ==================== ASISTENCIA Y LISTAS ====================
     function renderFechas() {
         const materia = getCurrentMateria();
         const container = document.getElementById('listaFechas');
@@ -714,14 +1136,14 @@
             container.innerHTML = '<div class="help-text">No hay alumnos. Use el formulario de matrícula.</div>';
             return;
         }
-        let html = `<table><thead>`;
-        html += `<tr><th>Alumno</th><th>DNI</th><th>Pabellón</th>`;
+        let html = '<table><thead><tr>';
+        html += '<th>Alumno</th><th>DNI</th><th>Pabellón</th>';
         fechas.forEach(f => html += `<th>${escapeHtml(f)}</th>`);
-        html += `<th>Observaciones</th>`;
-        if (adminMode) html += `<th>Acciones</th>`;
-        html += `</tr></thead><tbody>`;
+        html += '<th>Observaciones</th>';
+        if (adminMode) html += '<th>Acciones</th>';
+        html += '</tr></thead><tbody>';
         alumnos.forEach(al => {
-            html += `<tr>`;
+            html += '<tr>';
             html += `<td><strong>${escapeHtml(al.apellido)}</strong><br><span style="font-size:0.7rem;">${escapeHtml(al.nombre)}</span></td>`;
             html += `<td>${escapeHtml(al.dni || '—')}</td>`;
             html += `<td>${escapeHtml(al.pabellon)}</td>`;
@@ -735,13 +1157,15 @@
             });
             html += `<td><textarea style="width:100px" ${adminMode ? `onchange="updateObservaciones('${al.id}',this.value)"` : 'readonly disabled'}>${escapeHtml(al.observaciones || '')}</textarea></td>`;
             if (adminMode) {
-                html += `<td><button class="btn-sm" onclick="editarAlumnoCompleto('${al.id}')"><i class="fas fa-edit"></i></button>
-                         <button class="btn-sm" onclick="eliminarAlumnoDeMateria('${al.id}')"><i class="fas fa-trash"></i></button>
-                         <button class="btn-sm" onclick="renovarCarnet('${al.id}')"><i class="fas fa-id-card"></i></button></td>`;
+                html += `<td>
+                            <button class="btn-sm" onclick="editarAlumnoCompleto('${al.id}')"><i class="fas fa-edit"></i></button>
+                            <button class="btn-sm" onclick="eliminarAlumnoDeMateria('${al.id}')"><i class="fas fa-trash"></i></button>
+                            <button class="btn-sm" onclick="renovarCarnet('${al.id}')"><i class="fas fa-id-card"></i></button>
+                          </td>`;
             }
-            html += `</tr>`;
+            html += '</tr>';
         });
-        html += `</tbody></table>`;
+        html += '</tbody></tr>';
         container.innerHTML = html;
     }
 
@@ -762,17 +1186,29 @@
         const contadorTotalSpan = document.getElementById('contadorAlumnosTotal');
         if (contadorTotalSpan) contadorTotalSpan.innerText = `${alumnos.length} alumnos`;
         if (alumnos.length === 0) { container.innerHTML = '<div class="help-text">No hay alumnos registrados.</div>'; return; }
-        let html = `<table><thead><tr><th>Apellido</th><th>Nombre</th><th>DNI</th><th>Pabellón</th><th>Fecha inscripción</th><th>Vencimiento carnet</th><th>Materias</th>${adminMode ? '<th>Editar</th>' : ''}<tr></thead><tbody>`;
+        let html = '<table><thead><tr>';
+        html += '<th>Apellido</th><th>Nombre</th><th>DNI</th><th>Pabellón</th><th>Fecha inscripción</th><th>Vencimiento carnet</th><th>Materias</th>';
+        if (adminMode) html += '<th>Editar</th>';
+        html += '</tr></thead><tbody>';
         alumnos.forEach(al => {
             const materiasStr = getMateriasPorAlumno(al.id).join(', ');
-            html += `<tr><td>${escapeHtml(al.apellido)}</td><td>${escapeHtml(al.nombre)}</td><td>${escapeHtml(al.dni || '—')}</td><td>${escapeHtml(al.pabellon)}</td><td>${escapeHtml(al.fecha_inscripcion || '—')}</td><td>${escapeHtml(al.fecha_vencimiento_carnet || '—')}</td><td>${escapeHtml(materiasStr || 'Ninguna')}</td>${adminMode ? `<td><button class="btn-sm" onclick="editarAlumnoCompleto('${al.id}')"><i class="fas fa-edit"></i></button></td>` : ''}</tr>`;
+            html += '<tr>';
+            html += `<td>${escapeHtml(al.apellido)}</td>`;
+            html += `<td>${escapeHtml(al.nombre)}</td>`;
+            html += `<td>${escapeHtml(al.dni || '—')}</td>`;
+            html += `<td>${escapeHtml(al.pabellon)}</td>`;
+            html += `<td>${escapeHtml(al.fecha_inscripcion || '—')}</td>`;
+            html += `<td>${escapeHtml(al.fecha_vencimiento_carnet || '—')}</td>`;
+            html += `<td>${escapeHtml(materiasStr || 'Ninguna')}</td>`;
+            if (adminMode) {
+                html += `<td><button class="btn-sm" onclick="editarAlumnoCompleto('${al.id}')"><i class="fas fa-edit"></i></button></td>`;
+            }
+            html += '</tr>';
         });
-        html += `</tbody></table>`;
+        html += '</tbody></table>';
         container.innerHTML = html;
     }
 
-    function crearMateria(nombre, dias, horaInicio, horaFin) { if (!adminMode) return; if (!nombre.trim()) return alert('Ingrese nombre'); const newId = Date.now(); const horarioStr = (horaInicio && horaFin) ? `${horaInicio} - ${horaFin}` : ''; const nueva = { id: newId, nombre: nombre, dias: dias || [], horario: horarioStr, fechas: [], alumnos: [] }; globalData.materias.push(nueva); guardarLocal(); renderSidebar(); currentMateriaId = newId; seleccionarMateria(newId); mostrarToast(`Materia "${nombre}" creada`); }
-    function eliminarMateria(id) { if (!adminMode) return; if (!confirm('¿Eliminar materia? Se perderán las asistencias.')) return; globalData.materias = globalData.materias.filter(m => m.id !== id); if (currentMateriaId === id) currentMateriaId = null; guardarLocal(); renderSidebar(); seleccionarMateria(null); renderListaGeneral(); mostrarToast('Materia eliminada'); }
     function agregarFecha(fecha) { if (!adminMode) return; const materia = getCurrentMateria(); if (!materia) return alert('Seleccione una materia'); if (!fecha.trim()) return alert('Ingrese nombre de fecha'); if (!materia.fechas) materia.fechas = []; materia.fechas.push(fecha.trim()); guardarLocal(); renderFechas(); renderTablaAsistencia(); mostrarToast(`Fecha "${fecha}" agregada`); }
     function matricularAlumnoManual(apellido, nombre, dni, pabellon, fechaIngreso, fechaVenc) { if (!adminMode) return; if (!apellido || !nombre || !pabellon) return alert('Complete apellido, nombre y pabellón'); const materia = getCurrentMateria(); if (!materia) return alert('Seleccione una materia'); const idUnico = Date.now() + '-' + Math.random().toString(36).substr(2, 5); const hoy = new Date().toISOString().slice(0,10); const vencDef = new Date(); vencDef.setFullYear(vencDef.getFullYear()+1); const nuevoAlumno = { id: idUnico, apellido, nombre, dni: dni || '', pabellon, fecha_inscripcion: fechaIngreso || hoy, fecha_vencimiento_carnet: fechaVenc || vencDef.toISOString().slice(0,10), asist: {}, observaciones: '' }; globalData.alumnos.push(nuevoAlumno); materia.alumnos.push({ ...nuevoAlumno, asist: {}, observaciones: '' }); guardarLocal(); renderTablaAsistencia(); renderListaGeneral(); mostrarToast(`Alumno ${apellido} ${nombre} matriculado`); }
 
@@ -855,6 +1291,7 @@
                 const newId = Date.now();
                 materia = { id: newId, nombre: materiaNombre, dias: [], horario: '', fechas: fechas, alumnos: [] };
                 globalData.materias.push(materia);
+                agregarTrabajadoresANuevaMateria(materia);
             } else {
                 if (!materia.fechas) materia.fechas = [];
                 fechas.forEach(f => { if (!materia.fechas.includes(f)) materia.fechas.push(f); });
@@ -894,17 +1331,17 @@
 
     async function generarEstadisticas() { const materiaId = parseInt(document.getElementById('estMateria').value); if (!materiaId) { document.getElementById('estadisticasResumen').innerHTML = '<div class="help-text">Seleccione una materia para ver estadísticas.</div>'; if (chartInstance) { chartInstance.destroy(); chartInstance = null; } return; } const materia = globalData.materias.find(m => m.id === materiaId); if (!materia) { document.getElementById('estadisticasResumen').innerHTML = '<div class="help-text">Materia no encontrada.</div>'; if (chartInstance) { chartInstance.destroy(); chartInstance = null; } return; } const fechas = materia.fechas || []; const totalClases = fechas.length; if (totalClases === 0) { document.getElementById('estadisticasResumen').innerHTML = '<div class="help-text">No hay fechas cargadas para esta materia.</div>'; if (chartInstance) { chartInstance.destroy(); chartInstance = null; } return; } let totalAsistencias = 0; const alumnosMap = new Map(); (materia.alumnos || []).forEach(al => { if (!alumnosMap.has(al.id)) { alumnosMap.set(al.id, { nombre: `${al.apellido} ${al.nombre}`, dni: al.dni, asistencias: 0, faltas: 0 }); } const stats = alumnosMap.get(al.id); fechas.forEach(f => { if (al.asist && al.asist[f]) { stats.asistencias++; totalAsistencias++; } else { stats.faltas++; } }); }); const totalAlumnos = alumnosMap.size; const totalFaltas = (totalClases * totalAlumnos) - totalAsistencias; const pctGeneral = totalClases * totalAlumnos ? Math.round(totalAsistencias / (totalClases * totalAlumnos) * 100) : 0; let html = `<div style="display:grid; grid-template-columns:repeat(3,1fr); gap:0.8rem; margin-bottom:0.8rem;"><div style="background:#0f172a; padding:0.5rem; border-radius:0.5rem; text-align:center;"><h3 style="font-size:0.9rem;">Asistencias</h3><p style="font-size:1.2rem;">${totalAsistencias}</p></div><div style="background:#0f172a; padding:0.5rem; border-radius:0.5rem; text-align:center;"><h3 style="font-size:0.9rem;">Faltas</h3><p style="font-size:1.2rem;">${totalFaltas}</p></div><div style="background:#0f172a; padding:0.5rem; border-radius:0.5rem; text-align:center;"><h3 style="font-size:0.9rem;">% General</h3><p style="font-size:1.2rem;">${pctGeneral}%</p></div></div>`; document.getElementById('estadisticasResumen').innerHTML = html; if (chartInstance) chartInstance.destroy(); const ctx = document.getElementById('graficoAsistencia').getContext('2d'); const labels = Array.from(alumnosMap.values()).map(a => a.nombre.split(' ')[0]); const data = Array.from(alumnosMap.values()).map(a => totalClases ? Math.round(a.asistencias / totalClases * 100) : 0); if (labels.length > 0) chartInstance = new Chart(ctx, { type: 'bar', data: { labels, datasets: [{ label: '% Asistencia', data, backgroundColor: '#4f46e5' }] }, options: { responsive: true, scales: { y: { max: 100, beginAtZero: true } } } }); else chartInstance = null; }
 
-    function resetearTodo() { if (!adminMode) return; if (confirm('⚠️ Eliminar TODOS los datos?')) { globalData = { materias: [], alumnos: [] }; currentMateriaId = null; guardarLocal(); renderSidebar(); seleccionarMateria(null); renderListaGeneral(); document.getElementById('estadisticasResumen').innerHTML = '<div class="help-text">No hay datos para mostrar.</div>'; if (chartInstance) { chartInstance.destroy(); chartInstance = null; } const contadorTotal = document.getElementById('contadorAlumnosTotal'); if (contadorTotal) contadorTotal.innerText = '0 alumnos'; const contadorMateria = document.getElementById('contadorAlumnosMateria'); if (contadorMateria) contadorMateria.innerText = ''; document.getElementById('tablaAsistencia').innerHTML = ''; document.getElementById('listaFechas').innerHTML = ''; document.getElementById('fechasSection').style.display = 'none'; document.getElementById('asistenciaSection').style.display = 'none'; document.getElementById('formMatricula').style.display = 'none'; mostrarToast('Datos eliminados'); } }
+    function resetearTodo() { if (!adminMode) return; if (confirm('⚠️ Eliminar TODOS los datos?')) { globalData = { materias: [], alumnos: [], trabajadores: [] }; currentMateriaId = null; guardarLocal(); renderSidebar(); seleccionarMateria(null); renderListaGeneral(); renderTrabajadores(); document.getElementById('estadisticasResumen').innerHTML = '<div class="help-text">No hay datos para mostrar.</div>'; if (chartInstance) { chartInstance.destroy(); chartInstance = null; } const contadorTotal = document.getElementById('contadorAlumnosTotal'); if (contadorTotal) contadorTotal.innerText = '0 alumnos'; const contadorMateria = document.getElementById('contadorAlumnosMateria'); if (contadorMateria) contadorMateria.innerText = ''; document.getElementById('tablaAsistencia').innerHTML = ''; document.getElementById('listaFechas').innerHTML = ''; document.getElementById('fechasSection').style.display = 'none'; document.getElementById('asistenciaSection').style.display = 'none'; document.getElementById('formMatricula').style.display = 'none'; mostrarToast('Datos eliminados'); } }
 
     // Event listeners
     document.getElementById('searchAlumno').addEventListener('input', (e) => { searchAsistencia = e.target.value; renderTablaAsistencia(); });
     document.getElementById('orderAsistencia').addEventListener('change', (e) => { currentOrdenAsistencia = e.target.value; renderTablaAsistencia(); });
     document.getElementById('searchGeneral').addEventListener('input', (e) => { searchGeneral = e.target.value; renderListaGeneral(); });
     document.getElementById('orderGeneral').addEventListener('change', (e) => { currentOrdenGeneral = e.target.value; renderListaGeneral(); });
-    document.getElementById('btnNuevaMateria').onclick = () => { if (!adminMode) return; document.getElementById('modalNuevaMateria').classList.add('active'); };
+    document.getElementById('btnNuevaMateria').onclick = () => { if (!adminMode) return; document.getElementById('editMateriaId').value = ''; document.getElementById('modalMateriaTitle').innerText = 'Nueva Materia'; document.getElementById('nuevaMateriaNombre').value = ''; document.querySelectorAll('#diasCheckboxGroup input').forEach(cb => cb.checked = false); document.getElementById('nuevaMateriaHoraInicio').value = ''; document.getElementById('nuevaMateriaHoraFin').value = ''; document.getElementById('modalNuevaMateria').classList.add('active'); };
     document.getElementById('closeModalBtn').onclick = () => document.getElementById('modalNuevaMateria').classList.remove('active');
     document.getElementById('cancelarNuevaMateria').onclick = () => document.getElementById('modalNuevaMateria').classList.remove('active');
-    document.getElementById('confirmarNuevaMateria').onclick = () => { if (!adminMode) return; const nombre = document.getElementById('nuevaMateriaNombre').value.trim(); const dias = Array.from(document.querySelectorAll('#modalNuevaMateria .checkbox-group input:checked')).map(cb => cb.value); const horaInicio = document.getElementById('nuevaMateriaHoraInicio').value; const horaFin = document.getElementById('nuevaMateriaHoraFin').value; if (!nombre) return alert('El nombre es obligatorio'); crearMateria(nombre, dias, horaInicio, horaFin); document.getElementById('modalNuevaMateria').classList.remove('active'); document.getElementById('nuevaMateriaNombre').value = ''; document.querySelectorAll('#modalNuevaMateria .checkbox-group input:checked').forEach(cb => cb.checked = false); document.getElementById('nuevaMateriaHoraInicio').value = ''; document.getElementById('nuevaMateriaHoraFin').value = ''; };
+    document.getElementById('confirmarNuevaMateria').onclick = () => { if (!adminMode) return; const nombre = document.getElementById('nuevaMateriaNombre').value.trim(); const dias = Array.from(document.querySelectorAll('#diasCheckboxGroup input:checked')).map(cb => cb.value); const horaInicio = document.getElementById('nuevaMateriaHoraInicio').value; const horaFin = document.getElementById('nuevaMateriaHoraFin').value; if (!nombre) return alert('El nombre es obligatorio'); const editId = document.getElementById('editMateriaId').value; if (editId) crearMateria(nombre, dias, horaInicio, horaFin, parseInt(editId)); else crearMateria(nombre, dias, horaInicio, horaFin); document.getElementById('modalNuevaMateria').classList.remove('active'); };
     document.getElementById('guardarAlumno').onclick = () => { if (!adminMode) return; const a = document.getElementById('alumnoApellido').value.trim(); const n = document.getElementById('alumnoNombre').value.trim(); const d = document.getElementById('alumnoDNI').value.trim(); const p = document.getElementById('alumnoPabellon').value.trim(); const fi = document.getElementById('alumnoFechaIngreso').value; const fv = document.getElementById('alumnoFechaVencimiento').value; matricularAlumnoManual(a, n, d, p, fi, fv); document.getElementById('alumnoApellido').value = ''; document.getElementById('alumnoNombre').value = ''; document.getElementById('alumnoDNI').value = ''; document.getElementById('alumnoPabellon').value = ''; document.getElementById('alumnoFechaIngreso').value = new Date().toISOString().slice(0,10); let venc = new Date(); venc.setFullYear(venc.getFullYear()+1); document.getElementById('alumnoFechaVencimiento').value = venc.toISOString().slice(0,10); };
     document.getElementById('agregarFechaBtn').onclick = () => { if (!adminMode) return; const fecha = document.getElementById('nuevaFecha').value.trim(); if (fecha) agregarFecha(fecha); document.getElementById('nuevaFecha').value = ''; };
     document.getElementById('eliminarFechaBtn').onclick = () => { if (!adminMode) return; const materia = getCurrentMateria(); if (!materia || !materia.fechas.length) return alert('No hay fechas'); const idx = prompt(`Fechas disponibles:\n${materia.fechas.map((f,i)=>`${i+1}. ${f}`).join('\n')}\nNúmero a eliminar:`); if (idx && !isNaN(idx) && idx>=1 && idx<=materia.fechas.length) { materia.fechas.splice(idx-1,1); guardarLocal(); renderFechas(); renderTablaAsistencia(); mostrarToast('Fecha eliminada'); } };
@@ -916,6 +1353,10 @@
     document.getElementById('btnLogoutAdmin').onclick = () => disableAdminMode();
     document.getElementById('btnMatricular').onclick = () => { if (!adminMode) return; if (!getCurrentMateria()) return alert('Seleccione una materia'); document.getElementById('formMatricula').style.display = 'block'; };
     document.getElementById('btnSyncNow').onclick = syncNow;
+    document.getElementById('btnAgregarTrabajador').onclick = () => abrirModalTrabajador();
+    document.getElementById('guardarTrabajadorBtn').onclick = guardarTrabajador;
+    document.getElementById('closeTrabajadorModalBtn').onclick = () => document.getElementById('modalTrabajador').classList.remove('active');
+    document.getElementById('cancelarTrabajadorBtn').onclick = () => document.getElementById('modalTrabajador').classList.remove('active');
     setInterval(() => { document.getElementById('clock').innerText = new Date().toLocaleString('es-ES'); }, 1000);
     function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
     document.getElementById('hamburgerBtn').onclick = toggleSidebar;
@@ -929,15 +1370,34 @@
         if (local) { 
             try { globalData = JSON.parse(local); } catch(e) {} 
         } 
+        if (!globalData.trabajadores) globalData.trabajadores = [];
+        if (!globalData.alumnos) globalData.alumnos = [];
+        if (!globalData.materias) globalData.materias = [];
+        
+        globalData.trabajadores.forEach(t => {
+            if (!globalData.alumnos.some(a => a.id === t.id)) {
+                globalData.alumnos.push(trabajadorToAlumno(t));
+            }
+        });
+        globalData.materias.forEach(materia => {
+            globalData.trabajadores.forEach(t => {
+                if (!materia.alumnos.some(a => a.id === t.id)) {
+                    materia.alumnos.push({
+                        ...trabajadorToAlumno(t),
+                        asist: {},
+                        observaciones: ''
+                    });
+                }
+            });
+        });
+        
         if ((!globalData.materias || globalData.materias.length === 0) && (!globalData.alumnos || globalData.alumnos.length === 0)) { 
             const ok = await cargarDesdeJSONBin(); 
             if (!ok) { 
-                globalData = { materias: [], alumnos: [] }; 
+                globalData = { materias: [], alumnos: [], trabajadores: [] }; 
                 guardarLocal(); 
             } 
         } else { 
-            if (!globalData.materias) globalData.materias = []; 
-            if (!globalData.alumnos) globalData.alumnos = []; 
             guardarLocal(); 
         } 
         setupAdminToggle(); 
@@ -945,6 +1405,7 @@
         renderSidebar(); 
         if (currentMateriaId) seleccionarMateria(currentMateriaId); 
         renderListaGeneral(); 
+        renderTrabajadores();
         document.getElementById('alumnoFechaIngreso').value = new Date().toISOString().slice(0,10); 
         let venc = new Date(); venc.setFullYear(venc.getFullYear()+1); 
         document.getElementById('alumnoFechaVencimiento').value = venc.toISOString().slice(0,10); 
@@ -952,6 +1413,8 @@
             document.getElementById('estadisticasResumen').innerHTML = '<div class="help-text">No hay datos para mostrar.</div>'; 
             if (chartInstance) chartInstance.destroy(); 
         } 
+        lastSyncTime = new Date();
+        updateSyncStatus(true, false);
     }
     iniciar();
     function escapeHtml(str) { return String(str).replace(/[&<>]/g, function(m) { if(m==='&') return '&amp;'; if(m==='<') return '&lt;'; if(m==='>') return '&gt;'; return m; }); }
