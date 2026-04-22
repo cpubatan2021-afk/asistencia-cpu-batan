@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>CPU Batán · Control de Asistencia</title>
     
-    <!-- PWA manifest -->
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#000000">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -18,6 +17,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
     <style>
+        /* ========== ESTILOS (sin cambios, solo los básicos para que todo funcione) ========== */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Inter', sans-serif;
@@ -778,13 +778,12 @@
         });
     }
     
-    // ==================== FUNCIONES JSONBIN CON DEBOUNCE ====================
+    // ==================== FUNCIONES JSONBIN ====================
     async function guardarEnJSONBin() {
         if (!hayCambios || syncInProgress) return;
         syncInProgress = true;
         updateSyncStatus(true, true);
         try {
-            console.log("📤 Intentando guardar en JSONBin. Datos:", globalData);
             const response = await fetch(JSONBIN_URL, {
                 method: "PUT",
                 headers: {
@@ -798,13 +797,11 @@
                 hayCambios = false;
                 lastSyncTime = new Date();
                 updateSyncStatus(true, false);
-                console.log("✅ Guardado exitoso en JSONBin");
             } else {
                 const errorText = await response.text();
                 throw new Error(`HTTP ${response.status}: ${errorText}`);
             }
         } catch(e) {
-            console.error("❌ ERROR guardando en JSONBin:", e);
             mostrarToast("❌ Error al guardar: " + e.message, true);
             updateSyncStatus(false, false);
         } finally {
@@ -827,14 +824,11 @@
         syncInProgress = true;
         updateSyncStatus(true, true);
         try {
-            console.log("📥 Cargando desde JSONBin...");
             const response = await fetch(`${JSONBIN_URL}/latest`, {
                 headers: { "X-Master-Key": JSONBIN_API_KEY }
             });
             if (!response.ok) {
                 if (response.status === 404) {
-                    console.log("Bin no encontrado o vacío");
-                    updateSyncStatus(false, false);
                     return false;
                 }
                 throw new Error(`HTTP ${response.status}`);
@@ -850,12 +844,10 @@
                 mostrarToast("✅ Datos cargados desde JSONBin");
                 lastSyncTime = new Date();
                 updateSyncStatus(true, false);
-                console.log("✅ Carga exitosa. Trabajadores:", globalData.trabajadores.length);
                 hayCambios = false;
                 return true;
             }
         } catch(e) {
-            console.warn("⚠️ Error cargando desde JSONBin:", e);
             mostrarToast("⚠️ No se pudo cargar desde JSONBin, usando datos locales", true);
             updateSyncStatus(false, false);
         } finally {
@@ -908,24 +900,19 @@
         }
     });
 
-    // ==================== SIDEBAR TOGGLE ====================
     function toggleSidebar() {
         const sidebar = document.getElementById('sidebar');
         sidebar.classList.toggle('closed');
-        const isClosed = sidebar.classList.contains('closed');
-        localStorage.setItem('sidebarClosed', isClosed);
+        localStorage.setItem('sidebarClosed', sidebar.classList.contains('closed'));
     }
 
     function loadSidebarState() {
-        const saved = localStorage.getItem('sidebarClosed');
-        if (saved === 'true') {
+        if (localStorage.getItem('sidebarClosed') === 'true') {
             document.getElementById('sidebar').classList.add('closed');
-        } else {
-            document.getElementById('sidebar').classList.remove('closed');
         }
     }
 
-    // ==================== VALIDACIÓN Y GESTIÓN DE ALUMNOS ====================
+    // ==================== VALIDACIÓN Y GESTIÓN ====================
     function alumnoDuplicado(apellido, nombre, dni, excluirId = null) {
         return globalData.alumnos.some(al => {
             if (excluirId && al.id === excluirId) return false;
@@ -935,11 +922,9 @@
         });
     }
 
-    // Función para normalizar un alumno solo para mostrar (no modifica datos)
     function normalizarAlumnoParaTabla(al) {
         let apellido = al.apellido || "";
         let nombre = al.nombre || "";
-        // Si apellido tiene espacios y nombre vacío, separar
         if ((!nombre || nombre === "") && apellido.includes(" ")) {
             const partes = apellido.split(/\s+/);
             if (partes.length >= 2) {
@@ -947,7 +932,6 @@
                 nombre = partes.slice(1).join(" ");
             }
         }
-        // Si apellido tiene una sola palabra y nombre tiene varias, intercambiar
         if (apellido && !apellido.includes(" ") && nombre && nombre.includes(" ")) {
             const temp = apellido;
             apellido = nombre;
@@ -1086,7 +1070,7 @@
         mostrarToast('Materia eliminada');
     }
 
-    // ==================== TRABAJADORES ====================
+    // ==================== TRABAJADORES (con corrección de duplicados) ====================
     function trabajadorToAlumno(t) {
         return {
             id: t.id,
@@ -1099,6 +1083,15 @@
             asist: {},
             observaciones: ''
         };
+    }
+
+    function buscarAlumnoExistente(apellido, nombre, dni, excluirId = null) {
+        return globalData.alumnos.find(al => {
+            if (excluirId && al.id === excluirId) return false;
+            if (dni && al.dni === dni) return true;
+            if (!dni && al.apellido.toLowerCase() === apellido.toLowerCase() && al.nombre.toLowerCase() === nombre.toLowerCase()) return true;
+            return false;
+        });
     }
 
     function actualizarAlumnoDesdeTrabajador(trabajador) {
@@ -1152,6 +1145,7 @@
         });
     }
 
+    // Render de trabajadores (corregido)
     function renderTrabajadores() {
         const container = document.getElementById('tablaTrabajadores');
         const trabajadores = globalData.trabajadores || [];
@@ -1163,24 +1157,23 @@
         }
         let html = '<div class="table-wrapper" style="overflow-x: auto;">';
         html += '<table style="width: 100%; border-collapse: collapse;">';
-        html += '<thead>';
-        html += '<tr>';
+        html += '<thead><tr>';
         html += '<th>Apellido</th><th>Nombre</th><th>DNI</th><th>Pabellón</th><th>Puesto</th><th title="Fecha de vencimiento del carnet">Venc. carnet</th>';
         if (adminMode) html += '<th>Acciones</th>';
         html += '</tr></thead><tbody>';
         trabajadores.forEach(t => {
             html += '<tr>';
-            html += `<td style="vertical-align: top;">${escapeHtml(t.apellido)}<\/td>`;
-            html += `<td style="vertical-align: top;">${escapeHtml(t.nombre)}<\/td>`;
-            html += `<td style="vertical-align: top;">${escapeHtml(t.dni || '—')}<\/td>`;
-            html += `<td style="vertical-align: top;">${escapeHtml(t.pabellon || '—')}<\/td>`;
-            html += `<td style="vertical-align: top;">${escapeHtml(t.puesto || '—')}<\/td>`;
-            html += `<td style="vertical-align: top;">${escapeHtml(t.vencimiento_carnet || '—')}<\/td>`;
+            html += `<td style="vertical-align: top;">${escapeHtml(t.apellido)}</td>`;
+            html += `<td style="vertical-align: top;">${escapeHtml(t.nombre)}</td>`;
+            html += `<td style="vertical-align: top;">${escapeHtml(t.dni || '—')}</td>`;
+            html += `<td style="vertical-align: top;">${escapeHtml(t.pabellon || '—')}</td>`;
+            html += `<td style="vertical-align: top;">${escapeHtml(t.puesto || '—')}</td>`;
+            html += `<td style="vertical-align: top;">${escapeHtml(t.vencimiento_carnet || '—')}</td>`;
             if (adminMode) {
                 html += `<td style="white-space: nowrap; text-align: center;">
                             <button class="btn-sm" onclick="editarTrabajador('${t.id}')"><i class="fas fa-edit"></i></button>
                             <button class="btn-sm" onclick="eliminarTrabajador('${t.id}')"><i class="fas fa-trash"></i></button>
-                          <\/td>`;
+                         </td>`;
             }
             html += '</tr>';
         });
@@ -1238,17 +1231,46 @@
                 mostrarToast('Trabajador actualizado');
             }
         } else {
-            const newId = Date.now() + '-' + Math.random().toString(36).substr(2, 5);
-            const nuevoTrabajador = { id: newId, apellido, nombre, dni, pabellon, puesto, vencimiento_carnet };
+            let alumnoExistente = buscarAlumnoExistente(apellido, nombre, dni);
+            let trabajadorId;
+            if (alumnoExistente) {
+                trabajadorId = alumnoExistente.id;
+                const alumnoActualizado = {
+                    ...alumnoExistente,
+                    apellido, nombre,
+                    dni: dni || '',
+                    pabellon: pabellon || '',
+                    fecha_vencimiento_carnet: vencimiento_carnet || alumnoExistente.fecha_vencimiento_carnet
+                };
+                const idx = globalData.alumnos.findIndex(a => a.id === trabajadorId);
+                if (idx !== -1) globalData.alumnos[idx] = alumnoActualizado;
+                actualizarAlumnoEnTodasLasMaterias(alumnoActualizado);
+                mostrarToast("Alumno existente actualizado y vinculado como trabajador");
+            } else {
+                trabajadorId = Date.now() + '-' + Math.random().toString(36).substr(2, 5);
+                const nuevoAlumno = {
+                    id: trabajadorId,
+                    apellido, nombre,
+                    dni: dni || '',
+                    pabellon: pabellon || '',
+                    fecha_inscripcion: new Date().toISOString().slice(0,10),
+                    fecha_vencimiento_carnet: vencimiento_carnet || '',
+                    asist: {},
+                    observaciones: ''
+                };
+                globalData.alumnos.push(nuevoAlumno);
+                agregarAlumnoATodasLasMaterias(nuevoAlumno);
+            }
+            const nuevoTrabajador = {
+                id: trabajadorId,
+                apellido, nombre, dni, pabellon, puesto, vencimiento_carnet
+            };
             globalData.trabajadores.push(nuevoTrabajador);
-            const nuevoAlumno = trabajadorToAlumno(nuevoTrabajador);
-            globalData.alumnos.push(nuevoAlumno);
-            agregarAlumnoATodasLasMaterias(nuevoAlumno);
             guardarLocal();
             renderTrabajadores();
             renderListaGeneral();
             if (currentMateriaId) renderTablaAsistencia();
-            mostrarToast('Trabajador agregado y matriculado en todas las materias');
+            mostrarToast('Trabajador agregado y vinculado a la matrícula y a todas las materias');
         }
         document.getElementById('modalTrabajador').classList.remove('active');
     }
@@ -1344,16 +1366,12 @@
         
         let html = '<div class="table-wrapper" style="overflow-x: auto;">';
         html += '<table style="width: 100%; border-collapse: collapse;">';
-        html += '<thead>';
-        html += '<tr>';
-        html += '<th>Alumno</th>';
-        html += '<th>DNI</th>';
-        html += '<th>Pabellón</th>';
+        html += '<thead><tr>';
+        html += '<th>Alumno</th><th>DNI</th><th>Pabellón</th>';
         fechas.forEach(f => html += `<th>${escapeHtml(f)}</th>`);
         html += '<th>Observaciones</th>';
         if (adminMode) html += '<th>Acciones</th>';
-        html += '</tr>';
-        html += '</thead><tbody>';
+        html += '</tr></thead><tbody>';
         
         alumnos.forEach(al => {
             html += '<tr>';
@@ -1376,7 +1394,7 @@
                             <button class="btn-sm" onclick="editarAlumnoCompleto('${al.id}')" title="Editar"><i class="fas fa-edit"></i></button>
                             <button class="btn-sm" onclick="eliminarAlumnoDeMateria('${al.id}')" title="Eliminar de esta materia"><i class="fas fa-trash"></i></button>
                             <button class="btn-sm" onclick="renovarCarnet('${al.id}')" title="Renovar carnet"><i class="fas fa-id-card"></i></button>
-                        </td>`;
+                         </td>`;
             }
             html += '</tr>';
         });
@@ -1395,7 +1413,6 @@
     window.eliminarAlumnoDeMateria = function(alumnoId) { if (!adminMode) return; const materia = getCurrentMateria(); if (materia) { materia.alumnos = materia.alumnos.filter(a => a.id !== alumnoId); guardarLocal(); renderTablaAsistencia(); renderListaGeneral(); mostrarToast('Alumno eliminado de esta materia'); } };
     window.renovarCarnet = function(alumnoId) { if (!adminMode) return; const materia = getCurrentMateria(); const alumno = materia?.alumnos.find(a => a.id === alumnoId); if (alumno) { const venc = new Date(alumno.fecha_vencimiento_carnet); venc.setFullYear(venc.getFullYear() + 1); alumno.fecha_vencimiento_carnet = venc.toISOString().slice(0,10); const globalAlumno = getAlumnosGlobal().find(a => a.id === alumnoId); if (globalAlumno) globalAlumno.fecha_vencimiento_carnet = alumno.fecha_vencimiento_carnet; guardarLocal(); renderTablaAsistencia(); renderListaGeneral(); mostrarToast('Carnet renovado'); } };
 
-    // ==================== RENDER MATRÍCULA COMPLETA CORREGIDA ====================
     function renderListaGeneral() {
         let alumnos = getAlumnosOrdenadosFiltrados(false);
         const container = document.getElementById('tablaGeneral');
@@ -1405,7 +1422,9 @@
             container.innerHTML = '<div class="help-text">No hay alumnos registrados. Use el botón "Agregar Alumno" o importe desde Excel.</div>';
             return;
         }
-        let html = '<table><thead><tr>';
+        let html = '<div class="table-wrapper" style="overflow-x: auto;">';
+        html += '<table style="width: 100%; border-collapse: collapse;">';
+        html += '<thead><tr>';
         html += '<th>Apellido</th><th>Nombre</th><th>DNI</th><th>Pabellón</th><th>Fecha inscripción</th><th>Vencimiento carnet</th><th>Materias</th>';
         if (adminMode) html += '<th>Asignar a materia</th><th>Editar</th>';
         html += '</tr></thead><tbody>';
@@ -1413,24 +1432,23 @@
             const norm = normalizarAlumnoParaTabla(al);
             const materiasStr = getMateriasPorAlumno(al.id).join(', ');
             html += '<tr>';
-            html += `<td>${escapeHtml(norm.apellido)}</td>`;
-            html += `<td>${escapeHtml(norm.nombre)}</td>`;
-            html += `<td>${escapeHtml(norm.dni || '—')}</td>`;
-            html += `<td>${escapeHtml(norm.pabellon)}</td>`;
-            html += `<td>${escapeHtml(norm.fecha_inscripcion || '—')}</td>`;
-            html += `<td>${escapeHtml(norm.fecha_vencimiento_carnet || '—')}</td>`;
-            html += `<td>${escapeHtml(materiasStr || 'Ninguna')}</td>`;
+            html += `<td style="vertical-align: top;">${escapeHtml(norm.apellido)}</td>`;
+            html += `<td style="vertical-align: top;">${escapeHtml(norm.nombre)}</td>`;
+            html += `<td style="vertical-align: top;">${escapeHtml(norm.dni || '—')}</td>`;
+            html += `<td style="vertical-align: top;">${escapeHtml(norm.pabellon)}</td>`;
+            html += `<td style="vertical-align: top;">${escapeHtml(norm.fecha_inscripcion || '—')}</td>`;
+            html += `<td style="vertical-align: top;">${escapeHtml(norm.fecha_vencimiento_carnet || '—')}</td>`;
+            html += `<td style="vertical-align: top;">${escapeHtml(materiasStr || 'Ninguna')}</td>`;
             if (adminMode) {
                 html += `<td style="white-space:nowrap;"><button class="btn-sm" onclick="abrirModalAsignar('${al.id}', '${escapeHtml(norm.apellido)} ${escapeHtml(norm.nombre)}')"><i class="fas fa-plus-circle"></i> Asignar</button></td>`;
-                html += `<td><button class="btn-sm" onclick="editarAlumnoCompleto('${al.id}')"><i class="fas fa-edit"></i></button></td>`;
+                html += `<td style="white-space:nowrap;"><button class="btn-sm" onclick="editarAlumnoCompleto('${al.id}')"><i class="fas fa-edit"></i></button></td>`;
             }
             html += '</tr>';
         });
-        html += '</tbody></table>';
+        html += '</tbody></table></div>';
         container.innerHTML = html;
     }
 
-    // ==================== FUNCIONES ADICIONALES ====================
     window.abrirModalAsignar = function(alumnoId, alumnoNombre) {
         if (!adminMode) return;
         document.getElementById('asignarAlumnoNombre').innerHTML = alumnoNombre;
