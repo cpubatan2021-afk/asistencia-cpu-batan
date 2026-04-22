@@ -27,7 +27,6 @@
             position: relative;
             background: #0a0f1a;
         }
-        /* Fondo con logo semi-transparente */
         body::before {
             content: "";
             position: fixed;
@@ -60,7 +59,6 @@
             position: relative;
             z-index: 1;
         }
-        /* Sidebar */
         .sidebar {
             width: 280px;
             background: rgba(15, 23, 42, 0.95);
@@ -89,7 +87,6 @@
         .sidebar.closed ~ .main {
             margin-left: 0;
         }
-        /* Top bar */
         .top-bar {
             background: rgba(15, 23, 42, 0.8);
             backdrop-filter: blur(12px);
@@ -129,16 +126,8 @@
             cursor: pointer;
             user-select: none;
         }
-        .top-bar-logo img { 
-            height: 28px; 
-            width: auto; 
-            pointer-events: none; 
-        }
-        .top-bar-logo span { 
-            font-size: 0.9rem; 
-            font-weight: 700; 
-            color: #60a5fa;
-        }
+        .top-bar-logo img { height: 28px; width: auto; pointer-events: none; }
+        .top-bar-logo span { font-size: 0.9rem; font-weight: 700; color: #60a5fa; }
         .top-bar-title {
             font-size: 0.9rem;
             font-weight: 500;
@@ -160,7 +149,6 @@
         .status-icon { font-size: 0.9rem; }
         .status-text { font-weight: 500; }
         .status-time { font-size: 0.65rem; color: #94a3b8; }
-        /* Cards */
         .card {
             background: rgba(15, 23, 42, 0.85);
             backdrop-filter: blur(8px);
@@ -183,7 +171,6 @@
             align-items: center;
             gap: 0.5rem;
         }
-        /* Tablas */
         .table-wrapper {
             overflow-x: auto;
             max-height: 450px;
@@ -257,7 +244,6 @@
             background: #3b82f6;
             transform: scale(1.05);
         }
-        /* Botones principales */
         .btn {
             background: #3b82f6;
             border: none;
@@ -283,7 +269,6 @@
         .btn-success { background: #2563eb; }
         .btn-warning { background: #f59e0b; color: black; }
         .btn-danger { background: #ef4444; }
-        /* Sidebar items */
         .sidebar-header {
             padding: 1rem;
             border-bottom: 1px solid rgba(59, 130, 246, 0.4);
@@ -298,16 +283,8 @@
             gap: 0.3rem;
             text-align: center;
         }
-        .logo-area img { 
-            height: 60px; 
-            width: auto; 
-            max-width: 100%;
-        }
-        .logo-area h2 { 
-            font-size: 0.9rem; 
-            color: #60a5fa;
-            margin-top: 0.2rem;
-        }
+        .logo-area img { height: 60px; width: auto; max-width: 100%; }
+        .logo-area h2 { font-size: 0.9rem; color: #60a5fa; margin-top: 0.2rem; }
         .sidebar-content {
             flex: 1;
             padding: 1rem;
@@ -352,7 +329,6 @@
         }
         .delete-materia { color: #f87171 !important; }
         .edit-materia { color: #fbbf24 !important; }
-        /* Modales */
         .modal {
             display: none;
             position: fixed;
@@ -370,11 +346,49 @@
         .modal-content {
             background: #0f172a;
             border-radius: 1rem;
-            max-width: 500px;
+            max-width: 700px;
             width: 90%;
             padding: 1.5rem;
             border: 1px solid #3b82f6;
             box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        .duplicado-grupo {
+            background: #1e293b;
+            border-radius: 0.75rem;
+            padding: 0.8rem;
+            margin-bottom: 1rem;
+            border-left: 4px solid #f59e0b;
+        }
+        .duplicado-grupo h4 {
+            color: #f59e0b;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+        .duplicado-lista {
+            list-style: none;
+            margin: 0.5rem 0;
+        }
+        .duplicado-lista li {
+            padding: 0.3rem 0;
+            border-bottom: 1px solid #334155;
+            font-size: 0.8rem;
+        }
+        .btn-eliminar-grupo {
+            background: #ef4444;
+            border: none;
+            padding: 0.3rem 0.6rem;
+            border-radius: 0.5rem;
+            color: white;
+            font-size: 0.7rem;
+            cursor: pointer;
+            margin-top: 0.5rem;
+            transition: all 0.2s;
+        }
+        .btn-eliminar-grupo:hover {
+            background: #dc2626;
+            transform: scale(1.02);
         }
         .flex-row {
             display: flex;
@@ -441,6 +455,7 @@
                 font-size: 0.6rem;
             }
             .logo-area img { height: 45px; }
+            .modal-content { max-width: 95%; padding: 1rem; }
         }
     </style>
 </head>
@@ -541,8 +556,11 @@
             <div class="card-title">
                 <i class="fas fa-users"></i> Matrícula completa
                 <span id="contadorAlumnosTotal" class="stat-badge"></span>
-                <button id="btnAgregarAlumnoGlobal" class="btn-sm btn-success" style="margin-left:auto;"><i class="fas fa-plus"></i> Agregar Alumno</button>
-                <div style="display: flex; gap: 0.4rem;">
+                <div style="margin-left: auto; display: flex; gap: 0.4rem;">
+                    <button id="btnBuscarDuplicados" class="btn-sm btn-warning" style="background:#f59e0b; color:black;"><i class="fas fa-search"></i> Buscar duplicados</button>
+                    <button id="btnAgregarAlumnoGlobal" class="btn-sm btn-success"><i class="fas fa-plus"></i> Agregar Alumno</button>
+                </div>
+                <div style="display: flex; gap: 0.4rem; margin-top: 0.5rem; width: 100%;">
                     <input type="text" id="searchGeneral" class="search-box" placeholder="🔍 Buscar...">
                     <select id="orderGeneral" class="order-select">
                         <option value="apellido_asc">Apellido (A-Z)</option>
@@ -580,7 +598,23 @@
     </div>
 </div>
 
-<!-- MODALES (igual que antes, no cambian) -->
+<!-- Modal de duplicados mejorado -->
+<div id="modalDuplicados" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Alumnos duplicados en la matrícula</h3>
+            <button id="closeDuplicadosModalBtn" style="background:none; border:none; color:#94a3b8; font-size:1.2rem; cursor:pointer;">&times;</button>
+        </div>
+        <div id="duplicadosLista" style="max-height: 60vh; overflow-y: auto;">
+            <p class="help-text">Cargando...</p>
+        </div>
+        <div class="flex-row" style="margin-top: 1rem;">
+            <button id="cerrarDuplicadosBtn" class="btn-sm btn-danger">Cerrar</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modales existentes (sin cambios) -->
 <div id="modalNuevaMateria" class="modal">
     <div class="modal-content">
         <div class="modal-header">
@@ -748,7 +782,7 @@
     }
     
     function renderizarSegunRol() {
-        const adminButtons = ['btnNuevaMateria', 'btnMatricular', 'btnImportarExcel', 'btnResetear', 'agregarFechaBtn', 'eliminarFechaBtn', 'btnSyncNow', 'btnAgregarTrabajador', 'btnAgregarAlumnoGlobal'];
+        const adminButtons = ['btnNuevaMateria', 'btnMatricular', 'btnImportarExcel', 'btnResetear', 'agregarFechaBtn', 'eliminarFechaBtn', 'btnSyncNow', 'btnAgregarTrabajador', 'btnAgregarAlumnoGlobal', 'btnBuscarDuplicados'];
         adminButtons.forEach(id => {
             const btn = document.getElementById(id);
             if (btn) btn.style.display = adminMode ? 'flex' : 'none';
@@ -925,52 +959,95 @@
         });
     }
 
-    function agregarAlumnoGlobal(apellido, nombre, dni, pabellon, fechaIngreso, fechaVenc) {
-        if (!apellido || !nombre) return alert('Apellido y Nombre son obligatorios');
-        if (alumnoDuplicado(apellido, nombre, dni)) {
-            mostrarToast("⚠️ Este alumno ya existe en la matrícula (mismo DNI o nombre completo). No se ha agregado.", true);
-            return false;
+    // ==================== FUNCIÓN BUSCAR DUPLICADOS MEJORADA ====================
+    function buscarDuplicados() {
+        const alumnos = globalData.alumnos;
+        const duplicadosPorDNI = new Map();
+        const duplicadosPorNombre = new Map();
+        const duplicados = [];
+
+        // Agrupar por DNI (solo DNI no vacío)
+        alumnos.forEach(al => {
+            if (al.dni && al.dni.trim() !== "" && al.dni !== "?") {
+                if (!duplicadosPorDNI.has(al.dni)) duplicadosPorDNI.set(al.dni, []);
+                duplicadosPorDNI.get(al.dni).push(al);
+            }
+        });
+        // Agrupar por apellido+nombre (case insensitive)
+        alumnos.forEach(al => {
+            const key = `${al.apellido.toLowerCase()}|${al.nombre.toLowerCase()}`;
+            if (!duplicadosPorNombre.has(key)) duplicadosPorNombre.set(key, []);
+            duplicadosPorNombre.get(key).push(al);
+        });
+
+        // Filtrar grupos con más de 1 elemento
+        duplicadosPorDNI.forEach((grupo, dni) => {
+            if (grupo.length > 1) {
+                duplicados.push({ tipo: "DNI", valor: dni, alumnos: grupo });
+            }
+        });
+        duplicadosPorNombre.forEach((grupo, key) => {
+            if (grupo.length > 1) {
+                const [apellido, nombre] = key.split('|');
+                duplicados.push({ tipo: "Nombre completo", valor: `${apellido} ${nombre}`, alumnos: grupo });
+            }
+        });
+
+        const modal = document.getElementById('modalDuplicados');
+        const contenedor = document.getElementById('duplicadosLista');
+        if (duplicados.length === 0) {
+            contenedor.innerHTML = '<div class="help-text" style="text-align:center; padding:1rem;">✅ No se encontraron alumnos duplicados en la matrícula.</div>';
+        } else {
+            let html = '';
+            duplicados.forEach((dup, idx) => {
+                html += `<div class="duplicado-grupo" data-grupo-index="${idx}">`;
+                html += `<h4>📌 Duplicado por ${dup.tipo}: <strong>${escapeHtml(dup.valor)}</strong></h4>`;
+                html += `<ul class="duplicado-lista">`;
+                dup.alumnos.forEach(al => {
+                    html += `<li><strong>${escapeHtml(al.apellido)} ${escapeHtml(al.nombre)}</strong> (DNI: ${escapeHtml(al.dni || '—')}) - Pabellón: ${escapeHtml(al.pabellon)} - ID: ${al.id}</li>`;
+                });
+                html += `</ul>`;
+                html += `<button class="btn-eliminar-grupo" onclick="eliminarGrupoDuplicados(${idx})">🗑️ Borrar duplicados de este grupo (dejar solo uno)</button>`;
+                html += `</div>`;
+            });
+            contenedor.innerHTML = html;
+            // Guardar los datos de los grupos en una variable global temporal para la función eliminar
+            window.gruposDuplicadosTemp = duplicados;
         }
-        const idUnico = Date.now() + '-' + Math.random().toString(36).substr(2, 5);
-        const hoy = new Date().toISOString().slice(0,10);
-        const vencDef = new Date(); vencDef.setFullYear(vencDef.getFullYear()+1);
-        const nuevoAlumno = {
-            id: idUnico,
-            apellido, nombre,
-            dni: dni || '',
-            pabellon: pabellon || '',
-            fecha_inscripcion: fechaIngreso || hoy,
-            fecha_vencimiento_carnet: fechaVenc || vencDef.toISOString().slice(0,10),
-            asist: {},
-            observaciones: ''
-        };
-        globalData.alumnos.push(nuevoAlumno);
-        guardarLocal();
-        renderListaGeneral();
-        mostrarToast(`Alumno ${apellido} ${nombre} agregado a la matrícula general`);
-        return true;
+        modal.classList.add('active');
     }
 
-    function asignarAlumnoAMateria(alumnoId, materiaId) {
-        const materia = globalData.materias.find(m => m.id === materiaId);
-        if (!materia) return false;
-        if (materia.alumnos.some(a => a.id === alumnoId)) {
-            mostrarToast("El alumno ya está en esta materia", true);
-            return false;
-        }
-        const alumnoOriginal = globalData.alumnos.find(a => a.id === alumnoId);
-        if (!alumnoOriginal) return false;
-        materia.alumnos.push({
-            ...alumnoOriginal,
-            asist: {},
-            observaciones: ''
+    // Función para eliminar duplicados de un grupo (deja solo el primer alumno del grupo)
+    window.eliminarGrupoDuplicados = function(grupoIndex) {
+        const grupos = window.gruposDuplicadosTemp;
+        if (!grupos || !grupos[grupoIndex]) return;
+        const grupo = grupos[grupoIndex];
+        const alumnosAEliminar = grupo.alumnos.slice(1); // mantener el primero, eliminar el resto
+        if (alumnosAEliminar.length === 0) return;
+        
+        if (!confirm(`⚠️ ¿Está seguro? Se eliminarán ${alumnosAEliminar.length} alumno(s) duplicado(s) del grupo "${grupo.tipo}: ${grupo.valor}". Se conservará solo uno. Esta acción afectará también a las materias.`)) return;
+        
+        // Eliminar de globalData.alumnos
+        const idsAEliminar = alumnosAEliminar.map(al => al.id);
+        globalData.alumnos = globalData.alumnos.filter(al => !idsAEliminar.includes(al.id));
+        
+        // Eliminar de todas las materias
+        globalData.materias.forEach(materia => {
+            materia.alumnos = materia.alumnos.filter(al => !idsAEliminar.includes(al.id));
         });
+        
+        // También eliminar si existieran como trabajadores? No, los trabajadores son independientes y no se tocan.
+        
         guardarLocal();
-        if (currentMateriaId === materiaId) renderTablaAsistencia();
+        // Refrescar vistas
         renderListaGeneral();
-        mostrarToast(`Alumno asignado a la materia "${materia.nombre}"`);
-        return true;
-    }
+        if (currentMateriaId) renderTablaAsistencia();
+        renderTrabajadores(); // por si acaso
+        mostrarToast(`✅ Se eliminaron ${alumnosAEliminar.length} duplicado(s).`);
+        // Cerrar modal y volver a buscar para actualizar lista
+        document.getElementById('modalDuplicados').classList.remove('active');
+        setTimeout(() => buscarDuplicados(), 300);
+    };
 
     // ==================== MATERIAS ====================
     function getMaterias() { return globalData.materias; }
@@ -1178,7 +1255,7 @@
         let html = '<table><thead><tr>';
         html += '<th>Apellido</th><th>Nombre</th><th>DNI</th><th>Pabellón</th><th>Puesto</th><th title="Fecha de vencimiento del carnet">Venc. carnet</th>';
         if (adminMode) html += '<th>Acciones</th>';
-        html += '<tr></thead><tbody>';
+        html += '</tr></thead><tbody>';
         trabajadores.forEach(t => {
             html += '<tr>';
             html += `<td>${escapeHtml(t.apellido)}</td>`;
@@ -1333,7 +1410,6 @@
         return alumnos;
     }
 
-    // ==================== TABLA DE ASISTENCIA CORREGIDA ====================
     function renderTablaAsistencia() {
         const materia = getCurrentMateria();
         const container = document.getElementById('tablaAsistencia');
@@ -1367,13 +1443,9 @@
         
         alumnos.forEach(al => {
             html += '<tr>';
-            // Alumno: apellido + nombre en dos líneas
             html += `<td style="vertical-align: top;"><strong>${escapeHtml(al.apellido)}</strong><br><span style="font-size:0.7rem; color:#94a3b8;">${escapeHtml(al.nombre)}</span></td>`;
-            // DNI
             html += `<td style="vertical-align: top;">${escapeHtml(al.dni || '—')}</td>`;
-            // Pabellón
             html += `<td style="vertical-align: top;">${escapeHtml(al.pabellon)}</td>`;
-            // Fechas (asistencia)
             fechas.forEach(f => {
                 const presente = al.asist && al.asist[f];
                 if (adminMode) {
@@ -1384,9 +1456,7 @@
                     html += `<td style="text-align: center;">${icono}</td>`;
                 }
             });
-            // Observaciones
             html += `<td style="vertical-align: top;"><textarea style="width:90px; min-height:40px;" ${adminMode ? `onchange="updateObservaciones('${al.id}',this.value)"` : 'readonly disabled'}>${escapeHtml(al.observaciones || '')}</textarea></td>`;
-            // Acciones (solo admin)
             if (adminMode) {
                 html += `<td style="white-space: nowrap; text-align: center;">
                             <button class="btn-sm" onclick="editarAlumnoCompleto('${al.id}')" title="Editar"><i class="fas fa-edit"></i></button>
@@ -1420,7 +1490,7 @@
             container.innerHTML = '<div class="help-text">No hay alumnos registrados. Use el botón "Agregar Alumno" o importe desde Excel.</div>';
             return;
         }
-        let html = '<table><thead><tr>';
+        let html = '<table><thead><td>';
         html += '<th>Apellido</th><th>Nombre</th><th>DNI</th><th>Pabellón</th><th>Fecha inscripción</th><th>Vencimiento carnet</th><th>Materias</th>';
         if (adminMode) html += '<th>Asignar a materia</th><th>Editar</th>';
         html += '</tr></thead><tbody>';
@@ -1438,7 +1508,7 @@
                 html += `<td style="white-space:nowrap;"><button class="btn-sm" onclick="abrirModalAsignar('${al.id}', '${escapeHtml(al.apellido)} ${escapeHtml(al.nombre)}')"><i class="fas fa-plus-circle"></i> Asignar</button></td>`;
                 html += `<td><button class="btn-sm" onclick="editarAlumnoCompleto('${al.id}')"><i class="fas fa-edit"></i></button></td>`;
             }
-            html += '<tr>';
+            html += '</tr>';
         });
         html += '</tbody></table>';
         container.innerHTML = html;
@@ -1486,6 +1556,53 @@
         const fechaVenc = document.getElementById('globalAlumnoFechaVencimiento').value;
         agregarAlumnoGlobal(apellido, nombre, dni, pabellon, fechaIngreso, fechaVenc);
         document.getElementById('modalAgregarAlumnoGlobal').classList.remove('active');
+    }
+
+    function agregarAlumnoGlobal(apellido, nombre, dni, pabellon, fechaIngreso, fechaVenc) {
+        if (!apellido || !nombre) return alert('Apellido y Nombre son obligatorios');
+        if (alumnoDuplicado(apellido, nombre, dni)) {
+            mostrarToast("⚠️ Este alumno ya existe en la matrícula (mismo DNI o nombre completo). No se ha agregado.", true);
+            return false;
+        }
+        const idUnico = Date.now() + '-' + Math.random().toString(36).substr(2, 5);
+        const hoy = new Date().toISOString().slice(0,10);
+        const vencDef = new Date(); vencDef.setFullYear(vencDef.getFullYear()+1);
+        const nuevoAlumno = {
+            id: idUnico,
+            apellido, nombre,
+            dni: dni || '',
+            pabellon: pabellon || '',
+            fecha_inscripcion: fechaIngreso || hoy,
+            fecha_vencimiento_carnet: fechaVenc || vencDef.toISOString().slice(0,10),
+            asist: {},
+            observaciones: ''
+        };
+        globalData.alumnos.push(nuevoAlumno);
+        guardarLocal();
+        renderListaGeneral();
+        mostrarToast(`Alumno ${apellido} ${nombre} agregado a la matrícula general`);
+        return true;
+    }
+
+    function asignarAlumnoAMateria(alumnoId, materiaId) {
+        const materia = globalData.materias.find(m => m.id === materiaId);
+        if (!materia) return false;
+        if (materia.alumnos.some(a => a.id === alumnoId)) {
+            mostrarToast("El alumno ya está en esta materia", true);
+            return false;
+        }
+        const alumnoOriginal = globalData.alumnos.find(a => a.id === alumnoId);
+        if (!alumnoOriginal) return false;
+        materia.alumnos.push({
+            ...alumnoOriginal,
+            asist: {},
+            observaciones: ''
+        });
+        guardarLocal();
+        if (currentMateriaId === materiaId) renderTablaAsistencia();
+        renderListaGeneral();
+        mostrarToast(`Alumno asignado a la materia "${materia.nombre}"`);
+        return true;
     }
 
     function matricularAlumnoManual(apellido, nombre, dni, pabellon, fechaIngreso, fechaVenc) {
@@ -1813,6 +1930,9 @@
     document.getElementById('closeAgregarAlumnoModalBtn').onclick = () => document.getElementById('modalAgregarAlumnoGlobal').classList.remove('active');
     document.getElementById('cancelarAlumnoGlobalBtn').onclick = () => document.getElementById('modalAgregarAlumnoGlobal').classList.remove('active');
     document.getElementById('closeAsignarModalBtn').onclick = () => document.getElementById('modalAsignarAMateria').classList.remove('active');
+    document.getElementById('btnBuscarDuplicados').onclick = buscarDuplicados;
+    document.getElementById('closeDuplicadosModalBtn').onclick = () => document.getElementById('modalDuplicados').classList.remove('active');
+    document.getElementById('cerrarDuplicadosBtn').onclick = () => document.getElementById('modalDuplicados').classList.remove('active');
     window.onclick = function(e) { if (e.target.classList.contains('modal')) e.target.classList.remove('active'); };
     setInterval(() => { document.getElementById('clock').innerText = new Date().toLocaleString('es-ES'); }, 1000);
     
