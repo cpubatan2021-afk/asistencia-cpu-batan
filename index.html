@@ -7,7 +7,7 @@
     
     <!-- PWA manifest -->
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#0f172a">
+    <meta name="theme-color" content="#000000">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="CPU Batán">
@@ -25,7 +25,7 @@
             height: 100vh;
             overflow: hidden;
             position: relative;
-            background: #0a0f1a;
+            background: #000000;
         }
         body::before {
             content: "";
@@ -49,19 +49,14 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: radial-gradient(circle at 20% 30%, rgba(59,130,246,0.08), rgba(10,15,26,0.95));
+            background: radial-gradient(circle at 20% 30%, rgba(0,0,0,0.2), rgba(0,0,0,0.6));
             pointer-events: none;
             z-index: 0;
         }
-        .app {
-            display: flex;
-            height: 100vh;
-            position: relative;
-            z-index: 1;
-        }
+        .app { display: flex; height: 100vh; position: relative; z-index: 1; }
         .sidebar {
             width: 280px;
-            background: rgba(15, 23, 42, 0.95);
+            background: rgba(10, 10, 10, 0.95);
             backdrop-filter: blur(12px);
             border-right: 1px solid rgba(59, 130, 246, 0.5);
             transition: transform 0.3s ease;
@@ -73,9 +68,7 @@
             overflow-y: auto;
             transform: translateX(0);
         }
-        .sidebar.closed {
-            transform: translateX(-100%);
-        }
+        .sidebar.closed { transform: translateX(-100%); }
         .main {
             flex: 1;
             margin-left: 280px;
@@ -84,11 +77,9 @@
             height: 100vh;
             transition: margin-left 0.3s ease;
         }
-        .sidebar.closed ~ .main {
-            margin-left: 0;
-        }
+        .sidebar.closed ~ .main { margin-left: 0; }
         .top-bar {
-            background: rgba(15, 23, 42, 0.8);
+            background: rgba(0, 0, 0, 0.85);
             backdrop-filter: blur(12px);
             border-radius: 1rem;
             padding: 0.5rem 1rem;
@@ -97,7 +88,7 @@
             align-items: center;
             justify-content: space-between;
             border: 1px solid rgba(59, 130, 246, 0.5);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
         }
         .top-bar-left {
             display: flex;
@@ -115,10 +106,7 @@
             border-radius: 0.5rem;
             transition: all 0.2s;
         }
-        .hamburger:hover {
-            background: #3b82f6;
-            transform: scale(1.05);
-        }
+        .hamburger:hover { background: #3b82f6; transform: scale(1.05); }
         .top-bar-logo {
             display: flex;
             align-items: center;
@@ -139,7 +127,7 @@
             display: flex;
             align-items: center;
             gap: 0.6rem;
-            background: rgba(0,0,0,0.4);
+            background: rgba(0,0,0,0.6);
             padding: 0.3rem 0.8rem;
             border-radius: 2rem;
             font-size: 0.75rem;
@@ -150,7 +138,7 @@
         .status-text { font-weight: 500; }
         .status-time { font-size: 0.65rem; color: #94a3b8; }
         .card {
-            background: rgba(15, 23, 42, 0.85);
+            background: rgba(10, 10, 10, 0.85);
             backdrop-filter: blur(8px);
             border-radius: 1rem;
             padding: 0.8rem;
@@ -158,10 +146,7 @@
             border: 1px solid rgba(59, 130, 246, 0.3);
             transition: transform 0.2s, border-color 0.2s;
         }
-        .card:hover {
-            border-color: #3b82f6;
-            transform: translateY(-2px);
-        }
+        .card:hover { border-color: #3b82f6; transform: translateY(-2px); }
         .card-title {
             font-size: 1rem;
             font-weight: 700;
@@ -183,7 +168,7 @@
             font-size: 0.75rem;
         }
         .table-wrapper th {
-            background: #0f172a;
+            background: #0a0a0a;
             color: #60a5fa;
             font-weight: 600;
             padding: 0.6rem 0.5rem;
@@ -194,17 +179,13 @@
         }
         .table-wrapper td {
             padding: 0.4rem 0.5rem;
-            border-bottom: 1px solid #1e293b;
-            border-right: 1px solid #1e293b;
+            border-bottom: 1px solid #1a1a1a;
+            border-right: 1px solid #1a1a1a;
             white-space: normal;
             word-break: break-word;
         }
-        .table-wrapper tr:nth-child(even) {
-            background-color: rgba(59, 130, 246, 0.05);
-        }
-        .table-wrapper tr:hover {
-            background-color: rgba(59, 130, 246, 0.12);
-        }
+        .table-wrapper tr:nth-child(even) { background-color: rgba(59, 130, 246, 0.05); }
+        .table-wrapper tr:hover { background-color: rgba(59, 130, 246, 0.12); }
         .table-wrapper th:first-child, .table-wrapper td:first-child {
             min-width: 130px;
             max-width: 180px;
@@ -224,13 +205,13 @@
             min-height: 40px;
             font-size: 0.7rem;
             padding: 0.2rem;
-            background: #0f172a;
+            background: #0a0a0a;
             border: 1px solid #3b82f6;
             border-radius: 0.4rem;
             color: white;
         }
         .btn-sm {
-            background: #1e293b;
+            background: #1a1a1a;
             border: 1px solid #3b82f6;
             padding: 0.2rem 0.4rem;
             border-radius: 0.4rem;
@@ -240,10 +221,7 @@
             transition: all 0.2s;
             margin: 0 2px;
         }
-        .btn-sm:hover {
-            background: #3b82f6;
-            transform: scale(1.05);
-        }
+        .btn-sm:hover { background: #3b82f6; transform: scale(1.05); }
         .btn {
             background: #3b82f6;
             border: none;
@@ -261,11 +239,7 @@
             transition: all 0.2s;
             box-shadow: 0 2px 5px rgba(0,0,0,0.3);
         }
-        .btn:hover {
-            background: #2563eb;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
-        }
+        .btn:hover { background: #2563eb; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(59,130,246,0.4); }
         .btn-success { background: #2563eb; }
         .btn-warning { background: #f59e0b; color: black; }
         .btn-danger { background: #ef4444; }
@@ -300,7 +274,7 @@
             overflow-y: auto;
         }
         .materia-item {
-            background: rgba(30, 41, 59, 0.8);
+            background: rgba(26, 26, 26, 0.8);
             border-radius: 0.75rem;
             padding: 0.5rem;
             display: flex;
@@ -316,10 +290,7 @@
             border-left-color: #60a5fa;
             box-shadow: 0 2px 8px rgba(59,130,246,0.3);
         }
-        .materia-item:hover {
-            background: rgba(59, 130, 246, 0.4);
-            transform: translateX(3px);
-        }
+        .materia-item:hover { background: rgba(59, 130, 246, 0.4); transform: translateX(3px); }
         .materia-actions button {
             background: none;
             border: none;
@@ -336,7 +307,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.9);
+            background: rgba(0,0,0,0.95);
             backdrop-filter: blur(8px);
             z-index: 1000;
             align-items: center;
@@ -344,37 +315,26 @@
         }
         .modal.active { display: flex; }
         .modal-content {
-            background: #0f172a;
+            background: #0a0a0a;
             border-radius: 1rem;
             max-width: 700px;
             width: 90%;
             padding: 1.5rem;
             border: 1px solid #3b82f6;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.8);
             max-height: 80vh;
             overflow-y: auto;
         }
         .duplicado-grupo {
-            background: #1e293b;
+            background: #1a1a1a;
             border-radius: 0.75rem;
             padding: 0.8rem;
             margin-bottom: 1rem;
             border-left: 4px solid #f59e0b;
         }
-        .duplicado-grupo h4 {
-            color: #f59e0b;
-            margin-bottom: 0.5rem;
-            font-size: 0.9rem;
-        }
-        .duplicado-lista {
-            list-style: none;
-            margin: 0.5rem 0;
-        }
-        .duplicado-lista li {
-            padding: 0.3rem 0;
-            border-bottom: 1px solid #334155;
-            font-size: 0.8rem;
-        }
+        .duplicado-grupo h4 { color: #f59e0b; margin-bottom: 0.5rem; font-size: 0.9rem; }
+        .duplicado-lista { list-style: none; margin: 0.5rem 0; }
+        .duplicado-lista li { padding: 0.3rem 0; border-bottom: 1px solid #2a2a2a; font-size: 0.8rem; }
         .btn-eliminar-grupo {
             background: #ef4444;
             border: none;
@@ -386,10 +346,7 @@
             margin-top: 0.5rem;
             transition: all 0.2s;
         }
-        .btn-eliminar-grupo:hover {
-            background: #dc2626;
-            transform: scale(1.02);
-        }
+        .btn-eliminar-grupo:hover { background: #dc2626; transform: scale(1.02); }
         .flex-row {
             display: flex;
             flex-wrap: wrap;
@@ -398,7 +355,7 @@
             align-items: flex-end;
         }
         input, select, textarea {
-            background: #0f172a;
+            background: #0a0a0a;
             border: 1px solid #3b82f6;
             padding: 0.5rem;
             border-radius: 0.5rem;
@@ -423,10 +380,10 @@
             border-radius: 2rem;
             z-index: 1000;
             font-size: 0.8rem;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.5);
         }
         .stat-badge {
-            background: #0f172a;
+            background: #0a0a0a;
             border-radius: 2rem;
             padding: 0.2rem 0.6rem;
             font-size: 0.7rem;
@@ -437,7 +394,7 @@
         }
         .app-footer {
             margin-top: auto;
-            border-top: 1px solid #1e293b;
+            border-top: 1px solid #1a1a1a;
             padding-top: 0.5rem;
             font-size: 0.65rem;
             color: #64748b;
@@ -479,7 +436,7 @@
             <button id="btnResetear" class="btn btn-danger"><i class="fas fa-trash-alt"></i> Limpiar todo (solo local)</button>
             <button id="btnLogoutAdmin" class="btn" style="background:#f59e0b; color:black; display:none;"><i class="fas fa-sign-out-alt"></i> Salir modo admin</button>
             <input type="file" id="fileExcel" style="display:none" accept=".xlsx, .xls">
-            <div class="help-text" style="text-align:center;">Auto-sync cada 30s</div>
+            <div class="help-text" style="text-align:center;">Auto-sync con cambios (debounce 3s)</div>
             <div class="app-footer">
                 <i class="fas fa-code"></i> v1.0.0 | Desarrollado por <strong>La Clave Argentina</strong>
             </div>
@@ -598,23 +555,7 @@
     </div>
 </div>
 
-<!-- Modal de duplicados mejorado -->
-<div id="modalDuplicados" class="modal">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h3>Alumnos duplicados en la matrícula</h3>
-            <button id="closeDuplicadosModalBtn" style="background:none; border:none; color:#94a3b8; font-size:1.2rem; cursor:pointer;">&times;</button>
-        </div>
-        <div id="duplicadosLista" style="max-height: 60vh; overflow-y: auto;">
-            <p class="help-text">Cargando...</p>
-        </div>
-        <div class="flex-row" style="margin-top: 1rem;">
-            <button id="cerrarDuplicadosBtn" class="btn-sm btn-danger">Cerrar</button>
-        </div>
-    </div>
-</div>
-
-<!-- Modales existentes (sin cambios) -->
+<!-- Modales -->
 <div id="modalNuevaMateria" class="modal">
     <div class="modal-content">
         <div class="modal-header">
@@ -719,6 +660,21 @@
     </div>
 </div>
 
+<div id="modalDuplicados" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Alumnos duplicados en la matrícula</h3>
+            <button id="closeDuplicadosModalBtn" style="background:none; border:none; color:#94a3b8; font-size:1.2rem; cursor:pointer;">&times;</button>
+        </div>
+        <div id="duplicadosLista" style="max-height: 60vh; overflow-y: auto;">
+            <p class="help-text">Cargando...</p>
+        </div>
+        <div class="flex-row" style="margin-top: 1rem;">
+            <button id="cerrarDuplicadosBtn" class="btn-sm btn-danger">Cerrar</button>
+        </div>
+    </div>
+</div>
+
 <script>
     // ==================== CONFIGURACIÓN JSONBIN.IO ====================
     const JSONBIN_BIN_ID = "69e13cfc856a682189404f5f";
@@ -739,6 +695,9 @@
     let clickTimer = null;
     let syncInProgress = false;
     let lastSyncTime = null;
+    
+    let debounceTimer = null;
+    const DEBOUNCE_DELAY = 3000;
 
     const statusIcon = document.getElementById('statusIcon');
     const statusText = document.getElementById('statusText');
@@ -819,7 +778,7 @@
         });
     }
     
-    // ==================== FUNCIONES JSONBIN ====================
+    // ==================== FUNCIONES JSONBIN CON DEBOUNCE ====================
     async function guardarEnJSONBin() {
         if (!hayCambios || syncInProgress) return;
         syncInProgress = true;
@@ -853,6 +812,16 @@
         }
     }
 
+    function programarGuardado() {
+        if (!adminMode) return;
+        if (debounceTimer) clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(() => {
+            if (hayCambios && !syncInProgress) {
+                guardarEnJSONBin();
+            }
+        }, DEBOUNCE_DELAY);
+    }
+
     async function cargarDesdeJSONBin() {
         if (syncInProgress) return false;
         syncInProgress = true;
@@ -882,6 +851,7 @@
                 lastSyncTime = new Date();
                 updateSyncStatus(true, false);
                 console.log("✅ Carga exitosa. Trabajadores:", globalData.trabajadores.length);
+                hayCambios = false;
                 return true;
             }
         } catch(e) {
@@ -904,6 +874,7 @@
             return;
         }
         mostrarToast("Sincronizando con JSONBin...");
+        if (debounceTimer) clearTimeout(debounceTimer);
         hayCambios = true;
         await guardarEnJSONBin();
         await cargarDesdeJSONBin();
@@ -917,6 +888,7 @@
     function guardarLocal() {
         localStorage.setItem('cpu_data', JSON.stringify(globalData));
         hayCambios = true;
+        programarGuardado();
     }
 
     function mostrarToast(msg, err = false) {
@@ -930,7 +902,11 @@
         setTimeout(() => t.remove(), 3000);
     }
 
-    setInterval(async () => { if (hayCambios && !syncInProgress && adminMode) await guardarEnJSONBin(); }, 30000);
+    window.addEventListener('beforeunload', () => {
+        if (hayCambios && adminMode && !syncInProgress) {
+            localStorage.setItem('cpu_data', JSON.stringify(globalData));
+        }
+    });
 
     // ==================== SIDEBAR TOGGLE ====================
     function toggleSidebar() {
@@ -959,95 +935,28 @@
         });
     }
 
-    // ==================== FUNCIÓN BUSCAR DUPLICADOS MEJORADA ====================
-    function buscarDuplicados() {
-        const alumnos = globalData.alumnos;
-        const duplicadosPorDNI = new Map();
-        const duplicadosPorNombre = new Map();
-        const duplicados = [];
-
-        // Agrupar por DNI (solo DNI no vacío)
-        alumnos.forEach(al => {
-            if (al.dni && al.dni.trim() !== "" && al.dni !== "?") {
-                if (!duplicadosPorDNI.has(al.dni)) duplicadosPorDNI.set(al.dni, []);
-                duplicadosPorDNI.get(al.dni).push(al);
+    // Función para normalizar un alumno solo para mostrar (no modifica datos)
+    function normalizarAlumnoParaTabla(al) {
+        let apellido = al.apellido || "";
+        let nombre = al.nombre || "";
+        // Si apellido tiene espacios y nombre vacío, separar
+        if ((!nombre || nombre === "") && apellido.includes(" ")) {
+            const partes = apellido.split(/\s+/);
+            if (partes.length >= 2) {
+                apellido = partes[0];
+                nombre = partes.slice(1).join(" ");
             }
-        });
-        // Agrupar por apellido+nombre (case insensitive)
-        alumnos.forEach(al => {
-            const key = `${al.apellido.toLowerCase()}|${al.nombre.toLowerCase()}`;
-            if (!duplicadosPorNombre.has(key)) duplicadosPorNombre.set(key, []);
-            duplicadosPorNombre.get(key).push(al);
-        });
-
-        // Filtrar grupos con más de 1 elemento
-        duplicadosPorDNI.forEach((grupo, dni) => {
-            if (grupo.length > 1) {
-                duplicados.push({ tipo: "DNI", valor: dni, alumnos: grupo });
-            }
-        });
-        duplicadosPorNombre.forEach((grupo, key) => {
-            if (grupo.length > 1) {
-                const [apellido, nombre] = key.split('|');
-                duplicados.push({ tipo: "Nombre completo", valor: `${apellido} ${nombre}`, alumnos: grupo });
-            }
-        });
-
-        const modal = document.getElementById('modalDuplicados');
-        const contenedor = document.getElementById('duplicadosLista');
-        if (duplicados.length === 0) {
-            contenedor.innerHTML = '<div class="help-text" style="text-align:center; padding:1rem;">✅ No se encontraron alumnos duplicados en la matrícula.</div>';
-        } else {
-            let html = '';
-            duplicados.forEach((dup, idx) => {
-                html += `<div class="duplicado-grupo" data-grupo-index="${idx}">`;
-                html += `<h4>📌 Duplicado por ${dup.tipo}: <strong>${escapeHtml(dup.valor)}</strong></h4>`;
-                html += `<ul class="duplicado-lista">`;
-                dup.alumnos.forEach(al => {
-                    html += `<li><strong>${escapeHtml(al.apellido)} ${escapeHtml(al.nombre)}</strong> (DNI: ${escapeHtml(al.dni || '—')}) - Pabellón: ${escapeHtml(al.pabellon)} - ID: ${al.id}</li>`;
-                });
-                html += `</ul>`;
-                html += `<button class="btn-eliminar-grupo" onclick="eliminarGrupoDuplicados(${idx})">🗑️ Borrar duplicados de este grupo (dejar solo uno)</button>`;
-                html += `</div>`;
-            });
-            contenedor.innerHTML = html;
-            // Guardar los datos de los grupos en una variable global temporal para la función eliminar
-            window.gruposDuplicadosTemp = duplicados;
         }
-        modal.classList.add('active');
+        // Si apellido tiene una sola palabra y nombre tiene varias, intercambiar
+        if (apellido && !apellido.includes(" ") && nombre && nombre.includes(" ")) {
+            const temp = apellido;
+            apellido = nombre;
+            nombre = temp;
+        }
+        let dni = al.dni || "";
+        if (dni === "?" || dni === "—") dni = "";
+        return { ...al, apellido, nombre, dni };
     }
-
-    // Función para eliminar duplicados de un grupo (deja solo el primer alumno del grupo)
-    window.eliminarGrupoDuplicados = function(grupoIndex) {
-        const grupos = window.gruposDuplicadosTemp;
-        if (!grupos || !grupos[grupoIndex]) return;
-        const grupo = grupos[grupoIndex];
-        const alumnosAEliminar = grupo.alumnos.slice(1); // mantener el primero, eliminar el resto
-        if (alumnosAEliminar.length === 0) return;
-        
-        if (!confirm(`⚠️ ¿Está seguro? Se eliminarán ${alumnosAEliminar.length} alumno(s) duplicado(s) del grupo "${grupo.tipo}: ${grupo.valor}". Se conservará solo uno. Esta acción afectará también a las materias.`)) return;
-        
-        // Eliminar de globalData.alumnos
-        const idsAEliminar = alumnosAEliminar.map(al => al.id);
-        globalData.alumnos = globalData.alumnos.filter(al => !idsAEliminar.includes(al.id));
-        
-        // Eliminar de todas las materias
-        globalData.materias.forEach(materia => {
-            materia.alumnos = materia.alumnos.filter(al => !idsAEliminar.includes(al.id));
-        });
-        
-        // También eliminar si existieran como trabajadores? No, los trabajadores son independientes y no se tocan.
-        
-        guardarLocal();
-        // Refrescar vistas
-        renderListaGeneral();
-        if (currentMateriaId) renderTablaAsistencia();
-        renderTrabajadores(); // por si acaso
-        mostrarToast(`✅ Se eliminaron ${alumnosAEliminar.length} duplicado(s).`);
-        // Cerrar modal y volver a buscar para actualizar lista
-        document.getElementById('modalDuplicados').classList.remove('active');
-        setTimeout(() => buscarDuplicados(), 300);
-    };
 
     // ==================== MATERIAS ====================
     function getMaterias() { return globalData.materias; }
@@ -1252,25 +1161,30 @@
             container.innerHTML = '<div class="help-text">No hay trabajadores registrados.</div>';
             return;
         }
-        let html = '<table><thead><tr>';
+        let html = '<div class="table-wrapper" style="overflow-x: auto;">';
+        html += '<table style="width: 100%; border-collapse: collapse;">';
+        html += '<thead>';
+        html += '<tr>';
         html += '<th>Apellido</th><th>Nombre</th><th>DNI</th><th>Pabellón</th><th>Puesto</th><th title="Fecha de vencimiento del carnet">Venc. carnet</th>';
         if (adminMode) html += '<th>Acciones</th>';
         html += '</tr></thead><tbody>';
         trabajadores.forEach(t => {
             html += '<tr>';
-            html += `<td>${escapeHtml(t.apellido)}</td>`;
-            html += `<td>${escapeHtml(t.nombre)}</td>`;
-            html += `<td>${escapeHtml(t.dni || '—')}</td>`;
-            html += `<td>${escapeHtml(t.pabellon || '—')}</td>`;
-            html += `<td>${escapeHtml(t.puesto || '—')}</td>`;
-            html += `<td>${escapeHtml(t.vencimiento_carnet || '—')}</td>`;
+            html += `<td style="vertical-align: top;">${escapeHtml(t.apellido)}<\/td>`;
+            html += `<td style="vertical-align: top;">${escapeHtml(t.nombre)}<\/td>`;
+            html += `<td style="vertical-align: top;">${escapeHtml(t.dni || '—')}<\/td>`;
+            html += `<td style="vertical-align: top;">${escapeHtml(t.pabellon || '—')}<\/td>`;
+            html += `<td style="vertical-align: top;">${escapeHtml(t.puesto || '—')}<\/td>`;
+            html += `<td style="vertical-align: top;">${escapeHtml(t.vencimiento_carnet || '—')}<\/td>`;
             if (adminMode) {
-                html += `<td><button class="btn-sm" onclick="editarTrabajador('${t.id}')"><i class="fas fa-edit"></i></button>
-                         <button class="btn-sm" onclick="eliminarTrabajador('${t.id}')"><i class="fas fa-trash"></i></button></td>`;
+                html += `<td style="white-space: nowrap; text-align: center;">
+                            <button class="btn-sm" onclick="editarTrabajador('${t.id}')"><i class="fas fa-edit"></i></button>
+                            <button class="btn-sm" onclick="eliminarTrabajador('${t.id}')"><i class="fas fa-trash"></i></button>
+                          <\/td>`;
             }
             html += '</tr>';
         });
-        html += '</tbody></table>';
+        html += '</tbody></table></div>';
         container.innerHTML = html;
     }
 
@@ -1364,7 +1278,7 @@
         const container = document.getElementById('listaFechas');
         if (!materia || !materia.fechas) { container.innerHTML = ''; return; }
         container.innerHTML = materia.fechas.map((f, idx) => `
-            <span style="background:#1e293b; padding:0.2rem 0.5rem; border-radius:1rem; display:inline-flex; align-items:center; gap:0.3rem; font-size:0.75rem; border:1px solid #3b82f6;">
+            <span style="background:#1a1a1a; padding:0.2rem 0.5rem; border-radius:1rem; display:inline-flex; align-items:center; gap:0.3rem; font-size:0.75rem; border:1px solid #3b82f6;">
                 ${escapeHtml(f)}
                 ${adminMode ? `<button onclick="eliminarFecha(${idx})" style="background:none; border:none; color:#f87171; cursor:pointer;">✖</button>` : ''}
             </span>
@@ -1481,6 +1395,7 @@
     window.eliminarAlumnoDeMateria = function(alumnoId) { if (!adminMode) return; const materia = getCurrentMateria(); if (materia) { materia.alumnos = materia.alumnos.filter(a => a.id !== alumnoId); guardarLocal(); renderTablaAsistencia(); renderListaGeneral(); mostrarToast('Alumno eliminado de esta materia'); } };
     window.renovarCarnet = function(alumnoId) { if (!adminMode) return; const materia = getCurrentMateria(); const alumno = materia?.alumnos.find(a => a.id === alumnoId); if (alumno) { const venc = new Date(alumno.fecha_vencimiento_carnet); venc.setFullYear(venc.getFullYear() + 1); alumno.fecha_vencimiento_carnet = venc.toISOString().slice(0,10); const globalAlumno = getAlumnosGlobal().find(a => a.id === alumnoId); if (globalAlumno) globalAlumno.fecha_vencimiento_carnet = alumno.fecha_vencimiento_carnet; guardarLocal(); renderTablaAsistencia(); renderListaGeneral(); mostrarToast('Carnet renovado'); } };
 
+    // ==================== RENDER MATRÍCULA COMPLETA CORREGIDA ====================
     function renderListaGeneral() {
         let alumnos = getAlumnosOrdenadosFiltrados(false);
         const container = document.getElementById('tablaGeneral');
@@ -1490,22 +1405,23 @@
             container.innerHTML = '<div class="help-text">No hay alumnos registrados. Use el botón "Agregar Alumno" o importe desde Excel.</div>';
             return;
         }
-        let html = '<table><thead><td>';
+        let html = '<table><thead><tr>';
         html += '<th>Apellido</th><th>Nombre</th><th>DNI</th><th>Pabellón</th><th>Fecha inscripción</th><th>Vencimiento carnet</th><th>Materias</th>';
         if (adminMode) html += '<th>Asignar a materia</th><th>Editar</th>';
         html += '</tr></thead><tbody>';
         alumnos.forEach(al => {
+            const norm = normalizarAlumnoParaTabla(al);
             const materiasStr = getMateriasPorAlumno(al.id).join(', ');
             html += '<tr>';
-            html += `<td>${escapeHtml(al.apellido)}</td>`;
-            html += `<td>${escapeHtml(al.nombre)}</td>`;
-            html += `<td>${escapeHtml(al.dni || '—')}</td>`;
-            html += `<td>${escapeHtml(al.pabellon)}</td>`;
-            html += `<td>${escapeHtml(al.fecha_inscripcion || '—')}</td>`;
-            html += `<td>${escapeHtml(al.fecha_vencimiento_carnet || '—')}</td>`;
+            html += `<td>${escapeHtml(norm.apellido)}</td>`;
+            html += `<td>${escapeHtml(norm.nombre)}</td>`;
+            html += `<td>${escapeHtml(norm.dni || '—')}</td>`;
+            html += `<td>${escapeHtml(norm.pabellon)}</td>`;
+            html += `<td>${escapeHtml(norm.fecha_inscripcion || '—')}</td>`;
+            html += `<td>${escapeHtml(norm.fecha_vencimiento_carnet || '—')}</td>`;
             html += `<td>${escapeHtml(materiasStr || 'Ninguna')}</td>`;
             if (adminMode) {
-                html += `<td style="white-space:nowrap;"><button class="btn-sm" onclick="abrirModalAsignar('${al.id}', '${escapeHtml(al.apellido)} ${escapeHtml(al.nombre)}')"><i class="fas fa-plus-circle"></i> Asignar</button></td>`;
+                html += `<td style="white-space:nowrap;"><button class="btn-sm" onclick="abrirModalAsignar('${al.id}', '${escapeHtml(norm.apellido)} ${escapeHtml(norm.nombre)}')"><i class="fas fa-plus-circle"></i> Asignar</button></td>`;
                 html += `<td><button class="btn-sm" onclick="editarAlumnoCompleto('${al.id}')"><i class="fas fa-edit"></i></button></td>`;
             }
             html += '</tr>';
@@ -1514,6 +1430,7 @@
         container.innerHTML = html;
     }
 
+    // ==================== FUNCIONES ADICIONALES ====================
     window.abrirModalAsignar = function(alumnoId, alumnoNombre) {
         if (!adminMode) return;
         document.getElementById('asignarAlumnoNombre').innerHTML = alumnoNombre;
@@ -1651,7 +1568,7 @@
         }
     }
 
-    // ==================== IMPORTACIÓN, EXPORTACIÓN ====================
+    // ==================== IMPORTACIÓN DE EXCEL ====================
     function excelDateToJSDate(serial) { const utc_days = Math.floor(serial - 25569); const date = new Date(utc_days * 86400 * 1000); return date.toISOString().slice(0,10); }
 
     function importarExcel(file) {
@@ -1702,20 +1619,27 @@
                 let nombre = row[1]?.toString().trim() || "";
                 let dni = row[2]?.toString().trim() || "";
                 let pabellon = row[3]?.toString().trim() || "";
-                if (!nombre && apellido.includes(" ")) {
+                
+                if ((!nombre || nombre === "") && apellido.includes(" ")) {
                     const partes = apellido.split(/\s+/);
                     if (partes.length >= 2) {
-                        nombre = partes.slice(0, -1).join(" ");
-                        apellido = partes[partes.length - 1];
+                        apellido = partes[0];
+                        nombre = partes.slice(1).join(" ");
                     }
                 }
-                if (!nombre && row[1] && !row[0]) {
-                    apellido = row[1]?.toString().trim() || "";
-                    nombre = row[0]?.toString().trim() || "";
+                if (apellido.includes(" ") && nombre && !nombre.includes(" ")) {
+                    let temp = apellido;
+                    apellido = nombre;
+                    nombre = temp;
                 }
-                dni = dni.replace(/[^0-9]/g, '');
+                if (dni && dni !== "?" && dni !== "—") {
+                    dni = dni.replace(/[^0-9]/g, '');
+                }
+                if (dni === "" || dni === "?" || dni === "—") dni = "";
+                
                 pabellon = pabellon.replace(/[?¿!]/g, '').trim();
                 if (apellido === "" && nombre === "" && dni === "") continue;
+                
                 const asistencias = [];
                 for (let j = 4; j < row.length; j++) {
                     const val = row[j]?.toString().trim().toUpperCase();
@@ -1748,7 +1672,7 @@
             for (let al of alumnosData) {
                 let idUnico;
                 let alumnoExistente = null;
-                if (al.dni) alumnoExistente = globalData.alumnos.find(a => a.dni === al.dni);
+                if (al.dni && al.dni !== "") alumnoExistente = globalData.alumnos.find(a => a.dni === al.dni);
                 if (!alumnoExistente) alumnoExistente = globalData.alumnos.find(a => a.apellido.toLowerCase() === al.apellido.toLowerCase() && a.nombre.toLowerCase() === al.nombre.toLowerCase());
                 if (alumnoExistente) {
                     idUnico = alumnoExistente.id;
@@ -1758,7 +1682,7 @@
                         id: idUnico,
                         apellido: al.apellido,
                         nombre: al.nombre,
-                        dni: al.dni,
+                        dni: al.dni || '',
                         pabellon: al.pabellon,
                         fecha_inscripcion: hoy,
                         fecha_vencimiento_carnet: vencDef.toISOString().slice(0,10),
@@ -1782,7 +1706,7 @@
             guardarLocal();
             currentMateriaId = materia.id;
             seleccionarMateria(materia.id);
-            alert(`✅ Importado: ${alumnosData.length} alumnos, ${fechas.length} fechas. Revise la tabla.`);
+            alert(`✅ Importado: ${alumnosData.length} alumnos, ${fechas.length} fechas. Revise la tabla y corrija manualmente si algún nombre quedó mal separado (use el lápiz).`);
         };
         reader.readAsArrayBuffer(file);
     }
@@ -1846,15 +1770,15 @@
         const totalFaltas = (totalClases * totalAlumnos) - totalAsistencias; 
         const pctGeneral = totalClases * totalAlumnos ? Math.round(totalAsistencias / (totalClases * totalAlumnos) * 100) : 0; 
         let html = `<div style="display:grid; grid-template-columns:repeat(3,1fr); gap:0.8rem; margin-bottom:0.8rem;">
-            <div style="background:#0f172a; padding:0.5rem; border-radius:0.5rem; text-align:center; border:1px solid #3b82f6;">
+            <div style="background:#0a0a0a; padding:0.5rem; border-radius:0.5rem; text-align:center; border:1px solid #3b82f6;">
                 <h3 style="font-size:0.9rem; color:#60a5fa;">Asistencias</h3>
                 <p style="font-size:1.2rem;">${totalAsistencias}</p>
             </div>
-            <div style="background:#0f172a; padding:0.5rem; border-radius:0.5rem; text-align:center; border:1px solid #3b82f6;">
+            <div style="background:#0a0a0a; padding:0.5rem; border-radius:0.5rem; text-align:center; border:1px solid #3b82f6;">
                 <h3 style="font-size:0.9rem; color:#60a5fa;">Faltas</h3>
                 <p style="font-size:1.2rem;">${totalFaltas}</p>
             </div>
-            <div style="background:#0f172a; padding:0.5rem; border-radius:0.5rem; text-align:center; border:1px solid #3b82f6;">
+            <div style="background:#0a0a0a; padding:0.5rem; border-radius:0.5rem; text-align:center; border:1px solid #3b82f6;">
                 <h3 style="font-size:0.9rem; color:#60a5fa;">% General</h3>
                 <p style="font-size:1.2rem;">${pctGeneral}%</p>
             </div>
@@ -1900,6 +1824,84 @@
             mostrarToast('Datos locales eliminados. La nube permanece intacta.'); 
         } 
     }
+
+    // ==================== BUSCAR DUPLICADOS ====================
+    function buscarDuplicados() {
+        const alumnos = globalData.alumnos;
+        const duplicadosPorDNI = new Map();
+        const duplicadosPorNombre = new Map();
+        const duplicados = [];
+
+        alumnos.forEach(al => {
+            if (al.dni && al.dni.trim() !== "" && al.dni !== "?" && al.dni !== "—") {
+                if (!duplicadosPorDNI.has(al.dni)) duplicadosPorDNI.set(al.dni, []);
+                duplicadosPorDNI.get(al.dni).push(al);
+            }
+        });
+        alumnos.forEach(al => {
+            const key = `${al.apellido.toLowerCase()}|${al.nombre.toLowerCase()}`;
+            if (!duplicadosPorNombre.has(key)) duplicadosPorNombre.set(key, []);
+            duplicadosPorNombre.get(key).push(al);
+        });
+
+        duplicadosPorDNI.forEach((grupo, dni) => {
+            if (grupo.length > 1) {
+                duplicados.push({ tipo: "DNI", valor: dni, alumnos: grupo });
+            }
+        });
+        duplicadosPorNombre.forEach((grupo, key) => {
+            if (grupo.length > 1) {
+                const [apellido, nombre] = key.split('|');
+                duplicados.push({ tipo: "Nombre completo", valor: `${apellido} ${nombre}`, alumnos: grupo });
+            }
+        });
+
+        const modal = document.getElementById('modalDuplicados');
+        const contenedor = document.getElementById('duplicadosLista');
+        if (duplicados.length === 0) {
+            contenedor.innerHTML = '<div class="help-text" style="text-align:center; padding:1rem;">✅ No se encontraron alumnos duplicados en la matrícula.</div>';
+        } else {
+            let html = '';
+            duplicados.forEach((dup, idx) => {
+                html += `<div class="duplicado-grupo" data-grupo-index="${idx}">`;
+                html += `<h4>📌 Duplicado por ${dup.tipo}: <strong>${escapeHtml(dup.valor)}</strong></h4>`;
+                html += `<ul class="duplicado-lista">`;
+                dup.alumnos.forEach(al => {
+                    html += `<li><strong>${escapeHtml(al.apellido)} ${escapeHtml(al.nombre)}</strong> (DNI: ${escapeHtml(al.dni || '—')}) - Pabellón: ${escapeHtml(al.pabellon)} - ID: ${al.id}</li>`;
+                });
+                html += `</ul>`;
+                html += `<button class="btn-eliminar-grupo" onclick="eliminarGrupoDuplicados(${idx})">🗑️ Borrar duplicados de este grupo (dejar solo uno)</button>`;
+                html += `</div>`;
+            });
+            contenedor.innerHTML = html;
+            window.gruposDuplicadosTemp = duplicados;
+        }
+        modal.classList.add('active');
+    }
+
+    window.eliminarGrupoDuplicados = function(grupoIndex) {
+        const grupos = window.gruposDuplicadosTemp;
+        if (!grupos || !grupos[grupoIndex]) return;
+        const grupo = grupos[grupoIndex];
+        const alumnosAEliminar = grupo.alumnos.slice(1);
+        if (alumnosAEliminar.length === 0) return;
+        
+        if (!confirm(`⚠️ ¿Está seguro? Se eliminarán ${alumnosAEliminar.length} alumno(s) duplicado(s) del grupo "${grupo.tipo}: ${grupo.valor}". Se conservará solo uno. Esta acción afectará también a las materias.`)) return;
+        
+        const idsAEliminar = alumnosAEliminar.map(al => al.id);
+        globalData.alumnos = globalData.alumnos.filter(al => !idsAEliminar.includes(al.id));
+        globalData.materias.forEach(materia => {
+            materia.alumnos = materia.alumnos.filter(al => !idsAEliminar.includes(al.id));
+        });
+        
+        guardarLocal();
+        renderListaGeneral();
+        if (currentMateriaId) renderTablaAsistencia();
+        renderTrabajadores();
+        mostrarToast(`✅ Se eliminaron ${alumnosAEliminar.length} duplicado(s).`);
+        document.getElementById('modalDuplicados').classList.remove('active');
+        setTimeout(() => buscarDuplicados(), 300);
+    };
 
     // ==================== EVENT LISTENERS ====================
     document.getElementById('searchAlumno').addEventListener('input', (e) => { searchAsistencia = e.target.value; renderTablaAsistencia(); });
@@ -1989,15 +1991,8 @@
             });
         });
         
-        if ((!globalData.materias || globalData.materias.length === 0) && (!globalData.alumnos || globalData.alumnos.length === 0)) { 
-            const ok = await cargarDesdeJSONBin(); 
-            if (!ok) { 
-                globalData = { materias: [], alumnos: [], trabajadores: [] }; 
-                guardarLocal(); 
-            } 
-        } else { 
-            guardarLocal(); 
-        } 
+        await cargarDesdeJSONBin();
+        
         setupAdminToggle(); 
         renderizarSegunRol(); 
         renderSidebar(); 
